@@ -22,7 +22,7 @@ export function ProductSheet({ project, onClose }: { project: Project; onClose: 
         <div className="border-ink-500 flex items-end gap-5 border-b px-6 pt-7 pb-5 sm:px-8">
           <div
             className="relative flex w-20 shrink-0 items-end justify-center sm:w-24"
-            style={tintVars(project.tint, !soldOut)}
+            style={tintVars(project.brand.base, !soldOut)}
             aria-hidden="true"
           >
             <div className="from-amber-400/22 absolute inset-x-0 -top-6 h-24 bg-gradient-to-b to-transparent blur-md" />

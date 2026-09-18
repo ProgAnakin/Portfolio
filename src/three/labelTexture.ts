@@ -1,139 +1,232 @@
 import { CanvasTexture, SRGBColorSpace, type Texture } from 'three';
-import type { Project } from '../data/projects';
-import { palette } from './tokens';
+import type { Brand, Project } from '../data/projects';
+import { drawMark } from './logos';
 
 const W = 512;
 const H = 640;
 
 /**
- * Draws the front of the box.
+ * The front of the box.
  *
  * Every product on these shelves is a project, so every project gets real
- * packaging: a brand line, a claim flash, a spec panel and a barcode. Drawn
- * procedurally onto a canvas rather than shipped as artwork — it costs nothing
- * to download, it stays sharp, and adding a project still means adding one
- * object to the data file.
+ * packaging — and three boxes sharing one layout read as three of the same
+ * thing. Each brand gets its own: Suaipe's is the kiosk's own start screen,
+ * Kouci's is sports packaging with a banded diagonal, and the trainer's is a
+ * shipping label with a stamp on it, because it has not shipped.
  */
-function drawLabel(ctx: CanvasRenderingContext2D, project: Project) {
-  const base = palette.prod(project.tint);
-  const paper = palette.paper100();
-  const ink = palette.ink900();
-  const amber = palette.amber300();
-  const accent = palette.accent();
-  const soldOut = project.status === 'out-of-stock';
+type Layout = (ctx: CanvasRenderingContext2D, project: Project, brand: Brand) => void;
 
-  ctx.clearRect(0, 0, W, H);
-  ctx.fillStyle = base;
-  ctx.fillRect(0, 0, W, H);
 
-  // A band of paper across the top two-thirds — the printed area.
-  ctx.fillStyle = paper;
-  ctx.fillRect(28, 28, W - 56, H - 200);
-
-  // Misregistration: the same band again, offset and knocked back. Cheap
-  // trick, but it is what makes a flat fill look printed instead of filled.
-  ctx.globalAlpha = 0.16;
-  ctx.fillStyle = amber;
-  ctx.fillRect(33, 24, W - 56, H - 200);
-  ctx.globalAlpha = 1;
-
-  // Brand line.
-  ctx.fillStyle = ink;
-  ctx.font = '700 22px "Space Mono", monospace';
-  ctx.letterSpacing = '4px';
-  ctx.fillText('ANNICHINI & CO.', 48, 74);
-
-  ctx.fillStyle = accent;
-  ctx.fillRect(48, 88, W - 96, 5);
-
-  // The name, as big as it will go.
-  ctx.fillStyle = ink;
-  ctx.letterSpacing = '0px';
-  let size = 92;
-  ctx.font = `800 ${size}px "Bricolage Grotesque", sans-serif`;
-  while (ctx.measureText(project.name.toUpperCase()).width > W - 96 && size > 34) {
-    size -= 4;
-    ctx.font = `800 ${size}px "Bricolage Grotesque", sans-serif`;
+function fitText(ctx: CanvasRenderingContext2D, text: string, max: number, start: number, weight = 800) {
+  let size = start;
+  ctx.font = `${weight} ${size}px "Bricolage Grotesque", sans-serif`;
+  while (ctx.measureText(text).width > max && size > 24) {
+    size -= 3;
+    ctx.font = `${weight} ${size}px "Bricolage Grotesque", sans-serif`;
   }
-  ctx.fillText(project.name.toUpperCase(), 48, 100 + size);
+  return size;
+}
 
-  // Tagline, wrapped.
-  ctx.font = '400 24px "Instrument Sans", sans-serif';
-  ctx.fillStyle = ink;
-  ctx.globalAlpha = 0.72;
-  const words = project.tagline.split(' ');
-  let line = '';
-  let y = 148 + size;
-  for (const word of words) {
-    const next = line ? `${line} ${word}` : word;
-    if (ctx.measureText(next).width > W - 96) {
-      ctx.fillText(line, 48, y);
-      line = word;
-      y += 30;
-    } else {
-      line = next;
-    }
-  }
-  ctx.fillText(line, 48, y);
-  ctx.globalAlpha = 1;
-
-  // Claim flash — the loudest thing on the box, as it would be in a shop.
-  const flash = soldOut ? 'OUT OF\nSTOCK' : project.stack[0]?.toUpperCase() ?? 'NEW';
-  ctx.save();
-  ctx.translate(W - 118, H - 258);
-  ctx.rotate(-0.18);
-  ctx.fillStyle = soldOut ? accent : amber;
-  ctx.beginPath();
-  for (let i = 0; i < 24; i += 1) {
-    const a = (i / 24) * Math.PI * 2;
-    const r = i % 2 === 0 ? 78 : 62;
-    ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r);
-  }
-  ctx.closePath();
-  ctx.fill();
-  ctx.fillStyle = ink;
-  ctx.font = '700 20px "Space Mono", monospace';
-  ctx.textAlign = 'center';
-  flash.split('\n').forEach((part, i, all) => {
-    ctx.fillText(part, 0, 8 + (i - (all.length - 1) / 2) * 22);
-  });
-  ctx.restore();
-  ctx.textAlign = 'left';
-
-  // Spec panel — the stack, printed like nutritional information.
-  const panelY = H - 168;
-  ctx.fillStyle = ink;
-  ctx.globalAlpha = 0.9;
-  ctx.fillRect(28, panelY, W - 56, 124);
-  ctx.globalAlpha = 1;
-  ctx.fillStyle = paper;
-  ctx.font = '700 17px "Space Mono", monospace';
-  ctx.letterSpacing = '3px';
-  ctx.fillText('BUILT WITH', 46, panelY + 30);
-  ctx.letterSpacing = '0px';
-  ctx.font = '400 17px "Space Mono", monospace';
-  project.stack.slice(0, 3).forEach((item, i) => {
-    ctx.globalAlpha = 0.75;
-    ctx.fillText(item, 46, panelY + 58 + i * 22);
-    ctx.globalAlpha = 1;
-  });
-
-  // Barcode + net weight.
-  let x = W - 190;
+function barcode(ctx: CanvasRenderingContext2D, x: number, y: number, h: number, colour: string) {
+  let cursor = x;
+  ctx.fillStyle = colour;
   for (let i = 0; i < 26; i += 1) {
     const w = ((i * 37) % 3) + 1;
-    ctx.fillStyle = paper;
-    ctx.globalAlpha = 0.85;
-    ctx.fillRect(x, panelY + 30, w, 56);
-    x += w + 3;
+    ctx.fillRect(cursor, y, w, h);
+    cursor += w + 3;
+  }
+}
+
+/** Suaipe: the screen a customer actually sees, not a box. */
+const suaipeLayout: Layout = (ctx, project, brand) => {
+  const glow = ctx.createRadialGradient(W / 2, H * 0.34, 20, W / 2, H * 0.34, W * 0.72);
+  glow.addColorStop(0, '#153d9e');
+  glow.addColorStop(1, brand.ink);
+  ctx.fillStyle = glow;
+  ctx.fillRect(0, 0, W, H);
+
+  ctx.fillStyle = brand.paper;
+  ctx.font = '700 19px "Space Mono", monospace';
+  ctx.letterSpacing = '5px';
+  ctx.globalAlpha = 0.72;
+  ctx.fillText('ANNICHINI & CO.', 38, 54);
+  ctx.globalAlpha = 1;
+  ctx.letterSpacing = '0px';
+
+  drawMark(ctx, W / 2, H * 0.34, 150, brand);
+
+  ctx.textAlign = 'center';
+  ctx.fillStyle = brand.paper;
+  const size = fitText(ctx, 'SUAIPE', W - 90, 86);
+  ctx.fillText('SUAIPE', W / 2, H * 0.34 + 160 + size * 0.2);
+
+  ctx.font = '400 22px "Instrument Sans", sans-serif';
+  ctx.globalAlpha = 0.74;
+  ctx.fillText('Eight questions. One match.', W / 2, H * 0.34 + 205);
+  ctx.globalAlpha = 1;
+
+  // The swipe affordance, as the app shows it.
+  ctx.strokeStyle = brand.accent;
+  ctx.lineWidth = 5;
+  ctx.lineCap = 'round';
+  const cy = H - 132;
+  ctx.beginPath();
+  ctx.moveTo(W / 2 - 78, cy);
+  ctx.lineTo(W / 2 + 78, cy);
+  ctx.stroke();
+  for (const [dx, dir] of [[-96, -1], [96, 1]] as const) {
+    ctx.beginPath();
+    ctx.moveTo(W / 2 + dx - dir * 18, cy - 15);
+    ctx.lineTo(W / 2 + dx, cy);
+    ctx.lineTo(W / 2 + dx - dir * 18, cy + 15);
+    ctx.stroke();
+  }
+
+  ctx.font = '400 17px "Space Mono", monospace';
+  ctx.letterSpacing = '4px';
+  ctx.fillStyle = brand.accent;
+  ctx.fillText('SWIPE TO START', W / 2, H - 76);
+  ctx.letterSpacing = '0px';
+  ctx.globalAlpha = 0.45;
+  ctx.fillStyle = brand.paper;
+  ctx.font = '400 15px "Space Mono", monospace';
+  ctx.fillText(project.stack.slice(0, 3).join(' · '), W / 2, H - 40);
+  ctx.globalAlpha = 1;
+  ctx.textAlign = 'left';
+};
+
+/** Kouci: sports packaging — banded, loud, with the club colours on it. */
+const kouciLayout: Layout = (ctx, project, brand) => {
+  ctx.fillStyle = brand.base;
+  ctx.fillRect(0, 0, W, H);
+
+  // The diagonal band the whole thing hangs off.
+  ctx.save();
+  ctx.fillStyle = brand.paper;
+  ctx.beginPath();
+  ctx.moveTo(0, H * 0.2);
+  ctx.lineTo(W, H * 0.08);
+  ctx.lineTo(W, H * 0.66);
+  ctx.lineTo(0, H * 0.78);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+
+  // Lane lines, bottom third.
+  ctx.strokeStyle = brand.paper;
+  ctx.globalAlpha = 0.28;
+  ctx.lineWidth = 6;
+  for (let i = 0; i < 4; i += 1) {
+    ctx.beginPath();
+    ctx.moveTo(24, H * 0.83 + i * 22);
+    ctx.lineTo(W - 24, H * 0.815 + i * 22);
+    ctx.stroke();
   }
   ctx.globalAlpha = 1;
-  ctx.font = '400 15px "Space Mono", monospace';
-  ctx.fillStyle = paper;
-  ctx.globalAlpha = 0.6;
-  ctx.fillText(`NET WT. ${project.tag.year}`, W - 190, panelY + 106);
+
+  ctx.fillStyle = brand.ink;
+  ctx.font = '700 19px "Space Mono", monospace';
+  ctx.letterSpacing = '5px';
+  ctx.fillText('ANNICHINI & CO.', 34, H * 0.16);
+  ctx.letterSpacing = '0px';
+
+  drawMark(ctx, W * 0.32, H * 0.36, 128, brand);
+
+  ctx.textAlign = 'right';
+  ctx.fillStyle = brand.ink;
+  const size = fitText(ctx, 'KOUCI', W * 0.5, 78);
+  ctx.fillText('KOUCI', W - 34, H * 0.36);
+  ctx.font = '400 21px "Instrument Sans", sans-serif';
+  ctx.globalAlpha = 0.7;
+  ctx.fillText('Water polo, measured', W - 34, H * 0.36 + size * 0.5);
   ctx.globalAlpha = 1;
-}
+  ctx.textAlign = 'left';
+
+  ctx.fillStyle = brand.paper;
+  ctx.font = '700 17px "Space Mono", monospace';
+  ctx.letterSpacing = '3px';
+  ctx.fillText('LIVE STATS · TACTICS · ROSTERS', 34, H * 0.73);
+  ctx.letterSpacing = '0px';
+
+  barcode(ctx, 34, H - 72, 44, brand.paper);
+  ctx.textAlign = 'right';
+  ctx.font = '400 16px "Space Mono", monospace';
+  ctx.globalAlpha = 0.72;
+  ctx.fillText(`NET WT. ${project.tag.year}`, W - 34, H - 40);
+  ctx.globalAlpha = 1;
+  ctx.textAlign = 'left';
+};
+
+/** AI Call Trainer: a shipping label, stamped, because it has not shipped. */
+const trainerLayout: Layout = (ctx, project, brand) => {
+  ctx.fillStyle = brand.paper;
+  ctx.fillRect(0, 0, W, H);
+
+  // Kraft grain.
+  ctx.globalAlpha = 0.05;
+  ctx.fillStyle = brand.ink;
+  for (let i = 0; i < 260; i += 1) {
+    ctx.fillRect(Math.random() * W, Math.random() * H, 2, 1);
+  }
+  ctx.globalAlpha = 1;
+
+  ctx.strokeStyle = brand.ink;
+  ctx.lineWidth = 6;
+  ctx.strokeRect(22, 22, W - 44, H - 44);
+
+  ctx.fillStyle = brand.ink;
+  ctx.font = '700 18px "Space Mono", monospace';
+  ctx.letterSpacing = '4px';
+  ctx.fillText('ANNICHINI & CO.', 46, 74);
+  ctx.letterSpacing = '0px';
+  ctx.fillRect(46, 92, W - 92, 4);
+
+  drawMark(ctx, 104, 182, 96, brand);
+
+  ctx.font = '400 17px "Space Mono", monospace';
+  ctx.globalAlpha = 0.6;
+  ctx.fillText('CONTENTS', 178, 158);
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = brand.ink;
+  const size = fitText(ctx, 'AI CALL', W - 220, 56);
+  ctx.fillText('AI CALL', 178, 204);
+  ctx.fillText('TRAINER', 178, 204 + size * 0.98);
+
+  ctx.font = '400 20px "Instrument Sans", sans-serif';
+  ctx.globalAlpha = 0.7;
+  ctx.fillText('Cold-call simulator with', 46, 320);
+  ctx.fillText('feedback on every objection.', 46, 348);
+  ctx.globalAlpha = 1;
+
+  // The stamp.
+  ctx.save();
+  ctx.translate(W / 2, H * 0.68);
+  ctx.rotate(-0.16);
+  ctx.strokeStyle = brand.accent;
+  ctx.lineWidth = 7;
+  ctx.strokeRect(-166, -44, 332, 88);
+  ctx.fillStyle = brand.accent;
+  ctx.textAlign = 'center';
+  ctx.font = '700 40px "Space Mono", monospace';
+  ctx.letterSpacing = '3px';
+  ctx.fillText('IN DEVELOPMENT', 0, 14);
+  ctx.letterSpacing = '0px';
+  ctx.textAlign = 'left';
+  ctx.restore();
+
+  barcode(ctx, 46, H - 104, 46, brand.ink);
+  ctx.font = '400 16px "Space Mono", monospace';
+  ctx.fillStyle = brand.ink;
+  ctx.globalAlpha = 0.62;
+  ctx.fillText(`DO NOT STOCK · ${project.tag.year}`, 46, H - 42);
+  ctx.globalAlpha = 1;
+};
+
+const layouts: Record<string, Layout> = {
+  suaipe: suaipeLayout,
+  kouci: kouciLayout,
+  'call-trainer': trainerLayout,
+};
 
 export async function createLabelTexture(project: Project): Promise<Texture | null> {
   if (typeof document === 'undefined') return null;
@@ -151,7 +244,8 @@ export async function createLabelTexture(project: Project): Promise<Texture | nu
   const ctx = canvas.getContext('2d');
   if (!ctx) return null;
 
-  drawLabel(ctx, project);
+  ctx.clearRect(0, 0, W, H);
+  (layouts[project.brand.mark] ?? kouciLayout)(ctx, project, project.brand);
 
   const texture = new CanvasTexture(canvas);
   texture.colorSpace = SRGBColorSpace;

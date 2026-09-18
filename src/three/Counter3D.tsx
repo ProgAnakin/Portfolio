@@ -5,9 +5,15 @@ import { Group, Object3D } from 'three';
 import { palette } from './tokens';
 import { makeSpring, spring } from './spring';
 import { hotspotObjects, input, releaseHotspot } from './hotspots';
+import { Ink } from './materials';
+import { setRamp } from './toon';
 import { Shopkeeper3D } from './Shopkeeper3D';
 
 export const COUNTER_X = 2.45;
+
+const PHONE = '#ded0b4';
+const PHONE_DARK = '#8e7f66';
+const GOLD = '#d7a54a';
 const TOP_Y = 1.12;
 
 /**
@@ -69,7 +75,7 @@ export function Counter3D() {
         <meshStandardMaterial color={oak} roughness={0.55} />
       </RoundedBox>
 
-      <Shopkeeper3D position={[0.24, TOP_Y + 0.58, -0.45]} scale={1.3} />
+      <Shopkeeper3D position={[0.2, TOP_Y - 0.46, -0.52]} scale={1.22} />
 
       {/* Pendant: the fixture, and the bulb doing the lighting. */}
       <group position={[-0.78, 2.36, 0.16]}>
@@ -92,53 +98,82 @@ export function Counter3D() {
         </mesh>
       </group>
 
-      {/* Telephone — rubber, so it reads soft next to the chrome till. */}
+      {/* Telephone: a cream desk phone, because a dark object on a dark
+          counter is a hole. Dial, cradle, handset and a coiled cord — the
+          silhouette has to say "telephone" before anyone hovers it. */}
       <CounterProp id="telephone" position={[-0.86, TOP_Y, 0.14]}>
-        {/* Sloped base with a dial, so it reads as a telephone and not a bar
-            of soap — the silhouette has to do that work at this distance. */}
+        {/* Sloped base */}
         <RoundedBox
-          args={[0.44, 0.17, 0.34]}
-          radius={0.045}
+          args={[0.44, 0.15, 0.36]}
+          radius={0.05}
           smoothness={4}
-          position={[0, 0.085, 0]}
-          rotation={[-0.16, 0, 0]}
+          position={[0, 0.075, 0]}
+          rotation={[-0.14, 0, 0]}
         >
-          <meshPhysicalMaterial
-            color={palette.prod('clay')}
-            roughness={0.78}
-            clearcoat={0.18}
-            clearcoatRoughness={0.7}
-            sheen={0.6}
-            sheenColor="#ffffff"
-          />
+          <meshToonMaterial color={PHONE} gradientMap={setRamp()} />
+          <Ink weight="thin" />
         </RoundedBox>
-        {/* Rotary dial */}
-        <mesh position={[0, 0.16, 0.055]} rotation={[-Math.PI / 2 - 0.16, 0, 0]}>
-          <torusGeometry args={[0.082, 0.022, 10, 24]} />
-          <meshStandardMaterial color={palette.ink900()} roughness={0.45} />
-        </mesh>
-        <mesh position={[0, 0.152, 0.052]} rotation={[-Math.PI / 2 - 0.16, 0, 0]}>
-          <circleGeometry args={[0.062, 20]} />
-          <meshStandardMaterial color={palette.paper500()} roughness={0.7} />
-        </mesh>
+
+        {/* Rotary dial, with finger holes. */}
+        <group position={[0, 0.155, 0.06]} rotation={[-Math.PI / 2 - 0.14, 0, 0]}>
+          <mesh>
+            <cylinderGeometry args={[0.095, 0.095, 0.016, 28]} />
+            <meshToonMaterial color={PHONE_DARK} gradientMap={setRamp()} />
+          </mesh>
+          <mesh position={[0, 0.011, 0]}>
+            <torusGeometry args={[0.078, 0.012, 10, 28]} />
+            <meshToonMaterial color={GOLD} gradientMap={setRamp()} />
+          </mesh>
+          {Array.from({ length: 8 }, (_, i) => {
+            const a = (i / 8) * Math.PI * 1.6 - 0.5;
+            return (
+              <mesh key={i} position={[Math.cos(a) * 0.055, 0.014, Math.sin(a) * 0.055]}>
+                <cylinderGeometry args={[0.014, 0.014, 0.01, 10]} />
+                <meshToonMaterial color={palette.ink900()} gradientMap={setRamp()} />
+              </mesh>
+            );
+          })}
+        </group>
+
         {/* Cradle prongs */}
-        {[-0.15, 0.15].map((x) => (
-          <mesh key={x} position={[x, 0.2, -0.02]}>
-            <boxGeometry args={[0.05, 0.06, 0.09]} />
-            <meshStandardMaterial color={palette.ink900()} roughness={0.6} />
+        {[-0.155, 0.155].map((x) => (
+          <mesh key={x} position={[x, 0.185, -0.04]}>
+            <boxGeometry args={[0.05, 0.05, 0.1]} />
+            <meshToonMaterial color={PHONE_DARK} gradientMap={setRamp()} />
           </mesh>
         ))}
-        {/* Handset resting across them */}
-        <group position={[0, 0.26, -0.02]}>
-          <RoundedBox args={[0.42, 0.07, 0.08]} radius={0.033} smoothness={4}>
-            <meshPhysicalMaterial color={palette.prod('clay')} roughness={0.72} clearcoat={0.24} />
+
+        {/* Handset */}
+        <group position={[0, 0.245, -0.04]} rotation={[0, 0, 0.02]}>
+          <RoundedBox args={[0.42, 0.06, 0.07]} radius={0.028} smoothness={4}>
+            <meshToonMaterial color={PHONE} gradientMap={setRamp()} />
+            <Ink weight="thin" />
           </RoundedBox>
-          {[-0.17, 0.17].map((x) => (
-            <RoundedBox key={x} args={[0.13, 0.11, 0.12]} radius={0.05} smoothness={4} position={[x, 0, 0]}>
-              <meshPhysicalMaterial color={palette.prod('clay')} roughness={0.72} clearcoat={0.24} />
+          {[-0.18, 0.18].map((x) => (
+            <RoundedBox
+              key={x}
+              args={[0.13, 0.1, 0.11]}
+              radius={0.045}
+              smoothness={4}
+              position={[x, -0.005, 0]}
+            >
+              <meshToonMaterial color={PHONE} gradientMap={setRamp()} />
+              <Ink weight="thin" />
             </RoundedBox>
           ))}
         </group>
+
+        {/* Coiled cord, running off the back. */}
+        {Array.from({ length: 7 }, (_, i) => (
+          <mesh
+            key={i}
+            position={[-0.24 - i * 0.032, 0.11 - i * 0.004, -0.12 - i * 0.012]}
+            rotation={[0, 0.3, Math.PI / 2]}
+          >
+            <torusGeometry args={[0.028, 0.008, 8, 16]} />
+            <meshToonMaterial color={PHONE_DARK} gradientMap={setRamp()} />
+          </mesh>
+        ))}
       </CounterProp>
 
       {/* The till — the only chrome in the shop, so it reflects the strips. */}

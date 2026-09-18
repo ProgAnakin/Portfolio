@@ -65,8 +65,8 @@ function Kiosk({ finish, color, label, lit }: ShapeProps) {
           </mesh>
         )}
         {/* The card being swiped off the deck. */}
-        <group position={[0.17, -0.11, 0.075]} rotation={[0, 0.12, -0.34]}>
-          <RoundedBox args={[0.2, 0.26, 0.016]} radius={0.012} smoothness={3}>
+        <group position={[0.2, -0.2, 0.075]} rotation={[0, 0.14, -0.4]}>
+          <RoundedBox args={[0.16, 0.21, 0.016]} radius={0.012} smoothness={3}>
             <meshToonMaterial
               color={palette.amber300()}
               emissive={palette.amber400()}

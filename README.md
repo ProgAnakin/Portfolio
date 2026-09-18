@@ -112,6 +112,16 @@ answer is no.
   their light already in it so the scene cannot re-light them into mud. The
   pupils and lids are separate planes: they follow the visitor and they blink,
   which is worth more than any amount of geometry.
+- **Each project brings its own identity.** Suaipe's blue, Kouci's sage and
+  white, and a mark invented for the trainer, which has none of its own yet —
+  a speech bubble with a waveform in it, which is what the product does. The
+  marks are drawn in code (`logos.ts`), so no artwork is downloaded and one
+  mark can be recoloured for the packaging, the shelf talker and the box side
+  without exporting anything three times.
+- **Three boxes sharing one layout read as three of the same thing**, so each
+  brand gets its own (`labelTexture.ts`): Suaipe's packaging *is* the kiosk's
+  start screen, Kouci's is banded sports packaging, and the trainer's is a
+  shipping label with a stamp on it, because it has not shipped.
 - **Each product is a display, not a box.** The kiosk is tipped back with a
   quiz card caught mid-swipe; the boxed set leans so its top face shows, with
   the ball out of the box in front of it; the unfinished project is a shipping

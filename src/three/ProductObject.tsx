@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Group, Object3D, type Texture } from 'three';
 import type { Project } from '../data/projects';
@@ -29,7 +29,7 @@ export function ProductObject({ project, position }: ProductObjectProps) {
 
   const Shape = shapeMeshes[project.shape];
   const soldOut = project.status === 'out-of-stock';
-  const color = useMemo(() => palette.prod(project.tint), [project.tint]);
+  const color = project.brand.base;
 
   useEffect(() => {
     let alive = true;

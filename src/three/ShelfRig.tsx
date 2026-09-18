@@ -63,7 +63,7 @@ export function ShelfRig() {
             <meshStandardMaterial
               color={amber}
               emissive={amber}
-              emissiveIntensity={i === 0 ? 2.2 : 1.9}
+              emissiveIntensity={i === 0 ? 2.6 : 2.3}
               toneMapped={false}
             />
           </mesh>

@@ -1,6 +1,7 @@
 import { CanvasTexture, SRGBColorSpace, type Texture } from 'three';
 import type { Project } from '../data/projects';
 import { palette } from './tokens';
+import { drawMark } from './logos';
 
 const W = 512;
 const H = 160;
@@ -27,39 +28,60 @@ export async function createTalkerTexture(project: Project): Promise<Texture | n
   if (!ctx) return null;
 
   const soldOut = project.status === 'out-of-stock';
-  const paper = palette.paper100();
-  const ink = palette.ink900();
-  const accent = palette.accent();
+  const { paper, ink, accent } = project.brand;
+  const alert = palette.accent();
 
-  ctx.fillStyle = soldOut ? '#2a1512' : paper;
+  ctx.fillStyle = soldOut ? '#f4e3d6' : paper;
   ctx.fillRect(0, 0, W, H);
 
-  ctx.fillStyle = soldOut ? accent : ink;
-  ctx.fillRect(0, 0, W, 9);
+  // A band of the brand's own colour down the left, and its mark on it.
+  ctx.fillStyle = soldOut ? alert : project.brand.base;
+  ctx.fillRect(0, 0, 122, H);
+  drawMark(ctx, 61, H / 2, 66, {
+    ...project.brand,
+    base: paper,
+    accent: soldOut ? '#f4e3d6' : accent,
+  });
+
+  // Kind and year share the top line; the name gets the whole second one and
+  // is clipped if it has to be. "AI CALL TRAINER" ran straight into "IN DEV"
+  // when both were right-aligned on the same row.
+  const textLeft = 146;
+  const textRight = W - 26;
+
+  ctx.fillStyle = soldOut ? '#8f2d10' : ink;
+  ctx.textAlign = 'right';
+  ctx.font = '700 28px "Space Mono", monospace';
+  ctx.letterSpacing = '2px';
+  ctx.globalAlpha = soldOut ? 0.9 : 0.6;
+  ctx.fillText(project.tag.year, textRight, 66);
+  const yearWidth = ctx.measureText(project.tag.year).width + 26;
+  ctx.globalAlpha = 1;
 
   ctx.textAlign = 'left';
-  ctx.fillStyle = soldOut ? accent : ink;
-  ctx.font = '700 40px "Space Mono", monospace';
+  ctx.font = '700 38px "Space Mono", monospace';
   ctx.letterSpacing = '3px';
-  ctx.fillText(soldOut ? 'OUT OF STOCK' : project.tag.kind, 26, 72);
+  let kind = soldOut ? 'OUT OF STOCK' : project.tag.kind;
+  while (ctx.measureText(kind).width > textRight - textLeft - yearWidth && kind.length > 3) {
+    kind = kind.slice(0, -1);
+  }
+  ctx.fillText(kind, textLeft, 68);
 
   ctx.font = '400 26px "Space Mono", monospace';
   ctx.letterSpacing = '2px';
   ctx.globalAlpha = 0.66;
-  ctx.fillText(project.name.toUpperCase(), 26, 116);
+  let name = project.name.toUpperCase();
+  while (ctx.measureText(name).width > textRight - textLeft && name.length > 3) {
+    name = name.slice(0, -1);
+  }
+  ctx.fillText(name, textLeft, 118);
   ctx.globalAlpha = 1;
+  ctx.letterSpacing = '0px';
 
-  ctx.textAlign = 'right';
-  ctx.font = '700 30px "Space Mono", monospace';
-  ctx.globalAlpha = soldOut ? 0.85 : 0.55;
-  ctx.fillText(project.tag.year, W - 26, 116);
-  ctx.globalAlpha = 1;
-
-  // A pinch of accent so the eye finds the card at all.
   if (!soldOut) {
-    ctx.fillStyle = accent;
+    ctx.fillStyle = alert;
     ctx.beginPath();
-    ctx.arc(W - 40, 56, 11, 0, Math.PI * 2);
+    ctx.arc(W - 40, 108, 9, 0, Math.PI * 2);
     ctx.fill();
   }
 

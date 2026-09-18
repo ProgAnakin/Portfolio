@@ -35,7 +35,7 @@ export function ProductOnShelf({ project }: { project: Project }) {
       transition={{ type: 'spring', stiffness: 320, damping: 26 }}
       className="group relative flex h-full cursor-pointer flex-col items-center justify-end rounded-sm bg-transparent p-0"
       aria-label={`${project.name} — ${project.tagline}. ${statusLabel[project.status]}. Open details.`}
-      style={tintVars(project.tint, !soldOut)}
+      style={tintVars(project.brand.base, !soldOut)}
     >
       {/* The product itself, with its name riding just above it. */}
       <motion.span

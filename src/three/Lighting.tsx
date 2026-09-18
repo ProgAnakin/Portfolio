@@ -18,7 +18,7 @@ export function Lighting({ shelfY, shelfX }: { shelfY: number[]; shelfX: number 
   return (
     <>
       {/* Just enough ambient to keep the shadows from going pure black. */}
-      <ambientLight intensity={0.12} color={palette.ink600()} />
+      <ambientLight intensity={0.2} color={palette.ink600()} />
 
       {/* The strips. One per shelf, pointing down at the stock below. */}
       {shelfY.map((y, i) => (
@@ -28,7 +28,7 @@ export function Lighting({ shelfY, shelfX }: { shelfY: number[]; shelfX: number 
           rotation={[-Math.PI / 2, 0, 0]}
           width={4.2}
           height={0.62}
-          intensity={i === 0 ? 5.2 : 4.4}
+          intensity={i === 0 ? 7.4 : 6.4}
           color={amber}
         />
       ))}
@@ -54,6 +54,9 @@ export function Lighting({ shelfY, shelfX }: { shelfY: number[]; shelfX: number 
           silhouette. Kept cool so it never competes with the practicals. */}
       <pointLight position={[1.4, 2.2, 5.2]} intensity={4} distance={13} decay={2} color="#8aa0b0" />
       <pointLight position={[2.2, 2.15, 1.25]} intensity={2.3} distance={4.2} decay={2} color={palette.amber200()} />
+      {/* A soft key on the person behind the counter. Without it the only
+          face in the room is a silhouette, which is the opposite of the job. */}
+      <pointLight position={[2.6, 1.9, 1.9]} intensity={4.2} distance={4} decay={2} color={palette.amber200()} />
 
       <Environment resolution={128}>
         {shelfY.map((y, i) => (

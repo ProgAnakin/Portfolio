@@ -39,15 +39,15 @@ export function ramp(key: string, stops: number[]): Texture {
 
 export const finishRamp: Record<ProductFinish, number[]> = {
   // Moulded toy: dark body, mid, then a small blown highlight.
-  plastic: [0.24, 0.52, 0.8, 1],
+  plastic: [0.34, 0.62, 0.88, 1],
   // Unfired clay: light sinks in, no highlight anywhere.
-  clay: [0.3, 0.6, 0.86],
+  clay: [0.38, 0.68, 0.92],
   // Matte rubber: one wide soft band.
-  rubber: [0.26, 0.58, 0.82],
+  rubber: [0.34, 0.66, 0.88],
   // Cartoon chrome is drawn, not reflected: dark, then a hard bright band.
   chrome: [0.18, 0.4, 0.95, 1],
   // Printed board, flat as it gets.
-  card: [0.38, 0.78],
+  card: [0.48, 0.86],
 };
 
 export const finishRampTexture = (finish: ProductFinish) => ramp(finish, finishRamp[finish]);
