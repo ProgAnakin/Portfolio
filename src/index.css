@@ -1,0 +1,77 @@
+@import 'tailwindcss';
+
+/* ---------------------------------------------------------------------------
+   THE SHOP — design tokens
+   A dark shop interior at night. Warm amber light is the only warmth in the
+   scene; everything else is muted so the lighting does the work.
+   --------------------------------------------------------------------------- */
+@theme {
+  /* Ink & ground — walls, floor, panels */
+  --color-ink-900: #0c0a09; /* deepest shadow, vignette edges */
+  --color-ink-800: #14110f; /* shop wall / page background */
+  --color-ink-700: #1d1917; /* panels, product sheet */
+  --color-ink-600: #2a2422; /* raised surfaces, counter front */
+  --color-ink-500: #3a3230; /* hairlines, drawn outlines */
+
+  /* Wood — the shelving unit and the counter */
+  --color-oak-700: #3b2f27; /* shadow side of a plank */
+  --color-oak-500: #5a4636; /* plank body */
+  --color-oak-300: #7a6148; /* top edge catching the light */
+
+  /* Light — amber pooling from under the shelves and above the counter */
+  --color-amber-400: #e8a33d; /* the lamp itself */
+  --color-amber-300: #f2c078; /* hot core, lit edges */
+  --color-amber-200: #f8dcae; /* specular highlight */
+
+  /* Paper — receipts, price tags, type */
+  --color-paper-100: #ede6da; /* headings, receipt stock */
+  --color-paper-300: #c9bfb0; /* body copy */
+  --color-paper-500: #8b8073; /* secondary / muted */
+
+  /* Products — desaturated, lit rather than coloured */
+  --color-prod-sage: #6e7a62;
+  --color-prod-clay: #9a5f4b;
+  --color-prod-slate: #55636e;
+  --color-prod-mustard: #a88b46;
+  --color-prod-plum: #6b4f5e;
+
+  /* Accent — interactive hints, focus rings, SOLD OUT tags. Used sparingly. */
+  --color-accent: #e4572e;
+  --color-accent-dim: #a63d20;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-ink-800);
+  color: var(--color-paper-300);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Visible focus for everything, everywhere. The scene is decoration; the
+   content underneath must be reachable with a keyboard alone. */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
