@@ -22,6 +22,9 @@ interface ShopState {
   basket: Project[];
   /** Seconds spent in the shop, sampled when the receipt is printed. */
   timeInShop: () => number;
+  /** True once the till has printed. Stops the shop nagging about it. */
+  receiptTaken: boolean;
+  markReceiptTaken: () => void;
 }
 
 const ShopContext = createContext<ShopState | null>(null);
@@ -29,6 +32,7 @@ const ShopContext = createContext<ShopState | null>(null);
 export function ShopProvider({ children }: { children: ReactNode }) {
   const [openId, setOpenId] = useState<string | null>(null);
   const [basketIds, setBasketIds] = useState<string[]>([]);
+  const [receiptTaken, setReceiptTaken] = useState(false);
   const arrivedAt = useRef(Date.now());
 
   const open = useCallback((id: string) => {
@@ -46,8 +50,10 @@ export function ShopProvider({ children }: { children: ReactNode }) {
       close,
       basket: basketIds.map(byId).filter((p): p is Project => Boolean(p)),
       timeInShop: () => Math.round((Date.now() - arrivedAt.current) / 1000),
+      receiptTaken,
+      markReceiptTaken: () => setReceiptTaken(true),
     };
-  }, [openId, basketIds, open, close]);
+  }, [openId, basketIds, open, close, receiptTaken]);
 
   return <ShopContext.Provider value={value}>{children}</ShopContext.Provider>;
 }

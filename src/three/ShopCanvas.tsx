@@ -7,13 +7,14 @@ import { ProductObject } from './ProductObject';
 import { Counter3D } from './Counter3D';
 import { HotspotProjector } from './HotspotProjector';
 import { ShelfDressing } from './ShelfDressing';
+import { ShelfTalker } from './ShelfTalker';
 import { WallSign } from './WallSign';
 import { Floor, placement, SHELF_X, SHELF_Y, ShelfRig } from './ShelfRig';
 import { palette } from './tokens';
 import type { SceneTier } from './useSceneQuality';
 
 /** Everything that has to stay in shot, in world units. */
-const ROOM = { width: 8.8, height: 4.1, centreX: 0.05, centreY: 1.58 };
+const ROOM = { width: 8.4, height: 3.5, centreX: 0.05, centreY: 1.78 };
 
 /**
  * The camera leans with the cursor, and always frames the whole room.
@@ -100,6 +101,10 @@ export default function ShopCanvas({ tier }: { tier: SceneTier }) {
           project={project}
           position={placement(project.shelf, project.slot)}
         />
+      ))}
+
+      {projects.map((project) => (
+        <ShelfTalker key={`talker-${project.id}`} project={project} />
       ))}
 
       <HotspotProjector />

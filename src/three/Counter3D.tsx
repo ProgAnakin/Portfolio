@@ -69,10 +69,10 @@ export function Counter3D() {
         <meshStandardMaterial color={oak} roughness={0.55} />
       </RoundedBox>
 
-      <Shopkeeper3D position={[0.16, TOP_Y - 0.56, -0.58]} scale={1.28} />
+      <Shopkeeper3D position={[0.24, TOP_Y + 0.58, -0.45]} scale={1.3} />
 
       {/* Pendant: the fixture, and the bulb doing the lighting. */}
-      <group position={[-0.32, 2.34, 0.12]}>
+      <group position={[-0.78, 2.36, 0.16]}>
         <mesh position={[0, 0.55, 0]}>
           <cylinderGeometry args={[0.008, 0.008, 1.1, 8]} />
           <meshStandardMaterial color={palette.ink600()} roughness={0.6} />

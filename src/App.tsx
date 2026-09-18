@@ -4,14 +4,22 @@ import { GrainOverlay } from './components/GrainOverlay';
 import { ProductSheet } from './components/ProductSheet';
 import { ReadableIndex } from './components/ReadableIndex';
 import { Receipt } from './components/Receipt';
+import { ReceiptNudge } from './components/ReceiptNudge';
 import { SiteHeader } from './components/SiteHeader';
 import { SceneDefs } from './components/shop/SceneDefs';
 import { ShopStage } from './components/ShopStage';
 import { ShopProvider, useShop } from './state/ShopContext';
 
 function Shop() {
-  const { openProject, close, basket, timeInShop } = useShop();
+  const { openProject, close, basket, timeInShop, markReceiptTaken } = useShop();
   const [receipt, setReceipt] = useState<{ seconds: number } | null>(null);
+
+  // Printing is what settles the visit, so it is also what stops the shop
+  // asking about it on the way out.
+  const printReceipt = () => {
+    markReceiptTaken();
+    setReceipt({ seconds: timeInShop() });
+  };
 
   return (
     <>
@@ -22,12 +30,14 @@ function Shop() {
         Skip to the projects
       </a>
 
-      <SiteHeader onPrintReceipt={() => setReceipt({ seconds: timeInShop() })} />
+      <SiteHeader onPrintReceipt={printReceipt} />
 
       <main>
-        <ShopStage onPrintReceipt={() => setReceipt({ seconds: timeInShop() })} />
+        <ShopStage onPrintReceipt={printReceipt} />
         <ReadableIndex />
       </main>
+
+      <ReceiptNudge onPrint={printReceipt} />
 
       <AnimatePresence>
         {openProject && <ProductSheet key="sheet" project={openProject} onClose={close} />}

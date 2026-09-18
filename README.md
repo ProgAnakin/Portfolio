@@ -105,6 +105,20 @@ answer is no.
   drives every lift, squash and drag. Products squash as they leave the shelf
   and stretch at the top of the lift; volume is conserved, which is what makes
   them read as plastic rather than as cards.
+- **The shopkeeper is drawn, not modelled.** Building a face out of spheres
+  produced something crude every time, so they are a flat illustration
+  (`standeeArt.ts`) standing in the room — a cut-out standee by the till,
+  which is also the most honest object for a shop to contain. Painted with
+  their light already in it so the scene cannot re-light them into mud. The
+  pupils and lids are separate planes: they follow the visitor and they blink,
+  which is worth more than any amount of geometry.
+- **Each product is a display, not a box.** The kiosk is tipped back with a
+  quiz card caught mid-swipe; the boxed set leans so its top face shows, with
+  the ball out of the box in front of it; the unfinished project is a shipping
+  carton with its flaps still up. Every one gets a shelf talker
+  (`ShelfTalker.tsx`) clipped to the lip below it — the piece of retail
+  furniture that turns a row of objects into a display, and where the status
+  shouts. Talkers belong to the shelf, so they stay put when stock is lifted.
 
 ### Controls are DOM, always
 
@@ -155,6 +169,14 @@ into a component the entry bundle reaches will silently merge the two
 rendering entirely when the tab is in the background.
 
 ## The receipt
+
+On the way out — the pointer heading for the top of the window — the shop
+calls after you once: *don't forget your receipt*, with an arrow tracking the
+actual till control. It is a nudge and nothing more. No `beforeunload`
+dialog, nothing that argues with the browser, nothing that can trap anybody;
+a shop can call after you, it cannot lock the door. It never returns once the
+till has printed or once it has been dismissed, and it never fires on a touch
+device, which has no pointer to lose.
 
 The till prints a record of the visit, not a CV: the projects you actually
 opened, as line items, plus a short introduction and contacts. Nothing on it

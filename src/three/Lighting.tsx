@@ -35,7 +35,7 @@ export function Lighting({ shelfY, shelfX }: { shelfY: number[]; shelfX: number 
 
       {/* The pendant over the counter, off to the right. */}
       <spotLight
-        position={[2.15, 2.5, 1.6]}
+        position={[1.7, 2.5, 1.7]}
         angle={0.62}
         penumbra={0.85}
         intensity={40}
