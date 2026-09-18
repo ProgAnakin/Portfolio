@@ -21,8 +21,26 @@ export const shapeHeight: Record<ProductShape, number> = {
 /** Stock is drawn 40% up from life so a label reads from the doorway. */
 export const PRODUCT_SCALE = 1.4;
 
-/** Hit area for a product's button, in CSS pixels at unit scale. */
+/** How wide each shape is. Needed because a tall thing is not a wide thing. */
+export const shapeWidth: Record<ProductShape, number> = {
+  kiosk: 0.46,
+  'boxed-set': 0.52,
+  crate: 0.46,
+  tin: 0.4,
+  carton: 0.34,
+};
+
+/**
+ * Hit area for a product's button.
+ *
+ * Both axes come from the object's own size, and the number is in the same
+ * world units the projector scales by — so the button ends up the size of the
+ * thing it sits on. Sizing both axes off the *height* is what previously made
+ * a tall kiosk's hit area swallow the box beside it.
+ */
 export function productHitSize(project: Project): [number, number] {
+  const w = shapeWidth[project.shape] * PRODUCT_SCALE;
   const h = shapeHeight[project.shape] * PRODUCT_SCALE;
-  return [Math.max(70, h * 150), Math.max(70, h * 180)];
+  // A slightly generous target, but never wider than the gap between slots.
+  return [Math.min(w * 118, 112), h * 104];
 }

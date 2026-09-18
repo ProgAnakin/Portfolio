@@ -35,7 +35,7 @@ export function Lighting({ shelfY, shelfX }: { shelfY: number[]; shelfX: number 
 
       {/* The pendant over the counter, off to the right. */}
       <spotLight
-        position={[3.1, 2.5, 1.5]}
+        position={[2.15, 2.5, 1.6]}
         angle={0.62}
         penumbra={0.85}
         intensity={40}
@@ -53,7 +53,7 @@ export function Lighting({ shelfY, shelfX }: { shelfY: number[]; shelfX: number 
       {/* Just enough front fill to keep the counter props from going to
           silhouette. Kept cool so it never competes with the practicals. */}
       <pointLight position={[1.4, 2.2, 5.2]} intensity={4} distance={13} decay={2} color="#8aa0b0" />
-      <pointLight position={[2.3, 1.95, 0.95]} intensity={3.4} distance={4.4} decay={2} color={palette.amber300()} />
+      <pointLight position={[2.2, 2.15, 1.25]} intensity={2.3} distance={4.2} decay={2} color={palette.amber200()} />
 
       <Environment resolution={128}>
         {shelfY.map((y, i) => (

@@ -37,7 +37,7 @@ export function StageOverlay() {
       <section
         id="about"
         aria-labelledby="about-heading"
-        className="pointer-events-auto absolute top-[11%] right-[3%] hidden w-[min(23rem,34vw)] -rotate-[0.6deg] scroll-mt-24 border-2 border-[#3b2f27] bg-[#161a18]/92 px-5 py-4 shadow-[0_18px_40px_rgba(12,10,9,0.7)] backdrop-blur-[1px] lg:block"
+        className="pointer-events-auto absolute top-[5%] right-[2.5%] hidden w-[min(20rem,28vw)] -rotate-[0.6deg] scroll-mt-24 border-2 border-[#3b2f27] bg-[#161a18]/92 px-4 py-3.5 shadow-[0_18px_40px_rgba(12,10,9,0.7)] backdrop-blur-[1px] lg:block xl:w-[23rem] xl:px-5 xl:py-4"
       >
         <h2
           id="about-heading"
@@ -49,17 +49,17 @@ export function StageOverlay() {
         <p className="font-till text-paper-500 mt-1 text-center text-[0.5rem] tracking-[0.22em] uppercase">
           {profile.location}
         </p>
-        <dl className="mt-3 space-y-2.5">
+        <dl className="mt-3 space-y-2 xl:space-y-2.5">
           {menu.map((item) => (
             <div key={item.name}>
               <div className="flex items-baseline gap-2">
-                <dt className="text-paper-100/85 text-[0.82rem] leading-snug">{item.name}</dt>
+                <dt className="text-paper-100/85 text-[0.78rem] leading-snug xl:text-[0.82rem]">{item.name}</dt>
                 <span aria-hidden="true" className="border-paper-500/30 mb-1 grow border-b border-dotted" />
                 <span className="font-till text-paper-500 shrink-0 text-[0.5rem] tracking-[0.14em]">
                   {item.price}
                 </span>
               </div>
-              <dd className="text-paper-500 mt-0.5 text-[0.72rem] leading-snug">{item.note}</dd>
+              <dd className="text-paper-500 mt-0.5 text-[0.68rem] leading-snug xl:text-[0.72rem]">{item.note}</dd>
             </div>
           ))}
         </dl>
