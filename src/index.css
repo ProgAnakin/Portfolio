@@ -1,3 +1,4 @@
+@import './fonts.css';
 @import 'tailwindcss';
 
 /* ---------------------------------------------------------------------------
@@ -28,20 +29,29 @@
   --color-paper-300: #c9bfb0; /* body copy */
   --color-paper-500: #8b8073; /* secondary / muted */
 
-  /* Products — desaturated, lit rather than coloured */
-  --color-prod-sage: #6e7a62;
-  --color-prod-clay: #9a5f4b;
-  --color-prod-slate: #55636e;
-  --color-prod-mustard: #a88b46;
-  --color-prod-plum: #6b4f5e;
-
   /* Accent — interactive hints, focus rings, SOLD OUT tags. Used sparingly. */
   --color-accent: #e4572e;
   --color-accent-dim: #a63d20;
+
+  /* Type — a wonky grotesque for signage, a quiet sans for reading, and a
+     mono for anything the till would have printed. */
+  --font-sign: 'Bricolage Grotesque', 'Arial Narrow', sans-serif;
+  --font-body: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-till: 'Space Mono', ui-monospace, 'SFMono-Regular', monospace;
 }
 
 :root {
   color-scheme: dark;
+
+  /* Product tints — desaturated, lit rather than coloured.
+     These live outside @theme on purpose: nothing generates a `bg-prod-sage`
+     utility from them, they are picked by name at runtime (see lib/tints.ts),
+     and Tailwind drops theme variables it cannot see referenced in source. */
+  --prod-sage: #6e7a62;
+  --prod-clay: #9a5f4b;
+  --prod-slate: #55636e;
+  --prod-mustard: #a88b46;
+  --prod-plum: #6b4f5e;
 }
 
 html {
@@ -52,7 +62,21 @@ body {
   margin: 0;
   background-color: var(--color-ink-800);
   color: var(--color-paper-300);
+  font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
+  /* The scene is a stage, not a document: never let it scroll sideways. */
+  overflow-x: hidden;
+}
+
+/* Signage: condensed and heavy, the way a fascia board is painted. */
+.font-sign {
+  font-family: var(--font-sign);
+  font-variation-settings: 'wdth' 78, 'opsz' 48;
+  letter-spacing: 0.01em;
+}
+
+.font-till {
+  font-family: var(--font-till);
 }
 
 /* Visible focus for everything, everywhere. The scene is decoration; the
@@ -73,5 +97,119 @@ body {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Scene dimensions
+   Shelf and counter geometry lives in CSS variables so the same components can
+   be a wide stage on a desktop and a vertical scroll on a phone without either
+   layout knowing about the other.
+   --------------------------------------------------------------------------- */
+.shop-shelf {
+  --shelf-h: 200px;
+  --plank-h: 26px;
+}
+
+/* A shelf with nothing on it yet is a short one — it should read as space for
+   more stock, not as a hole in the page. */
+.shop-shelf--empty {
+  --shelf-h: 72px;
+}
+
+.shop-counter {
+  --counter-item-h: 76px;
+  --counter-block-h: 92px;
+}
+
+@media (min-width: 40rem) {
+  .shop-shelf {
+    --shelf-h: 216px;
+    --plank-h: 28px;
+  }
+  .shop-shelf--empty {
+    --shelf-h: 84px;
+  }
+  .shop-counter {
+    --counter-item-h: 96px;
+    --counter-block-h: 118px;
+  }
+}
+
+/* The wide stage has to hold the whole shop at once, so the shelves tighten
+   up and the empty one tucks in under them. */
+@media (min-width: 64rem) {
+  .shop-shelf {
+    --shelf-h: 168px;
+    --plank-h: 22px;
+  }
+  .shop-shelf--empty {
+    --shelf-h: 96px;
+  }
+  .shop-counter {
+    --counter-item-h: 84px;
+    --counter-block-h: 124px;
+  }
+}
+
+/* A strip light that is not quite well. Each shelf gets its own offset. */
+@keyframes shop-flicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  41% {
+    opacity: 0.94;
+  }
+  43% {
+    opacity: 0.72;
+  }
+  44.5% {
+    opacity: 0.97;
+  }
+  46% {
+    opacity: 0.8;
+  }
+  48% {
+    opacity: 1;
+  }
+  72% {
+    opacity: 0.9;
+  }
+}
+
+.shop-flicker {
+  animation: shop-flicker 11s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shop-flicker {
+    animation: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Printing
+   The receipt is the only thing on this site anyone would ever print, so the
+   printout is the paper and nothing else.
+   --------------------------------------------------------------------------- */
+@media print {
+  body {
+    background: #fff;
+  }
+  body * {
+    visibility: hidden;
+  }
+  .receipt-printable,
+  .receipt-printable * {
+    visibility: visible;
+  }
+  .receipt-printable {
+    position: relative;
+    box-shadow: none !important;
+    color: #000;
+  }
+  .receipt-no-print {
+    display: none !important;
   }
 }

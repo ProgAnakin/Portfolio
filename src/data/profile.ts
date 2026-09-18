@@ -74,8 +74,20 @@ export const menu: MenuItem[] = [
   },
 ];
 
-/** The till receipt doubles as the CV. */
-export const cv = {
-  href: '/costanzo-annichini-cv.pdf',
-  filename: 'costanzo-annichini-cv.pdf',
+/**
+ * The receipt is not a CV. It is a record of the visit: the projects the
+ * visitor actually opened, printed as line items, with a short introduction
+ * and a way to get in touch. Nothing here is information I would not hand to
+ * a stranger who walked into the shop.
+ */
+export const receipt = {
+  till: 'TILL 01',
+  operator: 'C. ANNICHINI',
+  /** The brief presentation, printed above the contacts. */
+  pitch:
+    'Twenty-three, selling in tech retail and building the software I wished the shop already had. Italian and Portuguese native. Looking for sales, business development and customer-facing work — or a good partner.',
+  footer: 'PAID WITH YOUR ATTENTION',
+  thanks: 'THANK YOU — COME BACK SOON',
+  emptyBasket: 'NO ITEMS SCANNED YET',
+  emptyHint: 'Open a product on the shelves and it prints here.',
 };
