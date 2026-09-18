@@ -1,9 +1,11 @@
 # The Shop
 
-The portfolio of Costanzo Annichini, laid out as an illustrated shop interior
-at night. Every project is a product on a shelf: in stock, out of stock, or a
-gap with a *restocking soon* card on it. The counter on the right has a
-telephone (contacts) and a till that prints a receipt for your visit.
+The portfolio of Costanzo Annichini, laid out as a shop interior at night —
+a room you can walk into on a desktop, a drawing you can scroll on a phone.
+Every project is a product on a shelf with its own designed packaging: in
+stock, out of stock, or a gap with a *restocking soon* card on it. You can
+pick things up and pull them off the shelf. The counter has a telephone
+(contacts) and a till that prints a receipt for your visit.
 
 The conceit is the point. The career started on a shop floor and moved into
 software — so retail is the origin and technology is the product.
@@ -18,8 +20,16 @@ npm run preview  # serve the built site
 npm run lint     # typecheck only
 ```
 
-Deploys to Vercel as a static site; `vercel.json` sets the build and the
-long-lived cache headers for fonts and hashed assets.
+Deploys two ways from the same commit:
+
+- **Vercel** — `vercel.json` sets the build and long-lived cache headers for
+  fonts and hashed assets. Serves from `/`.
+- **GitHub Pages** — `.github/workflows/deploy.yml` builds and publishes on
+  every push to `main`, or on demand from the Actions tab. A project page is
+  served from `/<repo>/`, so the workflow passes `VITE_BASE`; `vite.config.ts`
+  reads it rather than hardcoding a base, which is why the same commit works
+  on both. Pages needs enabling once: **Settings → Pages → Source: GitHub
+  Actions**.
 
 ## Adding a project
 
@@ -60,12 +70,55 @@ Everything else about the shop — the sign, the chalkboard menu, the contacts
 and what the receipt says — lives in
 [`src/data/profile.ts`](src/data/profile.ts).
 
-## How the scene is put together
+## Two shops, one set of data
 
-The shop is inline SVG, but it is not one big SVG. Each product, the phone
-and the till are real `<button>`s wrapping their own drawing, laid out with
-CSS. That keeps focus, labelling and keyboard behaviour working like ordinary
-controls while the artwork stays sharp and individually interactive.
+There are two renderings of the same place, and neither is the other one
+degraded.
+
+**The room** (`src/three/`) is the desktop version: a real WebGL scene built
+with react-three-fiber. Everything in it is procedural — primitives, no
+model files, no downloaded HDRI, nothing to fetch. The packaging artwork on
+each box is drawn onto a canvas at runtime from the same `projects.ts` entry.
+
+**The drawing** (`src/components/shop/`) is the version phones, tablets,
+metered connections, reduced-motion visitors and anyone without WebGL get:
+inline SVG, instant, scrollable, and art-directed for each width on its own
+terms. `useSceneQuality` decides, and the 3D bundle is never fetched when the
+answer is no.
+
+### How the room is put together
+
+- **Materials are meaning, not decoration.** Five finishes — plastic, clay,
+  rubber, chrome, card — and a project declares which one it is made of. The
+  unfinished project ships in plain cardboard because it is not finished; the
+  shopkeeper is clay because clay has no highlight and stays a silhouette;
+  the till is the only chrome in the shop so it has something to reflect.
+- **Lighting is fixtures.** Every light is a thing you can see: the strip
+  under each shelf lip, the pendant over the counter. There is no studio
+  HDRI — the environment is built from the shop's own strip lights
+  (`Lighting.tsx`), so chrome reflects *this room*. That is most of what
+  separates it from a default three.js scene.
+- **Type is architecture.** The shop name is painted on the back wall at
+  signage scale (`WallSign.tsx`), lit by the shelves and cropped by whatever
+  is standing in front of it — not floated over the canvas in a DOM layer.
+- **Motion is a toy.** One spring (`spring.ts`) with deliberate overshoot
+  drives every lift, squash and drag. Products squash as they leave the shelf
+  and stretch at the top of the lift; volume is conserved, which is what makes
+  them read as plastic rather than as cards.
+
+### Controls are DOM, always
+
+The canvas is `aria-hidden` decoration. Every interactive thing — each
+product, the telephone, the till — is an ordinary `<button>` in
+`HotspotLayer`, positioned over the canvas by projecting the object's world
+position to the screen each frame (`HotspotProjector` writes, an animation
+frame in the layer reads). Hover and drag state travels through plain mutable
+records, so pulling a box off a shelf never triggers a React render.
+
+The same is true of the drawing: each product there is a real `<button>`
+wrapping its own SVG. Focus, labelling and keyboard behaviour work like
+ordinary controls in both, and the artwork stays sharp and individually
+interactive.
 
 - `src/components/shop/SceneDefs.tsx` — every filter and gradient the scene
   shares, in one node. The hand-drawn wobble is a `feTurbulence` +
@@ -78,17 +131,28 @@ controls while the artwork stays sharp and individually interactive.
   `src/index.css`. The lamp's cone lands on the counter top and the counter
   cuts the shopkeeper at the waist because both are measured off those.
 
-### Three layouts, one DOM
+### Responsive art direction
 
-| Width | Shelves | Counter |
-| --- | --- | --- |
-| `< 40rem` | unrolled — one product per shelf section, at full size | last section |
-| `40–64rem` | real shelves, products side by side | below the shelves |
-| `≥ 64rem` | real shelves | beside them, on the right |
+| Width | What you get |
+| --- | --- |
+| `< 40rem` | the drawing, unrolled — one product per shelf section, at full size, counter last |
+| `40–64rem` | the drawing, with real shelves and the counter beneath them |
+| `≥ 64rem` | the room, in 3D, with the counter to the right |
 
-The scene is never scaled down to fit a phone; it re-flows. Only the shelf
-*grouping* is decided in JS (`useShelvedLayout`), and the DOM order is
-identical either way, so nothing about the reading order changes.
+Nothing is ever scaled down to fit. A phone gets a different composition, not
+a squeezed one, and the room is kept for windows wide enough to hold it —
+a perspective camera's `fov` is vertical, so a narrow window crops the sides.
+`CameraRig` solves the distance from the viewport aspect every resize rather
+than trusting a constant that happened to look right at one size.
+
+### Performance
+
+The 3D chunk is roughly 250 KB gzipped and the entry bundle is roughly 115 KB.
+A device that does not get the room never downloads the chunk at all — worth
+re-checking after any change, because a single static import from `src/three/`
+into a component the entry bundle reaches will silently merge the two
+(`shapeMetrics.ts` exists precisely to avoid that). The scene also stops
+rendering entirely when the tab is in the background.
 
 ## The receipt
 

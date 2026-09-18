@@ -213,3 +213,39 @@ body {
     display: none !important;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   3D stage
+   The canvas is the picture; these are the controls sitting on top of it.
+   --------------------------------------------------------------------------- */
+.shop-hotspot {
+  display: block;
+  cursor: grab;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  border-radius: 6px;
+  touch-action: none;
+}
+
+.shop-hotspot:active {
+  cursor: grabbing;
+}
+
+/* The object is the affordance, so the ring is all the control needs to draw —
+   but it has to be unmissable against a dark room. */
+.shop-hotspot:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+  background: color-mix(in oklab, var(--color-accent) 12%, transparent);
+}
+
+/* Oversized signage type that the shelf stands in front of. */
+.shop-megatype {
+  font-family: var(--font-sign);
+  font-variation-settings: 'wdth' 75, 'opsz' 96;
+  font-weight: 800;
+  line-height: 0.78;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}

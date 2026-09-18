@@ -1,0 +1,75 @@
+import { Environment, Lightformer } from '@react-three/drei';
+import { palette } from './tokens';
+
+/**
+ * The shop lights itself.
+ *
+ * Every light here is a fixture that exists in the scene: the strip under each
+ * shelf lip and the pendant over the counter. There is no fill light and no
+ * downloaded studio HDRI — the environment is built from the shop's own strip
+ * lights, so anything chrome reflects *this room* and not a generic photo
+ * studio. That reflection is most of what separates this from a default
+ * three.js scene.
+ */
+export function Lighting({ shelfY, shelfX }: { shelfY: number[]; shelfX: number }) {
+  const amber = palette.amber300();
+  const warm = palette.amber400();
+
+  return (
+    <>
+      {/* Just enough ambient to keep the shadows from going pure black. */}
+      <ambientLight intensity={0.12} color={palette.ink600()} />
+
+      {/* The strips. One per shelf, pointing down at the stock below. */}
+      {shelfY.map((y, i) => (
+        <rectAreaLight
+          key={i}
+          position={[shelfX, y - 0.05, 0.34]}
+          rotation={[-Math.PI / 2, 0, 0]}
+          width={4.2}
+          height={0.62}
+          intensity={i === 0 ? 5.2 : 4.4}
+          color={amber}
+        />
+      ))}
+
+      {/* The pendant over the counter, off to the right. */}
+      <spotLight
+        position={[3.1, 2.5, 1.5]}
+        angle={0.62}
+        penumbra={0.85}
+        intensity={40}
+        distance={12}
+        decay={2}
+        color={warm}
+      />
+
+      {/* A cold sliver from the street, so the amber has something to be warm
+          against. Without it the whole scene is one temperature and reads flat. */}
+      <directionalLight position={[-7, 3.4, 4]} intensity={0.62} color="#5f7d94" />
+
+      {/* A wash across the back wall, so the painted sign is legible and the
+          room has a far surface instead of a void behind it. */}
+      {/* Just enough front fill to keep the counter props from going to
+          silhouette. Kept cool so it never competes with the practicals. */}
+      <pointLight position={[1.4, 2.2, 5.2]} intensity={4} distance={13} decay={2} color="#8aa0b0" />
+      <pointLight position={[2.3, 1.95, 0.95]} intensity={3.4} distance={4.4} decay={2} color={palette.amber300()} />
+
+      <Environment resolution={128}>
+        {shelfY.map((y, i) => (
+          <Lightformer
+            key={i}
+            form="rect"
+            intensity={2.4}
+            color={amber}
+            position={[shelfX, y, 1.2]}
+            rotation={[-Math.PI / 2, 0, 0]}
+            scale={[4.6, 0.42, 1]}
+          />
+        ))}
+        <Lightformer form="circle" intensity={3} color={warm} position={[3.1, 2.4, 1.6]} scale={1.1} />
+        <Lightformer form="rect" intensity={0.5} color="#4d6879" position={[-6, 2, 3]} scale={[3, 4, 1]} />
+      </Environment>
+    </>
+  );
+}

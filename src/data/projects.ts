@@ -12,6 +12,13 @@ export type ProjectStatus = 'in-stock' | 'out-of-stock' | 'restocking';
 
 export type ProductShape = 'kiosk' | 'boxed-set' | 'crate' | 'tin' | 'carton';
 
+/**
+ * What the thing is made of. Drives the 3D material and, in the drawing, how
+ * hard its highlight reads. Meaningful, not decorative: the unfinished project
+ * ships in plain cardboard because it is not finished.
+ */
+export type ProductFinish = 'plastic' | 'clay' | 'rubber' | 'chrome' | 'card';
+
 export type ProductTint =
   | 'sage'
   | 'clay'
@@ -36,6 +43,7 @@ export interface Project {
   slot: number;
   shape: ProductShape;
   tint: ProductTint;
+  finish: ProductFinish;
   /** Price tag clipped to the shelf edge. Monospace, two short lines. */
   tag: { kind: string; year: string };
   /** Full description shown in the product sheet. */
@@ -55,6 +63,7 @@ export const projects: Project[] = [
     slot: 0,
     shape: 'kiosk',
     tint: 'slate',
+    finish: 'plastic',
     tag: { kind: 'PWA KIOSK', year: '2025' },
     description:
       'An interactive iPad kiosk app built solo. An 8-question swipe quiz that recommends the best-fit product for a customer and generates a discount code in under 60 seconds. Includes an analytics dashboard with conversion funnel, multi-store product management, a 5-language interface, and production-grade security: bcrypt PIN, 2FA/TOTP, rate limiting and audit logging.',
@@ -74,6 +83,7 @@ export const projects: Project[] = [
     slot: 1,
     shape: 'boxed-set',
     tint: 'sage',
+    finish: 'plastic',
     tag: { kind: 'SPORTS SAAS', year: '2025' },
     description:
       'A tactical and statistical analysis app for water polo: live match stats, penalty-shot mapping, roster management and animated tactics, built for coaches, clubs and federations.',
@@ -91,6 +101,7 @@ export const projects: Project[] = [
     slot: 0,
     shape: 'crate',
     tint: 'clay',
+    finish: 'card',
     tag: { kind: 'AI TRAINER', year: 'IN DEV' },
     description:
       'An AI simulator for cold calls. It runs realistic prospect scenarios and returns visual feedback on call structure, objection handling and recurring bad habits. Built to train sales fundamentals — the ones that are usually learned by burning real leads.',

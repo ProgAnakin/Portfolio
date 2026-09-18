@@ -6,7 +6,7 @@ import { ReadableIndex } from './components/ReadableIndex';
 import { Receipt } from './components/Receipt';
 import { SiteHeader } from './components/SiteHeader';
 import { SceneDefs } from './components/shop/SceneDefs';
-import { ShopScene } from './components/shop/ShopScene';
+import { ShopStage } from './components/ShopStage';
 import { ShopProvider, useShop } from './state/ShopContext';
 
 function Shop() {
@@ -25,7 +25,7 @@ function Shop() {
       <SiteHeader onPrintReceipt={() => setReceipt({ seconds: timeInShop() })} />
 
       <main>
-        <ShopScene onPrintReceipt={() => setReceipt({ seconds: timeInShop() })} />
+        <ShopStage onPrintReceipt={() => setReceipt({ seconds: timeInShop() })} />
         <ReadableIndex />
       </main>
 
