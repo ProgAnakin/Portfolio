@@ -20,8 +20,14 @@ export interface MenuItem {
 
 export const profile = {
   name: 'Costanzo Annichini',
-  /** The sign over the shop door. */
-  shopName: 'ANNICHINI & CO.',
+  /**
+   * The sign over the shop door.
+   *
+   * A person, not an invented company: there is no firm behind this, and
+   * printing one on the fascia and across three products' packaging was set
+   * dressing that stopped being charming the moment anyone read it.
+   */
+  shopName: 'COSTANZO ANNICHINI',
   /** Read in under three seconds, before anyone moves the mouse. */
   standfirst:
     'Sales professional, 23. Tech retail by trade, software by habit — everything on these shelves is something I built, sold, or both.',

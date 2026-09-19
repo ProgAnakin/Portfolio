@@ -57,32 +57,58 @@ export function StageOverlay() {
         </p>
       </motion.div>
 
-      {/* Top right: the board on the wall, over the counter. */}
+      {/* Top right: the board on the wall, over the counter.
+
+          A menu board, but the shop is tile, plaster and light now, and a
+          brown-framed slate was the one piece of set dressing still arguing
+          with that. This is a backlit panel: dark glass, a hairline bezel, a
+          bleed of light along the top edge and a status line, with the menu
+          conceit kept in the heading and the leaders. The tilt is gone too —
+          a hung sign leans, a fixed display does not. */}
       <motion.section
         id="about"
         aria-labelledby="about-heading"
         style={{ x: boardX, y: boardY }}
-        className="pointer-events-auto absolute top-[11%] right-[2.5%] hidden w-[min(20rem,28vw)] [@media(max-aspect-ratio:3/2)]:w-[min(23rem,36vw)] -rotate-[0.6deg] scroll-mt-24 border-2 border-[#3b2f27] bg-[#161a18]/92 px-4 py-3.5 shadow-[0_18px_40px_rgba(12,10,9,0.7)] backdrop-blur-[1px] lg:block xl:w-[23rem] xl:px-5 xl:py-4 [@media(max-height:640px)]:top-[6%] [@media(max-height:640px)]:px-3 [@media(max-height:640px)]:py-2.5"
+        className="pointer-events-auto absolute top-[11%] right-[2.5%] hidden w-[min(20rem,28vw)] overflow-hidden rounded-[10px] bg-gradient-to-b from-[#12171b]/92 to-[#0b0f12]/94 px-4 pt-3 pb-3.5 ring-1 shadow-[0_22px_50px_rgba(6,9,12,0.65)] ring-white/10 backdrop-blur-[3px] lg:block xl:w-[23rem] xl:px-5 [@media(max-aspect-ratio:3/2)]:w-[min(23rem,36vw)] [@media(max-height:640px)]:top-[6%] [@media(max-height:640px)]:px-3 [@media(max-height:640px)]:pb-2.5"
       >
+        {/* The bleed along the top edge, which is what makes a dark rectangle
+            read as a panel that is switched on. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/45 to-transparent"
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-6 -top-8 h-16 rounded-full bg-white/[0.07] blur-xl"
+        />
+
+        <div className="font-till text-paper-500 flex items-center justify-between text-[0.5rem] tracking-[0.22em] uppercase">
+          <span className="flex items-center gap-1.5">
+            <span aria-hidden="true" className="bg-amber-300 inline-block size-1 rounded-full" />
+            After hours
+          </span>
+          <span>{profile.location}</span>
+        </div>
+
         <h2
           id="about-heading"
-          className="font-sign text-paper-100/90 text-center text-xl tracking-[0.04em] [@media(max-height:640px)]:text-base"
-          style={{ textShadow: '0 0 14px rgba(237,230,218,0.2)' }}
+          className="font-sign text-paper-100/92 mt-2 text-center text-xl tracking-[0.04em] [@media(max-height:640px)]:mt-1.5 [@media(max-height:640px)]:text-base"
+          style={{ textShadow: '0 0 16px rgba(237,230,218,0.22)' }}
         >
           Today&rsquo;s menu
         </h2>
-        <p className="font-till text-paper-500 mt-1 text-center text-[0.5rem] tracking-[0.22em] uppercase">
-          {profile.location}
-        </p>
-        <dl className="mt-3 space-y-2 xl:space-y-2.5 [@media(max-height:640px)]:mt-2 [@media(max-height:640px)]:space-y-1">
+
+        <div aria-hidden="true" className="mt-2 h-px bg-white/10" />
+
+        <dl className="mt-2.5 space-y-2 xl:space-y-2.5 [@media(max-height:640px)]:mt-2 [@media(max-height:640px)]:space-y-1.5">
           {menu.map((item) => (
             <div key={item.name}>
               <div className="flex items-baseline gap-2">
-                <dt className="text-paper-100/85 text-[0.78rem] leading-snug xl:text-[0.82rem] [@media(max-height:640px)]:text-[0.72rem]">
+                <dt className="text-paper-100/90 text-[0.78rem] leading-snug xl:text-[0.82rem] [@media(max-height:640px)]:text-[0.72rem]">
                   {item.name}
                 </dt>
-                <span aria-hidden="true" className="border-paper-500/30 mb-1 grow border-b border-dotted" />
-                <span className="font-till text-paper-500 shrink-0 text-[0.5rem] tracking-[0.14em]">
+                <span aria-hidden="true" className="mb-1 grow border-b border-white/12" />
+                <span className="font-till text-paper-500 border-white/12 shrink-0 rounded-sm border px-1.5 py-0.5 text-[0.46rem] tracking-[0.14em]">
                   {item.price}
                 </span>
               </div>

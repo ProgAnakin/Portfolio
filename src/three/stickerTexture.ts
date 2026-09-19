@@ -87,12 +87,6 @@ export async function createStickerTexture(project: Project): Promise<Texture | 
   ctx.fillStyle = alert;
   ctx.fillText(copy.bottom, c, c + size * 0.86);
 
-  ctx.fillStyle = ink;
-  ctx.font = '400 20px "Space Mono", monospace';
-  ctx.letterSpacing = '4px';
-  ctx.globalAlpha = 0.55;
-  ctx.fillText('ANNICHINI & CO.', c, c + S * 0.29);
-  ctx.globalAlpha = 1;
 
   const texture = new CanvasTexture(canvas);
   texture.colorSpace = SRGBColorSpace;

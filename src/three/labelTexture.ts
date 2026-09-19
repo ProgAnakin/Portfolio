@@ -1,5 +1,6 @@
 import { CanvasTexture, SRGBColorSpace, type Texture } from 'three';
 import type { Brand, Project } from '../data/projects';
+import { loadMark } from './brandArt';
 import { drawMark } from './logos';
 
 const W = 512;
@@ -45,15 +46,16 @@ const suaipeLayout: Layout = (ctx, project, brand) => {
   ctx.fillStyle = glow;
   ctx.fillRect(0, 0, W, H);
 
-  ctx.fillStyle = brand.paper;
-  ctx.font = '700 19px "Space Mono", monospace';
-  ctx.letterSpacing = '5px';
-  ctx.globalAlpha = 0.72;
-  ctx.fillText('ANNICHINI & CO.', 38, 54);
-  ctx.globalAlpha = 1;
-  ctx.letterSpacing = '0px';
+  // The mark was drawn to glow out of black, so give it black to glow out of:
+  // on the screen's own navy its rim light had nothing to lift off.
+  const pocket = ctx.createRadialGradient(W / 2, H * 0.33, 12, W / 2, H * 0.33, 168);
+  pocket.addColorStop(0, 'rgba(4, 9, 24, 0.92)');
+  pocket.addColorStop(0.62, 'rgba(4, 9, 24, 0.5)');
+  pocket.addColorStop(1, 'rgba(4, 9, 24, 0)');
+  ctx.fillStyle = pocket;
+  ctx.fillRect(0, 0, W, H * 0.62);
 
-  drawMark(ctx, W / 2, H * 0.34, 150, brand);
+  drawMark(ctx, W / 2, H * 0.33, 214, brand);
 
   ctx.textAlign = 'center';
   ctx.fillStyle = brand.paper;
@@ -124,13 +126,7 @@ const kouciLayout: Layout = (ctx, project, brand) => {
   }
   ctx.globalAlpha = 1;
 
-  ctx.fillStyle = brand.ink;
-  ctx.font = '700 19px "Space Mono", monospace';
-  ctx.letterSpacing = '5px';
-  ctx.fillText('ANNICHINI & CO.', 34, H * 0.16);
-  ctx.letterSpacing = '0px';
-
-  drawMark(ctx, W * 0.32, H * 0.36, 128, brand);
+  drawMark(ctx, W * 0.31, H * 0.34, 168, brand);
 
   ctx.textAlign = 'right';
   ctx.fillStyle = brand.ink;
@@ -174,10 +170,15 @@ const trainerLayout: Layout = (ctx, project, brand) => {
   ctx.lineWidth = 6;
   ctx.strokeRect(22, 22, W - 44, H - 44);
 
+  // A shipping label's header is the consignment, not a company: there is no
+  // company, and inventing one to print on a box is the sort of set dressing
+  // that stops being charming the moment anyone reads it.
   ctx.fillStyle = brand.ink;
   ctx.font = '700 18px "Space Mono", monospace';
   ctx.letterSpacing = '4px';
-  ctx.fillText('ANNICHINI & CO.', 46, 74);
+  ctx.globalAlpha = 0.62;
+  ctx.fillText('CONSIGNMENT — 1 OF 1', 46, 74);
+  ctx.globalAlpha = 1;
   ctx.letterSpacing = '0px';
   ctx.fillRect(46, 92, W - 92, 4);
 
@@ -237,6 +238,8 @@ export async function createLabelTexture(project: Project): Promise<Texture | nu
   } catch {
     /* fonts API unavailable — draw with whatever is there */
   }
+  // And for the mark, so the packaging is never printed without its logo.
+  await loadMark(project.brand.mark);
 
   const canvas = document.createElement('canvas');
   canvas.width = W;

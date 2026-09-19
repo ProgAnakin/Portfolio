@@ -1,17 +1,15 @@
 import type { Brand, BrandMark } from '../data/projects';
+import { markImage } from './brandArt';
 
 /**
- * The marks, drawn rather than shipped.
+ * The marks.
  *
- * Two of these exist in the world and are redrawn here from their real
- * artwork: Suaipe's glossy blue S, and Kouci's sage-and-white KC over a wave
- * with the ball tucked into it. The trainer has no identity yet, so it gets
- * one invented for it — a speech bubble with a waveform in it, which is what
- * the product actually does.
- *
- * Drawing them in code rather than loading files keeps the whole shop free of
- * downloaded assets, and lets a mark be re-coloured for the packaging, the
- * shelf talker and the box side without exporting anything three times.
+ * Two of these exist in the world and ship as their real artwork — see
+ * `brandArt`. What is left here is the drawn version of each: the Suaipe and
+ * Kouci renderers stand in only if their file has not decoded yet, and the
+ * trainer's is the mark itself, since that product has no identity and the
+ * speech bubble with a waveform in it is an honest invention rather than a
+ * likeness of someone else's.
  */
 export type MarkRenderer = (
   ctx: CanvasRenderingContext2D,
@@ -163,5 +161,17 @@ export const marks: Record<BrandMark, MarkRenderer> = {
   'call-trainer': callTrainer,
 };
 
-export const drawMark: MarkRenderer = (ctx, cx, cy, size, brand) =>
+/**
+ * Print a mark: the real artwork where there is any, the drawing otherwise.
+ *
+ * Callers that can wait should `loadMark` first; this stays synchronous so a
+ * canvas painter mid-layout never has to.
+ */
+export const drawMark: MarkRenderer = (ctx, cx, cy, size, brand) => {
+  const art = markImage(brand.mark);
+  if (art) {
+    ctx.drawImage(art, cx - size / 2, cy - size / 2, size, size);
+    return;
+  }
   marks[brand.mark](ctx, cx, cy, size, brand);
+};

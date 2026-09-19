@@ -1,121 +1,157 @@
-import { useEffect, useState } from 'react';
-import { CanvasTexture, RepeatWrapping, SRGBColorSpace, type Texture } from 'three';
+import { useEffect, useMemo, useState } from 'react';
+import { CanvasTexture, InstancedMesh, Object3D, SRGBColorSpace, type Texture } from 'three';
 
 /** How high the room is, and where the pendant is screwed to. */
 export const CEILING_Y = 4.0;
+
+/** The ceiling plane, in world units: width, depth, and where its middle is. */
+const PLANE = { w: 22, d: 11, x: 0.3, z: -0.6 };
+
+/** Where the recessed runs sit, in world x. They read as the room's grain. */
+const RUNS = [-6.6, -3.3, 0, 3.3, 6.6];
 
 /**
  * The ceiling.
  *
  * The room had none: the pendant's flex ran up and simply stopped in mid-air,
- * which is the one thing that tells a viewer a room is a backdrop. Painting
- * the gap dark would have hidden the join without building the room, so this
- * is pressed tin — a real shop ceiling, and the right answer at this camera
- * angle because the coffers foreshorten into a rhythm across the top of the
- * frame instead of a flat field.
+ * which is the one thing that tells a viewer a room is a backdrop.
  *
- * It is lit by its own emissive map rather than by a lamp. Every practical in
- * this shop points down; a ceiling lit correctly from below would be black,
- * and adding an uplighter to fix it would cost arithmetic in every lit pixel
- * of the room to brighten a band at the top of it.
+ * It is a flush plaster ceiling with recessed linear runs in it — the language
+ * of a room built to show products rather than to be looked at, which is what
+ * this shop is. The runs are real geometry rather than paint, because at this
+ * camera angle they converge, and that convergence is the only depth cue the
+ * top of the frame has. They are on night output: the shop is shut, the
+ * display lighting is what is on, and a blazing ceiling would say otherwise.
+ *
+ * The plane is lit by its own emissive map rather than by a lamp. Every
+ * practical in this shop points down; a ceiling lit correctly from below would
+ * be black, and adding an uplighter to fix it would cost arithmetic in every
+ * lit pixel of the room to brighten a band at the top of it.
  */
-function paintTin(): Texture | null {
+function paintPlaster(): Texture | null {
   if (typeof document === 'undefined') return null;
-  const size = 256;
+  const w = 1024;
+  const h = 512;
   const canvas = document.createElement('canvas');
-  canvas.width = size;
-  canvas.height = size;
+  canvas.width = w;
+  canvas.height = h;
   const ctx = canvas.getContext('2d');
   if (!ctx) return null;
 
-  // The rail between coffers.
-  ctx.fillStyle = '#6b6459';
-  ctx.fillRect(0, 0, size, size);
+  ctx.fillStyle = '#9aa2a7';
+  ctx.fillRect(0, 0, w, h);
 
-  const inset = 22;
-  const span = size - inset * 2;
+  // Flush panel joints: a grid you find rather than notice.
+  ctx.strokeStyle = 'rgba(96, 104, 110, 0.45)';
+  ctx.lineWidth = 1;
+  const step = w / 10;
+  for (let x = step; x < w; x += step) {
+    ctx.beginPath();
+    ctx.moveTo(x + 0.5, 0);
+    ctx.lineTo(x + 0.5, h);
+    ctx.stroke();
+  }
+  for (let y = step; y < h; y += step) {
+    ctx.beginPath();
+    ctx.moveTo(0, y + 0.5);
+    ctx.lineTo(w, y + 0.5);
+    ctx.stroke();
+  }
 
-  // The sunken panel, with the light coming from the front of the shop, so the
-  // far lip catches and the near one falls away.
-  const face = ctx.createLinearGradient(0, inset, 0, inset + span);
-  face.addColorStop(0, '#9a9285');
-  face.addColorStop(0.55, '#7c7568');
-  face.addColorStop(1, '#5d574e');
-  ctx.fillStyle = face;
-  ctx.fillRect(inset, inset, span, span);
+  // The channels the runs are recessed into, and the wash each one throws on
+  // the plaster either side of it.
+  for (const x of RUNS) {
+    const u = ((x - (PLANE.x - PLANE.w / 2)) / PLANE.w) * w;
+    const wash = ctx.createLinearGradient(u - 34, 0, u + 34, 0);
+    wash.addColorStop(0, 'rgba(226, 240, 248, 0)');
+    wash.addColorStop(0.5, 'rgba(226, 240, 248, 0.18)');
+    wash.addColorStop(1, 'rgba(226, 240, 248, 0)');
+    ctx.fillStyle = wash;
+    ctx.fillRect(u - 34, 0, 68, h);
 
-  // Bevel: two bright edges, two dark, which is the whole trick of stamped
-  // metal and the only thing that survives this much foreshortening.
-  ctx.strokeStyle = 'rgba(255, 248, 232, 0.42)';
-  ctx.lineWidth = 5;
-  ctx.beginPath();
-  ctx.moveTo(inset, inset + span);
-  ctx.lineTo(inset, inset);
-  ctx.lineTo(inset + span, inset);
-  ctx.stroke();
-  ctx.strokeStyle = 'rgba(24, 20, 16, 0.55)';
-  ctx.beginPath();
-  ctx.moveTo(inset + span, inset);
-  ctx.lineTo(inset + span, inset + span);
-  ctx.lineTo(inset, inset + span);
-  ctx.stroke();
-
-  // A raised rosette in the middle of each panel.
-  const c = size / 2;
-  ctx.save();
-  ctx.translate(c, c);
-  ctx.rotate(Math.PI / 4);
-  ctx.fillStyle = '#8b8376';
-  ctx.fillRect(-26, -26, 52, 52);
-  ctx.strokeStyle = 'rgba(255, 248, 232, 0.32)';
-  ctx.lineWidth = 3;
-  ctx.strokeRect(-26, -26, 52, 52);
-  ctx.fillStyle = '#6f6a60';
-  ctx.beginPath();
-  ctx.arc(0, 0, 13, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.restore();
+    ctx.fillStyle = '#31383d';
+    ctx.fillRect(u - 5, 0, 10, h);
+    ctx.fillStyle = 'rgba(12, 16, 19, 0.7)';
+    ctx.fillRect(u - 5, 0, 3, h);
+  }
 
   const texture = new CanvasTexture(canvas);
   texture.colorSpace = SRGBColorSpace;
-  texture.wrapS = RepeatWrapping;
-  texture.wrapT = RepeatWrapping;
-  texture.repeat.set(26, 13);
   texture.anisotropy = 16;
   return texture;
 }
 
+/**
+ * The tubes in the channels.
+ *
+ * Five identical objects that differ by one number, so: one instanced draw
+ * call, the same as the till's keypad.
+ */
+function Runs() {
+  const mesh = useMemo(() => {
+    const dummy = new Object3D();
+    return { dummy };
+  }, []);
+
+  const attach = (node: InstancedMesh | null) => {
+    if (!node) return;
+    RUNS.forEach((x, i) => {
+      mesh.dummy.position.set(x, CEILING_Y - 0.028, PLANE.z);
+      mesh.dummy.updateMatrix();
+      node.setMatrixAt(i, mesh.dummy.matrix);
+    });
+    node.instanceMatrix.needsUpdate = true;
+  };
+
+  return (
+    <instancedMesh ref={attach} args={[undefined, undefined, RUNS.length]} frustumCulled={false}>
+      <boxGeometry args={[0.1, 0.02, PLANE.d - 0.6]} />
+      <meshStandardMaterial
+        color="#c9d6de"
+        emissive="#cfe0ea"
+        emissiveIntensity={0.5}
+        toneMapped={false}
+      />
+    </instancedMesh>
+  );
+}
+
 export function Ceiling() {
-  const [tin, setTin] = useState<Texture | null>(null);
+  const [plaster, setPlaster] = useState<Texture | null>(null);
 
   useEffect(() => {
-    const made = paintTin();
-    setTin(made);
+    const made = paintPlaster();
+    setPlaster(made);
     return () => made?.dispose();
   }, []);
 
   return (
     <group>
-      <mesh position={[0.3, CEILING_Y, -0.6]} rotation={[Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[22, 11]} />
-        {tin ? (
+      <mesh position={[PLANE.x, CEILING_Y, PLANE.z]} rotation={[Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[PLANE.w, PLANE.d]} />
+        {plaster ? (
           <meshStandardMaterial
-            key={tin.uuid}
-            map={tin}
-            emissiveMap={tin}
-            emissive="#8d8578"
-            emissiveIntensity={0.34}
-            roughness={0.86}
+            key={plaster.uuid}
+            map={plaster}
+            emissiveMap={plaster}
+            emissive="#838b90"
+            emissiveIntensity={0.24}
+            roughness={0.92}
           />
         ) : (
-          <meshStandardMaterial key="bare" color="#4f4a43" roughness={0.9} />
+          <meshStandardMaterial key="bare" color="#6b7175" roughness={0.92} />
         )}
       </mesh>
 
-      {/* Coving, so the wall stops at something instead of running out. */}
-      <mesh position={[0.3, CEILING_Y - 0.08, -1.82]} rotation={[Math.PI / 4, 0, 0]}>
-        <boxGeometry args={[22, 0.16, 0.16]} />
-        <meshStandardMaterial color="#8b8478" roughness={0.82} />
+      <Runs />
+
+      {/* A shadow gap where the wall meets the ceiling. Coving would have been
+          the other answer, and the wrong one: this room is tile, plaster and
+          light, and a moulding is the one thing in that list that is decoration
+          rather than construction. */}
+      <mesh position={[PLANE.x, CEILING_Y - 0.055, -1.855]}>
+        <boxGeometry args={[PLANE.w, 0.11, 0.05]} />
+        <meshBasicMaterial color="#14181b" />
       </mesh>
     </group>
   );

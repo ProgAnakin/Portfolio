@@ -1,13 +1,14 @@
 import { useEffect, useRef } from 'react';
 import type { Brand } from '../data/projects';
+import { loadMark } from '../three/brandArt';
 import { drawMark } from '../three/logos';
 
 /**
  * A project's mark, in the DOM.
  *
- * The same drawing code that prints the mark onto the packaging renders it
- * here, so the sheet and the box can never disagree about what a brand looks
- * like. Decorative — the project's name is right beside it.
+ * The same code that prints the mark onto the packaging renders it here, so
+ * the sheet and the box can never disagree about what a brand looks like.
+ * Decorative — the project's name is right beside it.
  */
 export function BrandMark({ brand, size = 64 }: { brand: Brand; size?: number }) {
   const canvas = useRef<HTMLCanvasElement>(null);
@@ -28,8 +29,10 @@ export function BrandMark({ brand, size = 64 }: { brand: Brand; size?: number })
     };
 
     paint();
-    // Redraw once the webfonts land, or a lettered mark is set in Times.
+    // Redraw once the webfonts land, or a lettered mark is set in Times — and
+    // again once the real artwork decodes, which is what most of these are.
     document.fonts?.ready.then(paint).catch(() => {});
+    loadMark(brand.mark).then(paint);
   }, [brand, size]);
 
   return (
