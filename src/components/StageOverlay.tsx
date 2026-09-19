@@ -37,7 +37,7 @@ export function StageOverlay() {
       <section
         id="about"
         aria-labelledby="about-heading"
-        className="pointer-events-auto absolute top-[5%] right-[2.5%] hidden w-[min(20rem,28vw)] -rotate-[0.6deg] scroll-mt-24 border-2 border-[#3b2f27] bg-[#161a18]/92 px-4 py-3.5 shadow-[0_18px_40px_rgba(12,10,9,0.7)] backdrop-blur-[1px] lg:block xl:w-[23rem] xl:px-5 xl:py-4"
+        className="pointer-events-auto absolute top-[11%] right-[2.5%] hidden w-[min(20rem,28vw)] -rotate-[0.6deg] scroll-mt-24 border-2 border-[#3b2f27] bg-[#161a18]/92 px-4 py-3.5 shadow-[0_18px_40px_rgba(12,10,9,0.7)] backdrop-blur-[1px] lg:block xl:w-[23rem] xl:px-5 xl:py-4"
       >
         <h2
           id="about-heading"

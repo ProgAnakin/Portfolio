@@ -53,7 +53,7 @@ export function ShopScene({ onPrintReceipt }: { onPrintReceipt: () => void }) {
         />
       </Layer>
 
-      <div className="relative z-10 mx-auto grid max-w-[1400px] items-end gap-y-14 px-4 pt-14 pb-10 sm:px-6 lg:grid-cols-[minmax(0,40rem)_minmax(0,1fr)] lg:gap-x-12 lg:pt-16">
+      <div className="relative z-10 mx-auto grid max-w-[1400px] items-end gap-y-14 px-4 pt-10 pb-10 sm:px-6 lg:grid-cols-[minmax(0,40rem)_minmax(0,1fr)] lg:gap-x-12 lg:pt-12">
         {/* Shelves */}
         <Layer x={x} y={y} depth={9} className="min-w-0">
           <ShopSign />

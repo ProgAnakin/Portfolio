@@ -210,10 +210,24 @@ page a stranger can scrape is a spam problem, not a contact method. The
 contact block says so and points at LinkedIn instead; `href` on a contact is
 optional, and one without it renders as plain text.
 
+## Getting around
+
+A shop this size does not have a navigation bar; it has a card telling you
+which aisle things are in. The tag in the top right pulls open a store
+directory (`ShopMenu.tsx`) printed on the same paper as the receipt — the
+aisle numbers are the real shelf numbers, so it is a map as well as a menu,
+and every product opens from it without being found on the shelf first.
+
+It is a second route, never the only one: everything listed is also a control
+in the room, and the skip link still jumps straight to the shelves. Worth
+knowing that a dropdown is less discoverable than a permanent bar; the tag is
+always visible and labelled to make up for it.
+
 ## Accessibility
 
-- A persistent text nav (Projects / About / Contact / Receipt) and a skip
-  link, so nobody has to explore a drawing to find the work.
+- A skip link, and a labelled directory tag that opens with the keyboard,
+  closes on Escape and hands focus back — so nobody has to explore a drawing
+  to find the work.
 - Every interactive element is a real control with an `aria-label` and a
   visible focus ring; tab order runs skip link → nav → products → phone →
   till.

@@ -11,6 +11,11 @@ export interface ShapeProps {
   label: Texture | null;
   /** The status roundel, when the thing is not finished. */
   sticker: Texture | null;
+  /**
+   * The one prop that belongs to this shape — the kiosk's quiz card, the
+   * boxed set's ball. Blank props read as labels nobody printed.
+   */
+  accessory: Texture | null;
   lit: boolean;
 }
 
@@ -65,7 +70,7 @@ function PrintedFace({
  * is, with a quiz card caught mid-swipe in front of the screen. The card is
  * what says *what the thing does* from across the room.
  */
-function Kiosk({ finish, color, label, sticker, lit }: ShapeProps) {
+function Kiosk({ finish, color, label, sticker, accessory, lit }: ShapeProps) {
   return (
     <group>
       {/* Weighted base */}
@@ -97,14 +102,15 @@ function Kiosk({ finish, color, label, sticker, lit }: ShapeProps) {
         {/* The card being swiped off the deck. */}
         <group position={[0.2, -0.2, 0.075]} rotation={[0, 0.14, -0.4]}>
           <RoundedBox args={[0.16, 0.21, 0.016]} radius={0.012} smoothness={3}>
-            <meshToonMaterial
-              color={palette.amber400()}
-              emissive={palette.amber400()}
-              emissiveIntensity={lit ? 0.22 : 0}
-              gradientMap={labelRamp()}
-            />
+            <meshToonMaterial color="#ffffff" gradientMap={labelRamp()} />
             <Ink weight="thin" />
           </RoundedBox>
+          {accessory && (
+            <mesh key={accessory.uuid} position={[0, 0, 0.0095]}>
+              <planeGeometry args={[0.155, 0.204]} />
+              <meshBasicMaterial map={accessory} toneMapped={false} color={lit ? '#ffffff' : '#9c948a'} />
+            </mesh>
+          )}
         </group>
       </group>
     </group>
@@ -115,7 +121,7 @@ function Kiosk({ finish, color, label, sticker, lit }: ShapeProps) {
  * Kouci: a deep boxed set leaning back on the shelf so its top face shows,
  * with the ball out of the box in front of it — a display, not a stack.
  */
-function BoxedSet({ finish, color, label, sticker }: ShapeProps) {
+function BoxedSet({ finish, color, label, sticker, accessory }: ShapeProps) {
   return (
     <group>
       <group position={[0, 0.32, -0.05]} rotation={[-0.11, 0.18, 0]}>
@@ -132,16 +138,16 @@ function BoxedSet({ finish, color, label, sticker }: ShapeProps) {
         </mesh>
       </group>
 
-      {/* The ball, out of the box. */}
-      <mesh position={[0.28, 0.1, 0.16]}>
-        <sphereGeometry args={[0.1, 24, 20]} />
-        <meshToonMaterial color={palette.amber400()} gradientMap={labelRamp()} />
+      {/* The ball, out of the box — panelled and gripped, so it reads as a
+          ball rather than as a dot someone forgot to print. */}
+      <mesh position={[0.28, 0.1, 0.16]} rotation={[0.3, 0.6, 0.2]}>
+        <sphereGeometry args={[0.1, 28, 22]} />
+        {accessory ? (
+          <meshToonMaterial key={accessory.uuid} map={accessory} gradientMap={labelRamp()} />
+        ) : (
+          <meshToonMaterial key="plain" color={palette.amber400()} gradientMap={labelRamp()} />
+        )}
         <Ink weight="thin" />
-      </mesh>
-      {/* Two drawn seams, so it is a ball and not a dot. */}
-      <mesh position={[0.28, 0.1, 0.16]} rotation={[0, 0, 0.4]}>
-        <torusGeometry args={[0.1, 0.007, 8, 28]} />
-        <meshBasicMaterial color={palette.ink900()} />
       </mesh>
     </group>
   );

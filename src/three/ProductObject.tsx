@@ -4,6 +4,7 @@ import { Group, Object3D, type Texture } from 'three';
 import type { Project } from '../data/projects';
 import { createLabelTexture } from './labelTexture';
 import { createStickerTexture } from './stickerTexture';
+import { createBallTexture, createSwipeCardTexture } from './propTextures';
 import { palette } from './tokens';
 import { makeSpring, spring } from './spring';
 import { hotspotObjects, input, releaseHotspot } from './hotspots';
@@ -31,6 +32,7 @@ export function ProductObject({ project, position }: ProductObjectProps) {
   const anchor = useRef<Object3D>(null);
   const [label, setLabel] = useState<Texture | null>(null);
   const [sticker, setSticker] = useState<Texture | null>(null);
+  const [accessory, setAccessory] = useState<Texture | null>(null);
 
   const Shape = shapeMeshes[project.shape];
   const soldOut = project.status === 'out-of-stock';
@@ -60,7 +62,27 @@ export function ProductObject({ project, position }: ProductObjectProps) {
     };
   }, [project]);
 
+  useEffect(() => {
+    const make =
+      project.shape === 'kiosk'
+        ? createSwipeCardTexture
+        : project.shape === 'boxed-set'
+          ? createBallTexture
+          : null;
+    if (!make) return;
+
+    let alive = true;
+    make(project.brand).then((texture) => {
+      if (alive) setAccessory(texture);
+      else texture?.dispose();
+    });
+    return () => {
+      alive = false;
+    };
+  }, [project]);
+
   useEffect(() => () => label?.dispose(), [label]);
+  useEffect(() => () => accessory?.dispose(), [accessory]);
   useEffect(() => () => sticker?.dispose(), [sticker]);
 
   useEffect(() => {
@@ -123,7 +145,14 @@ export function ProductObject({ project, position }: ProductObjectProps) {
 
   return (
     <group ref={group} position={position}>
-      <Shape finish={project.finish} color={color} label={label} sticker={sticker} lit={!soldOut} />
+      <Shape
+        finish={project.finish}
+        color={color}
+        label={label}
+        sticker={sticker}
+        accessory={accessory}
+        lit={!soldOut}
+      />
 
       {/* Where the control sits: the middle of the object, not its feet. */}
       <object3D ref={anchor} position={[0, shapeHeight[project.shape] / 2, 0.2]} />

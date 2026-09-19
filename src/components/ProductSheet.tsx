@@ -1,14 +1,27 @@
 import { motion, useReducedMotion } from 'framer-motion';
 import { Modal } from './Modal';
+import { BrandMark } from './BrandMark';
 import { statusLabel, type Project } from '../data/projects';
-import { tintVars } from '../lib/tints';
-import { productArt } from './shop/products';
 
-/** The spec card you get handed when you pick a product off the shelf. */
+const STATUS_NOTE: Record<Project['status'], string> = {
+  'in-stock': 'Shipped and running',
+  'out-of-stock': 'Being built — not shipped yet',
+  restocking: 'Coming to the shelf',
+};
+
+/**
+ * The spec sheet you get handed when you pick a product off the shelf.
+ *
+ * Built out of the project's own brand rather than the shop's palette: the
+ * header takes its colour, its mark and its paper, so opening Suaipe and
+ * opening Kouci feel like handling two different products instead of two rows
+ * of the same table. The links are the point of the sheet, so they are the
+ * loudest thing on it.
+ */
 export function ProductSheet({ project, onClose }: { project: Project; onClose: () => void }) {
   const prefersReduced = useReducedMotion();
-  const Art = productArt[project.shape];
-  const soldOut = project.status === 'out-of-stock';
+  const { brand } = project;
+  const soldOut = project.status !== 'in-stock';
 
   return (
     <Modal onClose={onClose} labelledBy="sheet-heading">
@@ -16,89 +29,115 @@ export function ProductSheet({ project, onClose }: { project: Project; onClose: 
         initial={prefersReduced ? { opacity: 0 } : { opacity: 0, y: 26 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ type: 'spring', stiffness: 240, damping: 28 }}
-        className="bg-ink-700 border-ink-500 relative border shadow-[0_24px_60px_rgba(12,10,9,0.75)]"
+        className="bg-ink-700 border-ink-500 relative overflow-hidden border shadow-[0_24px_60px_rgba(12,10,9,0.8)]"
       >
-        {/* Header: the product, lit, next to its label. */}
-        <div className="border-ink-500 flex items-end gap-5 border-b px-6 pt-7 pb-5 sm:px-8">
-          <div
-            className="relative flex w-20 shrink-0 items-end justify-center sm:w-24"
-            style={tintVars(project.brand.base, !soldOut)}
-            aria-hidden="true"
-          >
-            <div className="from-amber-400/22 absolute inset-x-0 -top-6 h-24 bg-gradient-to-b to-transparent blur-md" />
-            <Art lit={!soldOut} className="relative block h-24 w-auto sm:h-28" />
-          </div>
-
-          <div className="min-w-0 pb-1">
-            <p
-              className={[
-                'font-till text-[0.58rem] tracking-[0.2em] uppercase',
-                soldOut ? 'text-accent' : 'text-amber-300',
-              ].join(' ')}
+        {/* Header, in the project's own colours. */}
+        <header
+          className="relative px-6 pt-6 pb-5 sm:px-8"
+          style={{ backgroundColor: brand.base, color: brand.paper }}
+        >
+          <div className="flex items-start gap-4">
+            <span
+              className="flex size-16 shrink-0 items-center justify-center rounded-sm sm:size-20"
+              style={{ backgroundColor: brand.ink }}
             >
-              {statusLabel[project.status]}
-            </p>
-            <h2 id="sheet-heading" className="font-sign text-paper-100 mt-1 text-3xl sm:text-4xl">
-              {project.name}
-            </h2>
-            <p className="text-paper-500 mt-1 text-sm">{project.tagline}</p>
-          </div>
-        </div>
+              <BrandMark brand={brand} size={56} />
+            </span>
 
-        <div className="space-y-5 px-6 py-6 sm:px-8">
+            <div className="min-w-0 pt-0.5">
+              <p
+                className="font-till inline-flex items-center gap-1.5 px-2 py-1 text-[0.56rem] tracking-[0.18em] uppercase"
+                style={{
+                  backgroundColor: soldOut ? brand.paper : brand.accent,
+                  color: brand.ink,
+                }}
+              >
+                <span aria-hidden="true">{soldOut ? '◷' : '●'}</span>
+                {statusLabel[project.status]}
+              </p>
+              <h2 id="sheet-heading" className="font-sign mt-2 text-3xl sm:text-[2.6rem]">
+                {project.name}
+              </h2>
+              <p className="mt-0.5 text-sm opacity-80">{project.tagline}</p>
+            </div>
+          </div>
+
+          <p className="font-till mt-4 text-[0.58rem] tracking-[0.14em] uppercase opacity-70">
+            {STATUS_NOTE[project.status]} · {project.tag.kind} · {project.tag.year}
+          </p>
+        </header>
+
+        <div className="space-y-6 px-6 py-6 sm:px-8">
           <p className="text-paper-300 leading-relaxed">{project.description}</p>
 
-          <div>
-            <h3 className="font-till text-paper-500 text-[0.58rem] tracking-[0.2em] uppercase">
-              My role
-            </h3>
-            <p className="text-paper-300 mt-1.5">{project.role}</p>
-          </div>
-
-          <div>
-            <h3 className="font-till text-paper-500 text-[0.58rem] tracking-[0.2em] uppercase">
-              Stack
-            </h3>
-            <ul className="mt-2 flex flex-wrap gap-1.5">
-              {project.stack.map((item) => (
-                <li
-                  key={item}
-                  className="font-till border-ink-500 text-paper-300 border px-2 py-1 text-[0.62rem] tracking-[0.06em]"
-                >
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {project.links.length > 0 && (
+          <div className="grid gap-5 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
             <div>
-              <h3 className="font-till text-paper-500 text-[0.58rem] tracking-[0.2em] uppercase">
-                Links
+              <h3 className="font-till text-paper-500 text-[0.56rem] tracking-[0.2em] uppercase">
+                My role
               </h3>
-              <ul className="mt-2 flex flex-wrap gap-3">
-                {project.links.map((link) => (
+              <p className="text-paper-300 mt-1.5 text-[0.92rem] leading-relaxed">{project.role}</p>
+            </div>
+
+            <div>
+              <h3 className="font-till text-paper-500 text-[0.56rem] tracking-[0.2em] uppercase">
+                Built with
+              </h3>
+              <ul className="mt-2 flex flex-wrap gap-1.5">
+                {project.stack.map((item) => (
+                  <li
+                    key={item}
+                    className="font-till border-ink-500 text-paper-300 border px-2 py-1 text-[0.6rem] tracking-[0.06em]"
+                  >
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {/* The links are what the sheet is for. */}
+          <div>
+            <h3 className="font-till text-paper-500 text-[0.56rem] tracking-[0.2em] uppercase">
+              {project.links.length > 0 ? 'Go and look' : 'Nothing to show yet'}
+            </h3>
+            {project.links.length > 0 ? (
+              <ul className="mt-2.5 flex flex-wrap gap-2">
+                {project.links.map((link, index) => (
                   <li key={link.href}>
                     <a
                       href={link.href}
                       target="_blank"
                       rel="noreferrer"
-                      className="text-amber-300 decoration-amber-300/50 hover:text-accent hover:decoration-accent underline decoration-2 underline-offset-4 transition-colors"
+                      className="font-till group inline-flex items-center gap-2 px-3.5 py-2.5 text-[0.62rem] tracking-[0.14em] uppercase transition-transform hover:-translate-y-0.5"
+                      style={
+                        index === 0
+                          ? { backgroundColor: brand.accent, color: brand.ink }
+                          : { border: `1px solid ${brand.accent}`, color: brand.accent }
+                      }
                     >
-                      {link.label} <span aria-hidden="true">↗</span>
+                      {link.label}
+                      <span aria-hidden="true" className="transition-transform group-hover:translate-x-0.5">
+                        ↗
+                      </span>
                     </a>
                   </li>
                 ))}
               </ul>
-            </div>
-          )}
+            ) : (
+              <p className="text-paper-500 mt-1.5 text-[0.92rem]">
+                It is still in the back room. The receipt has my contacts if you want to hear how
+                it is going.
+              </p>
+            )}
+          </div>
         </div>
 
         <button
           type="button"
           onClick={onClose}
           aria-label="Put it back on the shelf"
-          className="text-paper-500 hover:text-paper-100 absolute top-3 right-3 cursor-pointer p-2 text-lg leading-none transition-colors"
+          className="absolute top-3 right-3 cursor-pointer p-2 text-lg leading-none opacity-70 transition-opacity hover:opacity-100"
+          style={{ color: brand.paper }}
         >
           <span aria-hidden="true">✕</span>
         </button>

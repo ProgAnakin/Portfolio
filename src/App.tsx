@@ -5,7 +5,7 @@ import { ProductSheet } from './components/ProductSheet';
 import { ReadableIndex } from './components/ReadableIndex';
 import { Receipt } from './components/Receipt';
 import { ReceiptNudge } from './components/ReceiptNudge';
-import { SiteHeader } from './components/SiteHeader';
+import { ShopMenu } from './components/ShopMenu';
 import { SceneDefs } from './components/shop/SceneDefs';
 import { ShopStage } from './components/ShopStage';
 import { ShopProvider, useShop } from './state/ShopContext';
@@ -30,7 +30,7 @@ function Shop() {
         Skip to the projects
       </a>
 
-      <SiteHeader onPrintReceipt={printReceipt} />
+      <ShopMenu onPrintReceipt={printReceipt} />
 
       <main>
         <ShopStage onPrintReceipt={printReceipt} />
