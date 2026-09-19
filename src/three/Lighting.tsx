@@ -48,8 +48,6 @@ export function Lighting({ shelfY, shelfX }: { shelfY: number[]; shelfX: number 
           against. Without it the whole scene is one temperature and reads flat. */}
       <directionalLight position={[-7, 3.4, 4]} intensity={0.62} color="#5f7d94" />
 
-      {/* A wash across the back wall, so the painted sign is legible and the
-          room has a far surface instead of a void behind it. */}
       {/* Just enough front fill to keep the counter props from going to
           silhouette. Kept cool so it never competes with the practicals. */}
       <pointLight position={[1.4, 2.4, 5.2]} intensity={5} distance={14} decay={1.9} color="#9fb3c2" />

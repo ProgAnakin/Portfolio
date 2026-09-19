@@ -9,7 +9,15 @@ import { palette } from './tokens';
 import { makeSpring, spring } from './spring';
 import { hotspotObjects, input, releaseHotspot } from './hotspots';
 import { shapeMeshes } from './products/shapes';
-import { PRODUCT_SCALE, productLimits, shapeHeight } from './shapeMetrics';
+import {
+  PRODUCT_SCALE,
+  productLimits,
+  shapeHeight,
+  ROLL_CAP,
+  ROLL_PER_SIDE,
+  SQUASH_CEILING,
+  SQUASH_FLOOR,
+} from './shapeMetrics';
 
 const clamp = (value: number, min: number, max: number) =>
   Math.max(min, Math.min(max, value));
@@ -107,7 +115,10 @@ export function ProductObject({ project, position }: ProductObjectProps) {
     // overshoots by design, so the *output* is clamped as well as the input —
     // otherwise the bounce at the top of a lift is what puts a box through the
     // plank above it.
-    const wantLift = state.dragging ? 0.3 : active ? 0.17 : 0;
+    // Picking a thing up takes at most half the headroom, so there is still
+    // somewhere for the drag itself to go. On a cramped shelf the two would
+    // otherwise both run to the ceiling and the pointer would do nothing.
+    const wantLift = state.dragging ? Math.min(0.3, limits.up * 0.55) : active ? 0.17 : 0;
     const targetLift = Math.min(wantLift, limits.up);
     const targetSquash = state.dragging ? 1.05 : active ? 0.95 : 1;
     const targetSpin = state.dragging ? 0 : active ? 0.24 : 0;
@@ -118,18 +129,22 @@ export function ProductObject({ project, position }: ProductObjectProps) {
     spring(dragX.current, state.dragging ? state.dx : 0, dt, 150, 13);
     spring(dragY.current, state.dragging ? state.dy : 0, dt, 150, 13);
 
-    const liftValue = clamp(lift.current.value, -0.01, limits.up);
     const offsetX = clamp(dragX.current.value, -limits.side, limits.side);
-    const offsetY = clamp(dragY.current.value, -limits.down, limits.up);
-    const squashValue = clamp(squash.current.value, 0.93, 1.07);
+    const squashValue = clamp(squash.current.value, SQUASH_FLOOR, SQUASH_CEILING);
 
-    group.current.position.set(
-      position[0] + offsetX,
-      position[1] + liftValue + offsetY,
-      position[2],
+    // The *sum* is what has to clear the plank. Clamping the lift and the
+    // drag separately and then adding them is how a product ends up twice as
+    // high as either limit allows — which is exactly what put the shipping
+    // box's flaps through the shelf above it.
+    const rise = clamp(
+      lift.current.value + dragY.current.value,
+      -limits.down,
+      limits.up,
     );
+
+    group.current.position.set(position[0] + offsetX, position[1] + rise, position[2]);
     group.current.rotation.y = spin.current.value + offsetX * 0.55;
-    group.current.rotation.z = clamp(-offsetX * 0.2, -0.16, 0.16);
+    group.current.rotation.z = clamp(-offsetX * ROLL_PER_SIDE, -ROLL_CAP, ROLL_CAP);
 
     const s = PRODUCT_SCALE;
     group.current.scale.set(

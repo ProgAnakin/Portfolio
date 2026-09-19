@@ -8,9 +8,8 @@ import { ProductObject } from './ProductObject';
 import { Counter3D } from './Counter3D';
 import { HotspotProjector } from './HotspotProjector';
 import { ShelfDressing } from './ShelfDressing';
-import { WallSign } from './WallSign';
+import { BackWall, WALL_DEEP } from './BackWall';
 import { Floor, placement, SHELF_X, SHELF_Y, ShelfRig } from './ShelfRig';
-import { palette } from './tokens';
 import type { SceneTier } from './useSceneQuality';
 
 /** Everything that has to stay in shot, in world units. */
@@ -85,12 +84,14 @@ export default function ShopCanvas({ tier }: { tier: SceneTier }) {
       }}
       style={{ position: 'absolute', inset: 0 }}
     >
-      <fog attach="fog" args={[palette.ink900(), 8, 19]} />
+      {/* Petrol, not soot: distance should read as the far end of a tiled
+          room, not as the drawing running out. */}
+      <fog attach="fog" args={[WALL_DEEP, 9, 21]} />
 
       <CameraRig enabled={tier === 'full'} />
       <Lighting shelfY={SHELF_Y} shelfX={SHELF_X} />
       <ProductLights />
-      <WallSign />
+      <BackWall />
       <ShelfRig />
       <ShelfDressing />
       <Counter3D />

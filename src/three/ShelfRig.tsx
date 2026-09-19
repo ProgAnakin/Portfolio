@@ -16,7 +16,10 @@ export { SHELF_X, SHELF_HALF_WIDTH, SHELF_Y, SLOT_GAP, placement } from './shelf
 export function ShelfRig() {
   const oak = palette.oak500();
   const oakDark = palette.oak700();
-  const back = palette.ink700();
+  // Not quite the ink token: against a petrol wall a warm near-black back
+  // panel reads as a hole cut in the room. Cooling it by a few degrees puts
+  // the fixture in the same building as the tile behind it.
+  const back = '#1a2429';
   const amber = palette.amber300();
 
   return (

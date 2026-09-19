@@ -1,5 +1,6 @@
-import type { Project, ProductShape } from '../data/projects';
-import { OPEN_LIFT, shelfGap, SLOT_GAP } from './shelfLayout';
+import { projects, type Project, type ProductShape } from '../data/projects';
+import { OPEN_LIFT, SHELF_HALF_WIDTH, SHELF_X, shelfGap, SLOT_GAP } from './shelfLayout';
+import { STOCK, stockX } from './shelfStock';
 
 /**
  * Sizes, with no three.js in sight.
@@ -10,11 +11,18 @@ import { OPEN_LIFT, shelfGap, SLOT_GAP } from './shelfLayout';
  * download. Keeping the numbers here keeps the split honest.
  */
 
-/** How tall each shape stands, so nothing looms over its neighbour. */
+/**
+ * How tall each shape stands, so nothing looms over its neighbour.
+ *
+ * This is the *drawn* top of the object, flaps, lids and crooked stickers
+ * included — not the top of its main box. Understating it is how a lift ends
+ * with a product's lid through the plank above, because the headroom below is
+ * worked out from these numbers and nothing else. Change a shape, change this.
+ */
 export const shapeHeight: Record<ProductShape, number> = {
-  kiosk: 0.86,
-  'boxed-set': 0.62,
-  crate: 0.42,
+  kiosk: 0.9,
+  'boxed-set': 0.66,
+  crate: 0.4,
   tin: 0.5,
   carton: 0.64,
 };
@@ -22,13 +30,56 @@ export const shapeHeight: Record<ProductShape, number> = {
 /** Stock is drawn 40% up from life so a label reads from the doorway. */
 export const PRODUCT_SCALE = 1.4;
 
-/** How wide each shape is. Needed because a tall thing is not a wide thing. */
+/**
+ * The tallest a product ever gets while being squashed.
+ *
+ * Picking something up stretches it a few percent, and the headroom below is
+ * worked out against this rather than against the resting height — otherwise
+ * the stretch at the top of a drag is exactly what puts a lid through a plank.
+ * `ProductObject` clamps to the same number, so the two cannot drift apart.
+ */
+export const SQUASH_CEILING = 1.07;
+export const SQUASH_FLOOR = 0.93;
+
+/**
+ * How far a product rolls as it is pulled sideways, and the most it ever does.
+ *
+ * A roll costs headroom — the outer corner of a box tipped by a tenth of a
+ * radian is measurably higher than the box was — so the numbers live here
+ * beside the limits that have to pay for it, and `ProductObject` reads them
+ * rather than keeping a second copy.
+ */
+export const ROLL_PER_SIDE = 0.2;
+export const ROLL_CAP = 0.16;
+
+/**
+ * How wide the *body* of each shape is: the part a pointer aims at. Needed
+ * because a tall thing is not a wide thing — sizing both axes off the height
+ * is what once made the kiosk's hit area swallow the box beside it.
+ */
 export const shapeWidth: Record<ProductShape, number> = {
-  kiosk: 0.46,
+  kiosk: 0.5,
   'boxed-set': 0.52,
-  crate: 0.46,
+  crate: 0.52,
   tin: 0.4,
   carton: 0.34,
+};
+
+/**
+ * How far each shape actually reaches to its left and to its right.
+ *
+ * Separate from `shapeWidth` because the two answer different questions. A
+ * button wants the body; a collision wants the props — the kiosk's swipe card
+ * hangs off its right-hand side and the boxed set's ball sits out in front of
+ * it, and those are the parts that arrive in the next slot first. Neither
+ * shape is symmetrical, so neither gets a single number.
+ */
+export const shapeReach: Record<ProductShape, [left: number, right: number]> = {
+  kiosk: [0.25, 0.32],
+  'boxed-set': [0.27, 0.39],
+  crate: [0.43, 0.43],
+  tin: [0.21, 0.21],
+  carton: [0.26, 0.26],
 };
 
 /**
@@ -62,22 +113,76 @@ export interface DragLimits {
   side: number;
 }
 
-export function productLimits(project: Project): DragLimits {
-  const height = shapeHeight[project.shape] * PRODUCT_SCALE;
-  const width = shapeWidth[project.shape] * PRODUCT_SCALE;
+/** What stands in the next slot along, if anything does. */
+function neighbour(project: Project, direction: -1 | 1): Project | undefined {
+  return projects.find((p) => p.shelf === project.shelf && p.slot === project.slot + direction);
+}
 
-  // Squash widens the product by a few percent at the extremes; leave for it.
-  const halfWidth = (width * 1.08) / 2;
+/**
+ * How far a product may slide toward its neighbour before the two touch.
+ *
+ * Measured against where the neighbour is *standing*, not against where it
+ * could be dragged to, because only one product is ever being dragged: the
+ * input layer hands out a single pointer. An empty slot is worth half a slot
+ * of travel — enough to feel loose, not so much that a box ends up parked
+ * where the next product will go.
+ */
+function sideRoom(project: Project, direction: -1 | 1): number {
+  const scale = PRODUCT_SCALE * SQUASH_WIDEN;
+  const mine = shapeReach[project.shape][direction < 0 ? 0 : 1] * scale;
+
+  const other = neighbour(project, direction);
+  const free = other
+    ? SLOT_GAP - mine - shapeReach[other.shape][direction < 0 ? 1 : 0] * scale - GAP_PAD
+    : SLOT_GAP / 2;
+
+  // Never off the end of the plank, and never into the backstock — those
+  // boxes are scenery, but they are scenery that does not get out of the way.
+  const centre = SHELF_X - 0.75 + project.slot * SLOT_GAP;
+  const edge =
+    direction < 0
+      ? centre - (SHELF_X - SHELF_HALF_WIDTH + mine)
+      : SHELF_X + SHELF_HALF_WIDTH - mine - centre;
+
+  const leading = centre + direction * mine;
+  let stock = Infinity;
+  for (const box of STOCK) {
+    if (box.shelf !== project.shelf) continue;
+    const face = stockX(box) - (direction * box.w) / 2;
+    const room = (face - leading) * direction;
+    if (room >= 0) stock = Math.min(stock, room - GAP_PAD);
+  }
+
+  return Math.max(0, Math.min(free, edge, stock));
+}
+
+/** Squash widens a product by a few percent at the extremes. Leave for it. */
+const SQUASH_WIDEN = 1.08;
+
+/** A finger's width of air kept between two products that both exist. */
+const GAP_PAD = 0.06;
+
+export function productLimits(project: Project): DragLimits {
+  // Worst case, not resting case: the product at full stretch.
+  const height = shapeHeight[project.shape] * PRODUCT_SCALE * SQUASH_CEILING;
+  const side = Math.min(sideRoom(project, -1), sideRoom(project, 1));
+
+  // A product pulled to the end of its travel is also rolled, and the corner
+  // that rolls upward is the one that meets the shelf above. Pay for it here
+  // rather than discovering it as a flap through a plank.
+  const reach = Math.max(...shapeReach[project.shape]) * PRODUCT_SCALE;
+  const roll = reach * Math.sin(Math.min(ROLL_CAP, side * ROLL_PER_SIDE));
 
   // Nothing overhead on the top shelf, so it gets a full lift. Below it, the
-  // lift is whatever is left between the product's own head and the plank.
+  // lift is whatever is left between the product's own head and the strip
+  // light under the plank above.
   const gap = shelfGap(project.shelf);
-  const up = gap === null ? OPEN_LIFT : Math.max(0, gap - height - 0.02);
+  const up = gap === null ? OPEN_LIFT : Math.max(0, gap - height - roll - 0.02);
 
   return {
     up,
     // A little sink into the shelf reads as weight. Any more is a box in wood.
     down: 0.03,
-    side: Math.max(0, SLOT_GAP / 2 - halfWidth),
+    side,
   };
 }
