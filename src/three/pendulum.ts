@@ -12,9 +12,9 @@ export const pendulum = { tiltX: 0, tiltZ: 0 };
 /**
  * Distance from the ceiling rose to the shade.
  *
- * Long, because a shop pendant hangs low over a counter, because a long
- * pendulum swings slowly and heavily rather than twitching, and because at the
- * old height the shade sat behind the board on the wall — a lamp you have to
- * take on trust is not worth animating.
+ * Long, because it now starts at the real ceiling and still has to finish low
+ * over the counter, and because a long pendulum swings slowly and heavily
+ * rather than twitching. The angular cap comes down to match: the same angle
+ * on a longer arm is a much wider sweep.
  */
-export const PENDANT_DROP = 1.54;
+export const PENDANT_DROP = 2.08;

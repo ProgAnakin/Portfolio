@@ -10,7 +10,9 @@ import { Counter3D } from './Counter3D';
 import { HotspotProjector } from './HotspotProjector';
 import { ShelfDressing } from './ShelfDressing';
 import { BackWall, WALL_DEEP } from './BackWall';
-import { Floor, placement, SHELF_X, SHELF_Y, ShelfRig } from './ShelfRig';
+import { Ceiling } from './Ceiling';
+import { placement, SHELF_X, SHELF_Y, ShelfRig } from './ShelfRig';
+import { Floor } from './Floor';
 import type { SceneTier } from './useSceneQuality';
 
 /** Everything that has to stay in shot, in world units. */
@@ -127,6 +129,7 @@ export default function ShopCanvas({ tier }: { tier: SceneTier }) {
       <Lighting shelfY={SHELF_Y} shelfX={SHELF_X} />
       <ProductLights />
       <BackWall />
+      <Ceiling />
       <ShelfRig />
       <ShelfDressing />
       <Counter3D />

@@ -59,8 +59,8 @@ export function Pendant({ position }: { position: [number, number, number] }) {
     velocity.current.x *= Math.exp(-1.15 * step);
     // Capped: past about this the shade swings clear out of its own pocket in
     // the composition and disappears behind the board on the wall.
-    angle.current.z = Math.max(-0.26, Math.min(0.26, angle.current.z + velocity.current.z * step));
-    angle.current.x = Math.max(-0.26, Math.min(0.26, angle.current.x + velocity.current.x * step));
+    angle.current.z = Math.max(-0.18, Math.min(0.18, angle.current.z + velocity.current.z * step));
+    angle.current.x = Math.max(-0.18, Math.min(0.18, angle.current.x + velocity.current.x * step));
 
     arm.current.rotation.z = angle.current.z;
     arm.current.rotation.x = angle.current.x;
@@ -76,6 +76,17 @@ export function Pendant({ position }: { position: [number, number, number] }) {
 
   return (
     <group position={position}>
+      {/* The rose: what the flex is screwed to. Without it the cord arrives at
+          the ceiling and stops, which is the join this was all built to hide. */}
+      <mesh position={[0, -0.012, 0]}>
+        <cylinderGeometry args={[0.17, 0.2, 0.05, 20]} />
+        <meshStandardMaterial color="#8b8478" roughness={0.8} />
+      </mesh>
+      <mesh position={[0, -0.035, 0]}>
+        <torusGeometry args={[0.115, 0.016, 6, 20]} />
+        <meshStandardMaterial color="#79736a" roughness={0.75} />
+      </mesh>
+
       <group ref={arm}>
         {/* Flex, from the ceiling rose down to the shade. */}
         <mesh position={[0, -PENDANT_DROP / 2 + 0.06, 0]}>

@@ -57,11 +57,16 @@ export function ShopStage({ onPrintReceipt }: { onPrintReceipt: () => void }) {
     // `#projects` and `#contact` have to resolve in this branch too: the text
     // nav is the escape hatch for anyone who will not explore a room, and a
     // fragment link that lands on nothing is worse than no link.
+    //
+    // The stage is never taller than the window: a bare `min-h` that exceeds a
+    // short viewport pushes everything anchored to the bottom of it — the
+    // name, the standfirst — below the fold, on a browser someone has simply
+    // dragged short.
     <div
       id="projects"
       tabIndex={-1}
       aria-label="The shop floor"
-      className="relative h-[100svh] min-h-[38rem] w-full overflow-hidden outline-none"
+      className="relative h-[100svh] min-h-[min(38rem,100svh)] w-full overflow-hidden outline-none"
     >
       <Suspense fallback={null}>
         <ShopCanvas tier={tier} />

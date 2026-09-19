@@ -61,6 +61,15 @@ export const finishRampTexture = (finish: ProductFinish) => ramp(finish, finishR
  */
 export const labelRamp = () => ramp('label', [0.72, 0.94]);
 
+/**
+ * Round things.
+ *
+ * Two or three steps on a sphere reads as a disc with a bite out of it. Four,
+ * weighted toward the light, puts the terminator where the eye expects it and
+ * is the difference between a ball and a coloured circle.
+ */
+export const ballRamp = () => ramp('ball', [0.3, 0.52, 0.74, 0.93]);
+
 /** The ramp everything that is not a product uses — wood, walls, the figure. */
 export const SET_RAMP = [0.34, 0.64, 0.9];
 export const skinRamp = () => ramp('skin', [0.4, 0.66, 0.88]);

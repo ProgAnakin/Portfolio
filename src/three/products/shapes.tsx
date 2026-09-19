@@ -2,7 +2,7 @@ import { RoundedBox } from '@react-three/drei';
 import type { Texture } from 'three';
 import type { ProductFinish, ProductShape } from '../../data/projects';
 import { Ink, ToyMaterial } from '../materials';
-import { labelRamp, setRamp } from '../toon';
+import { ballRamp, labelRamp, setRamp } from '../toon';
 import { palette } from '../tokens';
 
 export interface ShapeProps {
@@ -139,14 +139,14 @@ function BoxedSet({ finish, color, label, sticker, accessory }: ShapeProps) {
         </mesh>
       </group>
 
-      {/* The ball, out of the box — panelled and gripped, so it reads as a
-          ball rather than as a dot someone forgot to print. */}
-      <mesh position={[0.28, 0.1, 0.16]} rotation={[0.3, 0.6, 0.2]}>
-        <sphereGeometry args={[0.1, 20, 16]} />
+      {/* The ball, out of the box. Turned so a panel faces the room and the
+          club's stripe runs across it, rather than presenting a seam. */}
+      <mesh position={[0.28, 0.094, 0.17]} rotation={[0.42, 0.78, 0.16]}>
+        <sphereGeometry args={[0.094, 24, 18]} />
         {accessory ? (
-          <meshToonMaterial key={accessory.uuid} map={accessory} gradientMap={labelRamp()} />
+          <meshToonMaterial key={accessory.uuid} map={accessory} gradientMap={ballRamp()} />
         ) : (
-          <meshToonMaterial key="plain" color={palette.amber400()} gradientMap={labelRamp()} />
+          <meshToonMaterial key="plain" color={palette.amber400()} gradientMap={ballRamp()} />
         )}
         <Ink weight="thin" />
       </mesh>
