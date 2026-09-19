@@ -7,7 +7,11 @@ export interface Hotspot {
   /** Base hit size in CSS pixels at scale 1. */
   size: [number, number];
   onActivate: () => void;
-  draggable?: boolean;
+  /**
+   * How far this object may be pulled, in world units, worked out from the
+   * shelf around it. Absent means it does not move.
+   */
+  drag?: { up: number; down: number; side: number };
   anchorId?: string;
   /** Rendered above the control while it is hovered or focused. */
   popover?: React.ReactNode;
@@ -117,7 +121,7 @@ function HotspotButton({ spot }: { spot: Hotspot }) {
           if (state.focused) showPopover(true);
         }}
         onPointerDown={(event) => {
-          if (!spot.draggable) return;
+          if (!spot.drag) return;
           event.currentTarget.setPointerCapture(event.pointerId);
           state.dragging = true;
           state.dx = 0;
@@ -125,12 +129,15 @@ function HotspotButton({ spot }: { spot: Hotspot }) {
           moved.current = false;
         }}
         onPointerMove={(event) => {
-          if (!state.dragging) return;
+          if (!state.dragging || !spot.drag) return;
           state.dx += event.movementX * projection.worldPerPixel;
           state.dy -= event.movementY * projection.worldPerPixel;
-          // A shelf is not a table: you can only pull it so far.
-          state.dx = Math.max(-0.9, Math.min(0.9, state.dx));
-          state.dy = Math.max(-0.25, Math.min(1.1, state.dy));
+          // A shelf is not a table. The limits come from the plank above and
+          // the next slot along, so a product can never be pulled through
+          // either one.
+          const { up, down, side } = spot.drag;
+          state.dx = Math.max(-side, Math.min(side, state.dx));
+          state.dy = Math.max(-down, Math.min(up, state.dy));
           if (Math.hypot(state.dx, state.dy) > 0.06) moved.current = true;
         }}
         onPointerUp={(event) => {
@@ -142,9 +149,10 @@ function HotspotButton({ spot }: { spot: Hotspot }) {
         }}
         onKeyDown={(event) => {
           // The same lift, for people who never touch a mouse.
+          if (!spot.drag) return;
           if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
             event.preventDefault();
-            state.dy = event.key === 'ArrowUp' ? 0.5 : 0;
+            state.dy = event.key === 'ArrowUp' ? spot.drag.up : 0;
           }
         }}
       />

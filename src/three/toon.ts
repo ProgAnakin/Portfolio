@@ -39,7 +39,7 @@ export function ramp(key: string, stops: number[]): Texture {
 
 export const finishRamp: Record<ProductFinish, number[]> = {
   // Moulded toy: dark body, mid, then a small blown highlight.
-  plastic: [0.34, 0.62, 0.88, 1],
+  plastic: [0.32, 0.58, 0.8, 0.96],
   // Unfired clay: light sinks in, no highlight anywhere.
   clay: [0.38, 0.68, 0.92],
   // Matte rubber: one wide soft band.
@@ -47,7 +47,7 @@ export const finishRamp: Record<ProductFinish, number[]> = {
   // Cartoon chrome is drawn, not reflected: dark, then a hard bright band.
   chrome: [0.18, 0.4, 0.95, 1],
   // Printed board, flat as it gets.
-  card: [0.48, 0.86],
+  card: [0.44, 0.8],
 };
 
 export const finishRampTexture = (finish: ProductFinish) => ramp(finish, finishRamp[finish]);
@@ -59,7 +59,7 @@ export const finishRampTexture = (finish: ProductFinish) => ramp(finish, finishR
  * reads on the dark bottom shelf, while keeping one visible band of shading so
  * it does not float free of the room.
  */
-export const labelRamp = () => ramp('label', [0.74, 1]);
+export const labelRamp = () => ramp('label', [0.72, 0.94]);
 
 /** The ramp everything that is not a product uses — wood, walls, the figure. */
 export const SET_RAMP = [0.34, 0.64, 0.9];

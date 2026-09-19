@@ -59,17 +59,26 @@ export function Telephone() {
             <ul className="space-y-1.5">
               {contacts.map((contact) => (
                 <li key={contact.id}>
-                  <a
-                    href={contact.href}
-                    target={contact.href.startsWith('http') ? '_blank' : undefined}
-                    rel={contact.href.startsWith('http') ? 'noreferrer' : undefined}
-                    className="decoration-accent hover:text-accent focus-visible:text-accent block text-sm underline decoration-2 underline-offset-2"
-                  >
-                    <span className="font-till mr-1.5 text-[0.6rem] tracking-[0.12em] uppercase opacity-60">
-                      {contact.label}
-                    </span>
-                    <span className="break-all">{contact.value}</span>
-                  </a>
+                  {contact.href ? (
+                    <a
+                      href={contact.href}
+                      target={contact.href.startsWith('http') ? '_blank' : undefined}
+                      rel={contact.href.startsWith('http') ? 'noreferrer' : undefined}
+                      className="decoration-accent hover:text-accent focus-visible:text-accent block text-sm underline decoration-2 underline-offset-2"
+                    >
+                      <span className="font-till mr-1.5 text-[0.6rem] tracking-[0.12em] uppercase opacity-60">
+                        {contact.label}
+                      </span>
+                      <span className="break-all">{contact.value}</span>
+                    </a>
+                  ) : (
+                    <p className="block text-sm opacity-70">
+                      <span className="font-till mr-1.5 text-[0.6rem] tracking-[0.12em] uppercase opacity-70">
+                        {contact.label}
+                      </span>
+                      <span>{contact.value}</span>
+                    </p>
+                  )}
                 </li>
               ))}
             </ul>

@@ -1,4 +1,5 @@
 import type { Project, ProductShape } from '../data/projects';
+import { OPEN_LIFT, shelfGap, SLOT_GAP } from './shelfLayout';
 
 /**
  * Sizes, with no three.js in sight.
@@ -43,4 +44,40 @@ export function productHitSize(project: Project): [number, number] {
   const h = shapeHeight[project.shape] * PRODUCT_SCALE;
   // A slightly generous target, but never wider than the gap between slots.
   return [Math.min(w * 118, 112), h * 104];
+}
+
+/**
+ * How far a product may move before it breaks the scene.
+ *
+ * Picking something up is meant to look like picking something up, not like a
+ * box passing through a plank. Both limits come from the geometry around the
+ * product rather than from a constant that happened to look right on one
+ * shelf: `up` is the clear air to the underside of the shelf above, `side` is
+ * the gap to the next slot. Anything that would collide simply cannot be
+ * reached.
+ */
+export interface DragLimits {
+  up: number;
+  down: number;
+  side: number;
+}
+
+export function productLimits(project: Project): DragLimits {
+  const height = shapeHeight[project.shape] * PRODUCT_SCALE;
+  const width = shapeWidth[project.shape] * PRODUCT_SCALE;
+
+  // Squash widens the product by a few percent at the extremes; leave for it.
+  const halfWidth = (width * 1.08) / 2;
+
+  // Nothing overhead on the top shelf, so it gets a full lift. Below it, the
+  // lift is whatever is left between the product's own head and the plank.
+  const gap = shelfGap(project.shelf);
+  const up = gap === null ? OPEN_LIFT : Math.max(0, gap - height - 0.02);
+
+  return {
+    up,
+    // A little sink into the shelf reads as weight. Any more is a box in wood.
+    down: 0.03,
+    side: Math.max(0, SLOT_GAP / 2 - halfWidth),
+  };
 }

@@ -75,7 +75,7 @@ export function Counter3D() {
         <meshStandardMaterial color={oak} roughness={0.55} />
       </RoundedBox>
 
-      <Shopkeeper3D position={[0.2, TOP_Y - 0.46, -0.52]} scale={1.22} />
+      <Shopkeeper3D position={[0.2, TOP_Y - 0.42, -0.52]} scale={1.35} />
 
       {/* Pendant: the fixture, and the bulb doing the lighting. */}
       <group position={[-0.78, 2.36, 0.16]}>

@@ -7,7 +7,8 @@ export interface ContactLink {
   id: string;
   label: string;
   value: string;
-  href: string;
+  /** Absent when there is nothing to link to yet. Rendered as plain text. */
+  href?: string;
 }
 
 export interface MenuItem {
@@ -30,10 +31,11 @@ export const profile = {
 
 export const contacts: ContactLink[] = [
   {
+    // Deliberately not published: a personal address on a page a stranger can
+    // scrape is a spam problem, not a contact method. LinkedIn is the door.
     id: 'email',
     label: 'Email',
-    value: 'costatocb@gmail.com',
-    href: 'mailto:costatocb@gmail.com',
+    value: 'Available on request',
   },
   {
     id: 'linkedin',

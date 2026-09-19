@@ -1,17 +1,8 @@
 import { RoundedBox } from '@react-three/drei';
 import { palette } from './tokens';
+import { SHELF_DEPTH as DEPTH, SHELF_HALF_WIDTH, SHELF_X, SHELF_Y } from './shelfLayout';
 
-/** The gondola sits left of centre; the counter takes the right of the room. */
-export const SHELF_X = -1.6;
-export const SHELF_HALF_WIDTH = 2.2;
-export const SHELF_Y = [2.3, 1.42, 0.54];
-export const SLOT_GAP = 1.25;
-const DEPTH = 0.72;
-
-/** Where a product stands, from its shelf and slot. */
-export function placement(shelf: number, slot: number): [number, number, number] {
-  return [SHELF_X - 0.75 + slot * SLOT_GAP, SHELF_Y[shelf] ?? SHELF_Y[0], 0.05];
-}
+export { SHELF_X, SHELF_HALF_WIDTH, SHELF_Y, SLOT_GAP, placement } from './shelfLayout';
 
 /**
  * The gondola unit: back panel, uprights, planks, and the strip tucked under

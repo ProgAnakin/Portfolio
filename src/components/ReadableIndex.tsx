@@ -51,9 +51,15 @@ export function ReadableIndex() {
       <ul>
         {contacts.map((contact) => (
           <li key={contact.id}>
-            <a href={contact.href} tabIndex={-1}>
-              {contact.label}: {contact.value}
-            </a>
+            {contact.href ? (
+              <a href={contact.href} tabIndex={-1}>
+                {contact.label}: {contact.value}
+              </a>
+            ) : (
+              <span>
+                {contact.label}: {contact.value}
+              </span>
+            )}
           </li>
         ))}
       </ul>

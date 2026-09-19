@@ -162,14 +162,18 @@ export function Receipt({ basket, seconds, onClose }: ReceiptProps) {
                 <span className="w-14 shrink-0 text-[0.6rem] tracking-[0.1em] opacity-55 uppercase">
                   {contact.label}
                 </span>
-                <a
-                  href={contact.href}
-                  target={contact.href.startsWith('http') ? '_blank' : undefined}
-                  rel={contact.href.startsWith('http') ? 'noreferrer' : undefined}
-                  className="decoration-accent hover:text-accent break-all underline decoration-2 underline-offset-2"
-                >
-                  {contact.value}
-                </a>
+                {contact.href ? (
+                  <a
+                    href={contact.href}
+                    target={contact.href.startsWith('http') ? '_blank' : undefined}
+                    rel={contact.href.startsWith('http') ? 'noreferrer' : undefined}
+                    className="decoration-accent hover:text-accent break-all underline decoration-2 underline-offset-2"
+                  >
+                    {contact.value}
+                  </a>
+                ) : (
+                  <span className="break-all opacity-75">{contact.value}</span>
+                )}
               </li>
             ))}
           </ul>

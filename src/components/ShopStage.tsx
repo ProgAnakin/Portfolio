@@ -6,7 +6,7 @@ import { StageOverlay } from './StageOverlay';
 import { HotspotLayer, type Hotspot } from './HotspotLayer';
 import { ContactsCard } from './ContactsCard';
 import { projects, statusLabel } from '../data/projects';
-import { productHitSize } from '../three/shapeMetrics';
+import { productHitSize, productLimits } from '../three/shapeMetrics';
 
 const ShopCanvas = lazy(() => import('../three/ShopCanvas'));
 
@@ -29,7 +29,7 @@ export function ShopStage({ onPrintReceipt }: { onPrintReceipt: () => void }) {
         label: `${project.name} — ${project.tagline}. ${statusLabel[project.status]}. Open details, or drag it off the shelf.`,
         size: productHitSize(project),
         onActivate: () => open(project.id),
-        draggable: true,
+        drag: productLimits(project),
       })),
       {
         id: 'telephone',

@@ -9,7 +9,35 @@ export interface ShapeProps {
   finish: ProductFinish;
   color: string;
   label: Texture | null;
+  /** The status roundel, when the thing is not finished. */
+  sticker: Texture | null;
   lit: boolean;
+}
+
+/**
+ * A sticker, applied by hand and therefore crooked.
+ *
+ * Each shape places its own, because where a sticker lands depends on where
+ * the flat is: on a box it goes across a corner, on a screen it goes on the
+ * bezel. Always proud of the surface it sits on, so it never z-fights.
+ */
+function Sticker({
+  sticker,
+  position,
+  size,
+  rotation = [0, 0, -0.22],
+}: {
+  sticker: Texture;
+  position: [number, number, number];
+  size: number;
+  rotation?: [number, number, number];
+}) {
+  return (
+    <mesh key={sticker.uuid} position={position} rotation={rotation}>
+      <planeGeometry args={[size, size]} />
+      <meshBasicMaterial map={sticker} transparent alphaTest={0.08} toneMapped={false} />
+    </mesh>
+  );
 }
 
 /** The printed face of a box. Flat, bright, and always readable. */
@@ -37,7 +65,7 @@ function PrintedFace({
  * is, with a quiz card caught mid-swipe in front of the screen. The card is
  * what says *what the thing does* from across the room.
  */
-function Kiosk({ finish, color, label, lit }: ShapeProps) {
+function Kiosk({ finish, color, label, sticker, lit }: ShapeProps) {
   return (
     <group>
       {/* Weighted base */}
@@ -64,13 +92,15 @@ function Kiosk({ finish, color, label, lit }: ShapeProps) {
             <meshBasicMaterial map={label} toneMapped={false} color={lit ? '#ffffff' : '#8c8378'} />
           </mesh>
         )}
+        {sticker && <Sticker sticker={sticker} position={[-0.17, -0.2, 0.046]} size={0.26} />}
+
         {/* The card being swiped off the deck. */}
         <group position={[0.2, -0.2, 0.075]} rotation={[0, 0.14, -0.4]}>
           <RoundedBox args={[0.16, 0.21, 0.016]} radius={0.012} smoothness={3}>
             <meshToonMaterial
-              color={palette.amber300()}
+              color={palette.amber400()}
               emissive={palette.amber400()}
-              emissiveIntensity={lit ? 0.45 : 0}
+              emissiveIntensity={lit ? 0.22 : 0}
               gradientMap={labelRamp()}
             />
             <Ink weight="thin" />
@@ -85,7 +115,7 @@ function Kiosk({ finish, color, label, lit }: ShapeProps) {
  * Kouci: a deep boxed set leaning back on the shelf so its top face shows,
  * with the ball out of the box in front of it — a display, not a stack.
  */
-function BoxedSet({ finish, color, label }: ShapeProps) {
+function BoxedSet({ finish, color, label, sticker }: ShapeProps) {
   return (
     <group>
       <group position={[0, 0.32, -0.05]} rotation={[-0.11, 0.18, 0]}>
@@ -94,6 +124,7 @@ function BoxedSet({ finish, color, label }: ShapeProps) {
           <Ink />
         </RoundedBox>
         {label && <PrintedFace label={label} position={[0, 0, 0.122]} size={[0.47, 0.61]} />}
+        {sticker && <Sticker sticker={sticker} position={[0.13, -0.18, 0.128]} size={0.27} />}
         {/* Spine, so the box reads as a box from any angle. */}
         <mesh position={[-0.251, 0, 0]} rotation={[0, -Math.PI / 2, 0]}>
           <planeGeometry args={[0.22, 0.6]} />
@@ -120,7 +151,7 @@ function BoxedSet({ finish, color, label }: ShapeProps) {
  * Sales Call Trainer: a shipping box that was never opened. Flaps still up,
  * tape across the seam — the status is the object, not a badge on it.
  */
-function Crate({ finish, color, label }: ShapeProps) {
+function Crate({ finish, color, label, sticker }: ShapeProps) {
   return (
     <group>
       <RoundedBox args={[0.48, 0.4, 0.44]} radius={0.014} smoothness={3} position={[0, 0.2, 0]}>
@@ -150,12 +181,15 @@ function Crate({ finish, color, label }: ShapeProps) {
       </mesh>
 
       {label && <PrintedFace label={label} position={[0, 0.22, 0.222]} size={[0.36, 0.28]} />}
+      {sticker && (
+        <Sticker sticker={sticker} position={[0.16, 0.37, 0.228]} size={0.26} rotation={[0, 0, 0.26]} />
+      )}
     </group>
   );
 }
 
 /** Spare shapes, for stock that has not arrived yet. */
-function Tin({ finish, color, label }: ShapeProps) {
+function Tin({ finish, color, label, sticker }: ShapeProps) {
   return (
     <group>
       <mesh position={[0, 0.25, 0]}>
@@ -168,11 +202,12 @@ function Tin({ finish, color, label }: ShapeProps) {
         <ToyMaterial finish={finish} color={color} />
       </mesh>
       {label && <PrintedFace label={label} position={[0, 0.25, 0.201]} size={[0.3, 0.34]} />}
+      {sticker && <Sticker sticker={sticker} position={[0.1, 0.41, 0.207]} size={0.2} />}
     </group>
   );
 }
 
-function Carton({ finish, color, label }: ShapeProps) {
+function Carton({ finish, color, label, sticker }: ShapeProps) {
   return (
     <group>
       <RoundedBox args={[0.34, 0.5, 0.34]} radius={0.01} smoothness={3} position={[0, 0.25, 0]}>
@@ -185,6 +220,7 @@ function Carton({ finish, color, label }: ShapeProps) {
         <Ink weight="thin" />
       </mesh>
       {label && <PrintedFace label={label} position={[0, 0.27, 0.172]} size={[0.28, 0.36]} />}
+      {sticker && <Sticker sticker={sticker} position={[0.1, 0.42, 0.178]} size={0.2} />}
     </group>
   );
 }

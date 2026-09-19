@@ -3,11 +3,11 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { ACESFilmicToneMapping } from 'three';
 import { projects } from '../data/projects';
 import { Lighting } from './Lighting';
+import { ProductLights } from './ProductLights';
 import { ProductObject } from './ProductObject';
 import { Counter3D } from './Counter3D';
 import { HotspotProjector } from './HotspotProjector';
 import { ShelfDressing } from './ShelfDressing';
-import { ShelfTalker } from './ShelfTalker';
 import { WallSign } from './WallSign';
 import { Floor, placement, SHELF_X, SHELF_Y, ShelfRig } from './ShelfRig';
 import { palette } from './tokens';
@@ -81,7 +81,7 @@ export default function ShopCanvas({ tier }: { tier: SceneTier }) {
       camera={{ position: [0.3, 1.72, 6.9], fov: 40 }}
       onCreated={({ gl }) => {
         gl.toneMapping = ACESFilmicToneMapping;
-        gl.toneMappingExposure = 1.05;
+        gl.toneMappingExposure = 1.06;
       }}
       style={{ position: 'absolute', inset: 0 }}
     >
@@ -89,6 +89,7 @@ export default function ShopCanvas({ tier }: { tier: SceneTier }) {
 
       <CameraRig enabled={tier === 'full'} />
       <Lighting shelfY={SHELF_Y} shelfX={SHELF_X} />
+      <ProductLights />
       <WallSign />
       <ShelfRig />
       <ShelfDressing />
@@ -101,10 +102,6 @@ export default function ShopCanvas({ tier }: { tier: SceneTier }) {
           project={project}
           position={placement(project.shelf, project.slot)}
         />
-      ))}
-
-      {projects.map((project) => (
-        <ShelfTalker key={`talker-${project.id}`} project={project} />
       ))}
 
       <HotspotProjector />

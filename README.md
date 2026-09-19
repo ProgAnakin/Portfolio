@@ -101,6 +101,17 @@ answer is no.
 - **Type is architecture.** The shop name is painted on the back wall at
   signage scale (`WallSign.tsx`), lit by the shelves and cropped by whatever
   is standing in front of it — not floated over the canvas in a DOM layer.
+- **Every product has its own lamp.** Strip lights light the *shelf* — they
+  rake across the front of a box and leave it in the darkest band of its ramp.
+  Retail solves that with a spot on each facing and so does this
+  (`ProductLights.tsx`), which is what makes the stock the brightest thing in
+  the room rather than the woodwork.
+- **Nothing can be moved through anything.** Lift and drag limits are computed
+  from the geometry around each product — the clear air to the plank above,
+  the gap to the next slot (`productLimits` in `shapeMetrics.ts`). Springs
+  overshoot by design, so the *output* is clamped as well as the input;
+  otherwise the bounce at the top of a lift is exactly what puts a box through
+  a shelf.
 - **Motion is a toy.** One spring (`spring.ts`) with deliberate overshoot
   drives every lift, squash and drag. Products squash as they leave the shelf
   and stretch at the top of the lift; volume is conserved, which is what makes
@@ -193,6 +204,11 @@ opened, as line items, plus a short introduction and contacts. Nothing on it
 is information that would not be handed to someone who walked into the shop.
 `Print / save` uses the browser's print dialog against a print stylesheet
 that puts the paper on the page and nothing else.
+
+No email address is published anywhere on the site — a personal address on a
+page a stranger can scrape is a spam problem, not a contact method. The
+contact block says so and points at LinkedIn instead; `href` on a contact is
+optional, and one without it renders as plain text.
 
 ## Accessibility
 
