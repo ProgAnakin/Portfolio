@@ -9,6 +9,7 @@ import { ShopMenu } from './components/ShopMenu';
 import { SceneDefs } from './components/shop/SceneDefs';
 import { ShopStage } from './components/ShopStage';
 import { ShopProvider, useShop } from './state/ShopContext';
+import { tillPrinted } from './three/tillState';
 
 function Shop() {
   const { openProject, close, basket, timeInShop, markReceiptTaken } = useShop();
@@ -18,6 +19,10 @@ function Shop() {
   // asking about it on the way out.
   const printReceipt = () => {
     markReceiptTaken();
+    // The machine in the room runs too, if there is a room. It reads this from
+    // a plain record rather than a prop, so the feed motor starting does not
+    // re-render the page around it.
+    tillPrinted();
     setReceipt({ seconds: timeInShop() });
   };
 

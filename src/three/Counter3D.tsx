@@ -1,12 +1,13 @@
 import { useEffect, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { RoundedBox } from '@react-three/drei';
 import { Group, Object3D } from 'three';
 import { palette } from './tokens';
 import { makeSpring, spring } from './spring';
 import { hotspotObjects, input, releaseHotspot } from './hotspots';
 import { Shopkeeper3D } from './Shopkeeper3D';
 import { Telephone } from './Telephone';
+import { Pendant } from './Pendant';
+import { Till } from './Till';
 
 export const COUNTER_X = 2.45;
 
@@ -59,73 +60,34 @@ function CounterProp({
 export function Counter3D() {
   const oak = palette.oak500();
   const oakDark = palette.oak700();
-  const amber = palette.amber300();
 
   return (
     <group position={[COUNTER_X, 0, 0.55]}>
-      {/* Block and top */}
-      <RoundedBox args={[2.5, 1.06, 0.92]} radius={0.03} smoothness={2} position={[0, 0.53, 0]}>
+      {/* Block and top. Slabs, so: plain boxes. */}
+      <mesh position={[0, 0.53, 0]}>
+        <boxGeometry args={[2.5, 1.06, 0.92]} />
         <meshStandardMaterial color={oakDark} roughness={0.86} />
-      </RoundedBox>
-      <RoundedBox args={[2.66, 0.09, 1.04]} radius={0.02} smoothness={3} position={[0, TOP_Y - 0.045, 0]}>
+      </mesh>
+      <mesh position={[0, TOP_Y - 0.045, 0]}>
+        <boxGeometry args={[2.66, 0.09, 1.04]} />
         <meshStandardMaterial color={oak} roughness={0.55} />
-      </RoundedBox>
+      </mesh>
 
       <Shopkeeper3D position={[0.2, TOP_Y - 0.42, -0.52]} scale={1.35} />
 
-      {/* Pendant: the fixture, and the bulb doing the lighting. */}
-      <group position={[-0.78, 2.36, 0.16]}>
-        <mesh position={[0, 0.55, 0]}>
-          <cylinderGeometry args={[0.008, 0.008, 1.1, 8]} />
-          <meshStandardMaterial color={palette.ink600()} roughness={0.6} />
-        </mesh>
-        <mesh>
-          <coneGeometry args={[0.3, 0.26, 24, 1, true]} />
-          <meshStandardMaterial color={palette.ink600()} roughness={0.42} metalness={0.5} side={2} />
-        </mesh>
-        <mesh position={[0, -0.1, 0]}>
-          <sphereGeometry args={[0.075, 18, 16]} />
-          <meshStandardMaterial
-            color={amber}
-            emissive={amber}
-            emissiveIntensity={3.4}
-            toneMapped={false}
-          />
-        </mesh>
-      </group>
+      {/* Pendant: the fixture, and the bulb doing the lighting. It hangs from
+          the ceiling rather than from this group, so the pivot is where the
+          rose is and the swing is a swing. */}
+      <Pendant position={[-0.78, 3.46, 0.16]} />
 
       {/* Telephone: the door marked "talk to a person". */}
       <CounterProp id="telephone" position={[-0.86, TOP_Y, 0.14]}>
         <Telephone />
       </CounterProp>
 
-      {/* The till — the only chrome in the shop, so it reflects the strips. */}
+      {/* The till: the one machine a visitor is asked to operate. */}
       <CounterProp id="till" position={[0.88, TOP_Y, 0.1]}>
-        <RoundedBox args={[0.6, 0.42, 0.46]} radius={0.04} smoothness={4} position={[0, 0.21, 0]}>
-          <meshPhysicalMaterial color="#b9bcc0" roughness={0.11} metalness={1} clearcoat={0.4} envMapIntensity={1.7} />
-        </RoundedBox>
-        <RoundedBox args={[0.44, 0.2, 0.1]} radius={0.025} smoothness={3} position={[0, 0.5, -0.1]}>
-          <meshStandardMaterial color={palette.ink700()} roughness={0.3} metalness={0.7} />
-        </RoundedBox>
-        {/* Amber digits in the window */}
-        <mesh position={[0, 0.5, -0.043]}>
-          <planeGeometry args={[0.3, 0.1]} />
-          <meshStandardMaterial
-            color={amber}
-            emissive={amber}
-            emissiveIntensity={1.7}
-            toneMapped={false}
-          />
-        </mesh>
-        {/* Paper waiting in the slot */}
-        <mesh position={[0, 0.425, 0.12]} rotation={[-Math.PI / 2.1, 0, 0]}>
-          <planeGeometry args={[0.3, 0.16]} />
-          <meshStandardMaterial color={palette.paper100()} roughness={0.9} side={2} />
-        </mesh>
-        <mesh position={[0, 0.06, 0.232]}>
-          <boxGeometry args={[0.5, 0.1, 0.02]} />
-          <meshStandardMaterial color={palette.ink600()} roughness={0.5} metalness={0.4} />
-        </mesh>
+        <Till />
       </CounterProp>
     </group>
   );

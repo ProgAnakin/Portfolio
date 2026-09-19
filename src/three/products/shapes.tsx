@@ -74,20 +74,20 @@ function Kiosk({ finish, color, label, sticker, accessory, lit }: ShapeProps) {
   return (
     <group>
       {/* Weighted base */}
-      <RoundedBox args={[0.42, 0.055, 0.3]} radius={0.022} smoothness={3} position={[0, 0.028, 0]}>
+      <RoundedBox args={[0.42, 0.055, 0.3]} radius={0.022} smoothness={2} position={[0, 0.028, 0]}>
         <ToyMaterial finish={finish} color={color} />
         <Ink weight="thin" />
       </RoundedBox>
       {/* Column */}
       <mesh position={[0, 0.17, -0.02]} rotation={[0.1, 0, 0]}>
-        <cylinderGeometry args={[0.04, 0.055, 0.26, 20]} />
+        <cylinderGeometry args={[0.04, 0.055, 0.26, 12]} />
         <ToyMaterial finish={finish} color={color} />
         <Ink weight="thin" />
       </mesh>
 
       {/* The tablet, tipped back. */}
       <group position={[0, 0.58, 0.02]} rotation={[-0.16, 0, 0]}>
-        <RoundedBox args={[0.5, 0.62, 0.075]} radius={0.028} smoothness={4}>
+        <RoundedBox args={[0.5, 0.62, 0.075]} radius={0.028} smoothness={2}>
           <ToyMaterial finish={finish} color={color} />
           <Ink />
         </RoundedBox>
@@ -101,7 +101,7 @@ function Kiosk({ finish, color, label, sticker, accessory, lit }: ShapeProps) {
 
         {/* The card being swiped off the deck. */}
         <group position={[0.2, -0.2, 0.075]} rotation={[0, 0.14, -0.4]}>
-          <RoundedBox args={[0.16, 0.21, 0.016]} radius={0.012} smoothness={3}>
+          <RoundedBox args={[0.16, 0.21, 0.016]} radius={0.012} smoothness={2}>
             <meshToonMaterial color="#ffffff" gradientMap={labelRamp()} />
             <Ink weight="thin" />
           </RoundedBox>
@@ -125,10 +125,11 @@ function BoxedSet({ finish, color, label, sticker, accessory }: ShapeProps) {
   return (
     <group>
       <group position={[0, 0.32, -0.05]} rotation={[-0.11, 0.18, 0]}>
-        <RoundedBox args={[0.5, 0.64, 0.24]} radius={0.016} smoothness={4}>
+        <mesh>
+          <boxGeometry args={[0.5, 0.64, 0.24]} />
           <ToyMaterial finish={finish} color={color} />
           <Ink />
-        </RoundedBox>
+        </mesh>
         {label && <PrintedFace label={label} position={[0, 0, 0.122]} size={[0.47, 0.61]} />}
         {sticker && <Sticker sticker={sticker} position={[0.13, -0.18, 0.128]} size={0.27} />}
         {/* Spine, so the box reads as a box from any angle. */}
@@ -141,7 +142,7 @@ function BoxedSet({ finish, color, label, sticker, accessory }: ShapeProps) {
       {/* The ball, out of the box — panelled and gripped, so it reads as a
           ball rather than as a dot someone forgot to print. */}
       <mesh position={[0.28, 0.1, 0.16]} rotation={[0.3, 0.6, 0.2]}>
-        <sphereGeometry args={[0.1, 28, 22]} />
+        <sphereGeometry args={[0.1, 20, 16]} />
         {accessory ? (
           <meshToonMaterial key={accessory.uuid} map={accessory} gradientMap={labelRamp()} />
         ) : (
@@ -168,25 +169,24 @@ function Crate({ finish, color, label, sticker }: ShapeProps) {
 
   return (
     <group rotation={[0, -0.12, 0]}>
-      <RoundedBox args={[0.52, 0.3, 0.38]} radius={0.012} smoothness={3} position={[0, 0.15, 0]}>
+      <mesh position={[0, 0.15, 0]}>
+        <boxGeometry args={[0.52, 0.3, 0.38]} />
         <ToyMaterial finish={finish} color={color} />
         <Ink />
-      </RoundedBox>
+      </mesh>
 
       {/* Short flaps, thrown open sideways — where there is room. The long
           pair is tucked down inside, which is where they'd be. */}
       {[-1, 1].map((side) => (
-        <RoundedBox
+        <mesh
           key={side}
-          args={[0.016, 0.17, 0.38]}
-          radius={0.006}
-          smoothness={2}
           position={[side * (0.26 + 0.085 * Math.sin(FLAP)), 0.3 + 0.085 * Math.cos(FLAP), 0]}
           rotation={[0, 0, -side * FLAP]}
         >
+          <boxGeometry args={[0.016, 0.17, 0.38]} />
           <ToyMaterial finish={finish} color={color} />
           <Ink weight="thin" />
-        </RoundedBox>
+        </mesh>
       ))}
 
       {/* Crinkled packing paper, so the box reads as full rather than as a
@@ -225,7 +225,7 @@ function Headset() {
     <group position={[0.02, 0.285, -0.02]} rotation={[0.12, 0.3, -0.08]}>
       {/* Headband, a half ring: the silhouette that says headset. */}
       <mesh>
-        <torusGeometry args={[0.085, 0.017, 10, 28, Math.PI]} />
+        <torusGeometry args={[0.085, 0.017, 6, 16, Math.PI]} />
         <meshToonMaterial color={band} gradientMap={setRamp()} />
         <Ink weight="thin" />
       </mesh>
@@ -233,12 +233,12 @@ function Headset() {
       {[-1, 1].map((side) => (
         <group key={side} position={[side * 0.085, 0, 0]}>
           <mesh rotation={[Math.PI / 2, 0, 0]}>
-            <cylinderGeometry args={[0.044, 0.048, 0.05, 20]} />
+            <cylinderGeometry args={[0.044, 0.048, 0.05, 12]} />
             <meshToonMaterial color={palette.ink700()} gradientMap={setRamp()} />
             <Ink weight="thin" />
           </mesh>
           <mesh position={[0, 0, 0.026]} rotation={[Math.PI / 2, 0, 0]}>
-            <cylinderGeometry args={[0.031, 0.031, 0.004, 18]} />
+            <cylinderGeometry args={[0.031, 0.031, 0.004, 10]} />
             <meshToonMaterial color={band} gradientMap={setRamp()} />
           </mesh>
         </group>
@@ -246,11 +246,11 @@ function Headset() {
 
       {/* Mic boom, with the live tip on the end. */}
       <mesh position={[0.11, -0.05, 0.05]} rotation={[0.7, 0, -0.9]}>
-        <cylinderGeometry args={[0.006, 0.006, 0.11, 8]} />
+        <cylinderGeometry args={[0.006, 0.006, 0.11, 6]} />
         <meshToonMaterial color={palette.ink800()} gradientMap={setRamp()} />
       </mesh>
       <mesh position={[0.145, -0.085, 0.085]}>
-        <sphereGeometry args={[0.014, 12, 10]} />
+        <sphereGeometry args={[0.014, 8, 6]} />
         <meshStandardMaterial
           color={palette.amber300()}
           emissive={palette.amber300()}
@@ -267,7 +267,7 @@ function Tin({ finish, color, label, sticker }: ShapeProps) {
   return (
     <group>
       <mesh position={[0, 0.25, 0]}>
-        <cylinderGeometry args={[0.2, 0.2, 0.5, 32]} />
+        <cylinderGeometry args={[0.2, 0.2, 0.5, 20]} />
         <ToyMaterial finish={finish} color={color} />
         <Ink />
       </mesh>
@@ -284,7 +284,7 @@ function Tin({ finish, color, label, sticker }: ShapeProps) {
 function Carton({ finish, color, label, sticker }: ShapeProps) {
   return (
     <group>
-      <RoundedBox args={[0.34, 0.5, 0.34]} radius={0.01} smoothness={3} position={[0, 0.25, 0]}>
+      <RoundedBox args={[0.34, 0.5, 0.34]} radius={0.01} smoothness={2} position={[0, 0.25, 0]}>
         <ToyMaterial finish={finish} color={color} />
         <Ink />
       </RoundedBox>

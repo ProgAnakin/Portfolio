@@ -14,7 +14,7 @@ const CORD = '#332b24';
 const GOLD = '#d7a54a';
 
 /** Links in the coil. Enough that the rings touch and read as one cord. */
-const LINKS = 40;
+const LINKS = 34;
 
 /** Where the handset rests, and where the cord disappears into the base. */
 const HANDSET_Y = 0.252;
@@ -113,7 +113,7 @@ function Cord({ handset }: { handset: React.RefObject<Group | null> }) {
 
   return (
     <instancedMesh ref={mesh} args={[undefined, undefined, LINKS]} frustumCulled={false}>
-      <torusGeometry args={[0.019, 0.0068, 6, 14]} />
+      <torusGeometry args={[0.019, 0.0072, 5, 10]} />
       <meshToonMaterial color={CORD} gradientMap={setRamp()} />
     </instancedMesh>
   );
@@ -148,17 +148,17 @@ function Dial() {
     <group>
       {/* Number plate: stays put while the finger wheel turns over it. */}
       <mesh position={[0, 0.004, 0]}>
-        <cylinderGeometry args={[0.108, 0.108, 0.014, 34]} />
+        <cylinderGeometry args={[0.108, 0.108, 0.014, 24]} />
         <meshToonMaterial color={SHELL_DARK} gradientMap={setRamp()} />
       </mesh>
 
       <group ref={wheel}>
         <mesh position={[0, 0.014, 0]}>
-          <cylinderGeometry args={[0.098, 0.098, 0.016, 34]} />
+          <cylinderGeometry args={[0.098, 0.098, 0.016, 24]} />
           <meshToonMaterial color={palette.ink800()} gradientMap={setRamp()} />
         </mesh>
         <mesh position={[0, 0.023, 0]} rotation={[Math.PI / 2, 0, 0]}>
-          <torusGeometry args={[0.08, 0.009, 8, 32]} />
+          <torusGeometry args={[0.08, 0.009, 5, 20]} />
           <meshToonMaterial color={GOLD} gradientMap={setRamp()} />
         </mesh>
         {/* Ten finger holes, opened through the wheel. */}
@@ -166,13 +166,13 @@ function Dial() {
           const a = (i / 10) * Math.PI * 1.7 - 0.36;
           return (
             <mesh key={i} position={[Math.cos(a) * 0.059, 0.026, Math.sin(a) * 0.059]}>
-              <cylinderGeometry args={[0.0155, 0.0155, 0.012, 12]} />
+              <cylinderGeometry args={[0.0155, 0.0155, 0.012, 8]} />
               <meshToonMaterial color={SHELL} gradientMap={setRamp()} />
             </mesh>
           );
         })}
         <mesh position={[0, 0.026, 0]}>
-          <cylinderGeometry args={[0.028, 0.028, 0.014, 20]} />
+          <cylinderGeometry args={[0.028, 0.028, 0.014, 12]} />
           <meshToonMaterial color={SHELL} gradientMap={setRamp()} />
         </mesh>
       </group>
@@ -212,10 +212,11 @@ export function Telephone() {
   return (
     <group>
       {/* Plinth, a shade darker, so the cream shell lands on something. */}
-      <RoundedBox args={[0.45, 0.036, 0.4]} radius={0.014} smoothness={3} position={[0, 0.018, -0.02]}>
+      <mesh position={[0, 0.018, -0.02]}>
+        <boxGeometry args={[0.45, 0.036, 0.4]} />
         <meshToonMaterial color={SHELL_DARK} gradientMap={setRamp()} />
         <Ink weight="thin" />
-      </RoundedBox>
+      </mesh>
 
       {/* The body is two parts, and that is the whole design: a block at the
           back to carry the cradle, and a deck raked up in front of it.
@@ -225,7 +226,7 @@ export function Telephone() {
       <RoundedBox
         args={[0.44, 0.17, 0.21]}
         radius={0.04}
-        smoothness={5}
+        smoothness={2}
         position={[0, 0.105, -0.115]}
         rotation={[-0.08, 0, 0]}
       >
@@ -234,7 +235,7 @@ export function Telephone() {
       </RoundedBox>
 
       <group position={[0, 0.098, 0.085]} rotation={[0.78, 0, 0]}>
-        <RoundedBox args={[0.43, 0.035, 0.29]} radius={0.016} smoothness={4}>
+        <RoundedBox args={[0.43, 0.035, 0.29]} radius={0.016} smoothness={2}>
           <meshToonMaterial color={SHELL} gradientMap={setRamp()} />
           <Ink weight="thin" />
         </RoundedBox>
@@ -246,28 +247,28 @@ export function Telephone() {
       {/* Cradle prongs */}
       {[-0.13, 0.13].map((x) => (
         <mesh key={x} position={[x, 0.2, -0.115]} rotation={[0.1, 0, 0]}>
-          <cylinderGeometry args={[0.028, 0.034, 0.06, 16]} />
+          <cylinderGeometry args={[0.028, 0.034, 0.06, 10]} />
           <meshToonMaterial color={SHELL_DARK} gradientMap={setRamp()} />
         </mesh>
       ))}
 
       {/* Handset: a tapered bar with the ear and mouth pieces turned in. */}
       <group ref={handset} position={[0, HANDSET_Y, -0.11]} rotation={[0, 0, 0.02]}>
-        <RoundedBox args={[0.29, 0.052, 0.058]} radius={0.024} smoothness={5}>
+        <RoundedBox args={[0.29, 0.052, 0.058]} radius={0.024} smoothness={2}>
           <meshToonMaterial color={SHELL} gradientMap={setRamp()} />
           <Ink weight="thin" />
         </RoundedBox>
         {[-1, 1].map((side) => (
           <group key={side} position={[side * 0.168, -0.014, 0.004]} rotation={[0, 0, side * 0.3]}>
             <mesh rotation={[Math.PI / 2, 0, 0]}>
-              <cylinderGeometry args={[0.058, 0.047, 0.058, 22]} />
+              <cylinderGeometry args={[0.058, 0.047, 0.058, 14]} />
               <meshToonMaterial color={SHELL} gradientMap={setRamp()} />
               <Ink weight="thin" />
             </mesh>
             {/* A moulded groove round the cup. Two dark discs here instead
                 read as a pair of eyes, which is not the object. */}
             <mesh rotation={[Math.PI / 2, 0, 0]}>
-              <torusGeometry args={[0.049, 0.005, 6, 22]} />
+              <torusGeometry args={[0.049, 0.005, 4, 14]} />
               <meshToonMaterial color={SHELL_DARK} gradientMap={setRamp()} />
             </mesh>
           </group>

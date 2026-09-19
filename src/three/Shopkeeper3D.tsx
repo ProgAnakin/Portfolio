@@ -73,7 +73,7 @@ export function Shopkeeper3D({
   return (
     <group ref={body} position={position} scale={scale}>
       {/* Shoulders */}
-      <RoundedBox args={[0.62, 0.52, 0.36]} radius={0.16} smoothness={4} position={[0, 0.26, 0]}>
+      <RoundedBox args={[0.62, 0.52, 0.36]} radius={0.16} smoothness={3} position={[0, 0.26, 0]}>
         <meshToonMaterial color={shirt} gradientMap={setRamp()} />
         <Ink weight="heavy" />
       </RoundedBox>
@@ -81,12 +81,12 @@ export function Shopkeeper3D({
       <group ref={head} position={[0, 0.62, 0]}>
         {/* Neck */}
         <mesh position={[0, -0.13, 0]}>
-          <cylinderGeometry args={[0.08, 0.095, 0.14, 16]} />
+          <cylinderGeometry args={[0.08, 0.095, 0.14, 12]} />
           <meshToonMaterial color={skin} gradientMap={skinRamp()} />
         </mesh>
         {/* Head */}
         <mesh>
-          <sphereGeometry args={[0.2, 30, 26]} />
+          <sphereGeometry args={[0.2, 20, 16]} />
           <meshToonMaterial color={skin} gradientMap={skinRamp()} />
           <Ink weight="heavy" />
         </mesh>
@@ -94,7 +94,7 @@ export function Shopkeeper3D({
             each curl is what turns a cluster into a visible bag of spheres. */}
         {CURLS.map(([x, y, z, r], i) => (
           <mesh key={i} position={[x, y, z]}>
-            <sphereGeometry args={[r, 16, 14]} />
+            <sphereGeometry args={[r, 12, 10]} />
             <meshToonMaterial color={shirt} gradientMap={setRamp()} />
           </mesh>
         ))}

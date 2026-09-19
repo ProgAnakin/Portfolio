@@ -1,15 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { AdditiveBlending, CanvasTexture, SRGBColorSpace, type Texture } from 'three';
-import { palette } from './tokens';
 
 /**
  * The back wall: glazed tile, lit by the room.
  *
  * The shop used to have its own name painted across here, which made the one
  * surface with nothing on it compete with the three things that matter. This
- * says nothing and does more work: petrol-blue tile is a cold ground for a
- * warm room, so the amber strips finally have something to be warm *against*,
+ * says nothing and does more work: pale grey tile is a cold, bright ground for
+ * a warm room, so the amber strips finally have something to be warm
+ * *against*, the oak fixture reads as a dark shape cut out of a light wall,
  * and the glaze picks up the pendant as a pool of light instead of a flat
  * shade of brown.
  *
@@ -17,8 +17,18 @@ import { palette } from './tokens';
  * the spill under the pendant and the cold wash from the street.
  */
 
-/** The darkest the room gets: grout, and the fog at the far end of it. */
-export const WALL_DEEP = '#08202b';
+/** Grout, and the fog at the far end of the room. */
+export const WALL_DEEP = '#4a5055';
+
+/**
+ * The tube colour.
+ *
+ * White on pale grey has almost no hue to work with, so what makes it read is
+ * value and bloom rather than colour: a tube that clips past white, a wider
+ * halo than a coloured one would need, and a vignette that keeps the top of
+ * the wall darker than the line crossing it.
+ */
+const NEON = '#f4f8ff';
 
 const COL = 34;
 const ROW = 22;
@@ -55,23 +65,25 @@ async function paintTiles(width: number, height: number): Promise<Texture | null
       const n = jitter(col, row);
       const m = jitter(row, col);
 
-      // Glaze is never even. Lightness and hue both drift a little per tile.
-      const light = 17 + n * 8;
-      const hue = 193 + (m - 0.5) * 9;
-      ctx.fillStyle = `hsl(${hue} 56% ${light}%)`;
+      // Glaze is never even. Lightness and hue both drift a little per tile —
+      // barely any hue here, because the wall's job is to be a neutral the
+      // amber can sit against.
+      const light = 61 + n * 9;
+      const hue = 204 + (m - 0.5) * 16;
+      ctx.fillStyle = `hsl(${hue} 7% ${light}%)`;
       ctx.fillRect(x + GROUT / 2, y + GROUT / 2, tw - GROUT, th - GROUT);
 
       // The fired highlight, top-left, where the light would catch it.
       const glaze = ctx.createLinearGradient(x, y, x + tw * 0.8, y + th);
-      glaze.addColorStop(0, `rgba(196, 236, 248, ${0.07 + n * 0.07})`);
-      glaze.addColorStop(0.55, 'rgba(196, 236, 248, 0)');
+      glaze.addColorStop(0, `rgba(255, 255, 255, ${0.1 + n * 0.1})`);
+      glaze.addColorStop(0.55, 'rgba(255, 255, 255, 0)');
       ctx.fillStyle = glaze;
       ctx.fillRect(x + GROUT / 2, y + GROUT / 2, tw - GROUT, th - GROUT);
 
       // One tile in twelve is a duller firing. Hand-glazed tile is not a grid
       // of identical squares, and the eye notices when it is.
       if (m > 0.84) {
-        ctx.fillStyle = `rgba(6, 22, 29, ${0.24 + n * 0.2})`;
+        ctx.fillStyle = `rgba(44, 50, 55, ${0.16 + n * 0.14})`;
         ctx.fillRect(x + GROUT / 2, y + GROUT / 2, tw - GROUT, th - GROUT);
       }
     }
@@ -82,7 +94,7 @@ async function paintTiles(width: number, height: number): Promise<Texture | null
     width * 0.59, height * 0.42, 10,
     width * 0.59, height * 0.42, width * 0.28,
   );
-  pool.addColorStop(0, 'rgba(242, 192, 120, 0.16)');
+  pool.addColorStop(0, 'rgba(242, 192, 120, 0.2)');
   pool.addColorStop(1, 'rgba(242, 192, 120, 0)');
   ctx.fillStyle = pool;
   ctx.fillRect(0, 0, width, height);
@@ -92,18 +104,19 @@ async function paintTiles(width: number, height: number): Promise<Texture | null
     -width * 0.05, height * 0.2, 10,
     -width * 0.05, height * 0.2, width * 0.42,
   );
-  street.addColorStop(0, 'rgba(126, 196, 226, 0.3)');
+  street.addColorStop(0, 'rgba(176, 214, 236, 0.22)');
   street.addColorStop(1, 'rgba(120, 178, 208, 0)');
   ctx.fillStyle = street;
   ctx.fillRect(0, 0, width, height);
 
   // Corners down, so the room ends rather than stopping.
   const vignette = ctx.createRadialGradient(
-    width / 2, height * 0.5, height * 0.14,
-    width / 2, height * 0.5, width * 0.56,
+    width / 2, height * 0.56, height * 0.16,
+    width / 2, height * 0.56, width * 0.66,
   );
-  vignette.addColorStop(0, 'rgba(4, 14, 19, 0)');
-  vignette.addColorStop(1, 'rgba(4, 14, 19, 0.92)');
+  vignette.addColorStop(0, 'rgba(18, 22, 26, 0)');
+  vignette.addColorStop(0.62, 'rgba(18, 22, 26, 0.2)');
+  vignette.addColorStop(1, 'rgba(18, 22, 26, 0.72)');
   ctx.fillStyle = vignette;
   ctx.fillRect(0, 0, width, height);
 
@@ -144,18 +157,18 @@ function Neon({
     const t = clock.elapsedTime;
     if (t > flickerAt.current) flickerAt.current = t + 5 + Math.random() * 11;
     const stutter = flickerAt.current - t < 0.16 ? 0.55 : 1;
-    glass.current.material.opacity = (0.3 + Math.sin(t * 1.4) * 0.025) * stutter;
+    glass.current.material.opacity = (0.42 + Math.sin(t * 1.4) * 0.03) * stutter;
   });
 
   const geometry = arc ? (
-    <torusGeometry args={[length, 0.026, 10, 90, arc]} />
+    <torusGeometry args={[length, 0.026, 5, 26, arc]} />
   ) : (
-    <cylinderGeometry args={[0.026, 0.026, length, 12]} />
+    <cylinderGeometry args={[0.026, 0.026, length, 6]} />
   );
   const halo = arc ? (
-    <torusGeometry args={[length, 0.1, 10, 60, arc]} />
+    <torusGeometry args={[length, 0.1, 5, 20, arc]} />
   ) : (
-    <cylinderGeometry args={[0.1, 0.1, length, 12]} />
+    <cylinderGeometry args={[0.1, 0.1, length, 6]} />
   );
 
   return (
@@ -169,7 +182,7 @@ function Neon({
         <meshBasicMaterial
           color={color}
           transparent
-          opacity={0.3}
+          opacity={0.4}
           depthWrite={false}
           blending={AdditiveBlending}
           toneMapped={false}
@@ -181,7 +194,7 @@ function Neon({
 
 export function BackWall() {
   const [texture, setTexture] = useState<Texture | null>(null);
-  const accent = useMemo(() => palette.accent(), []);
+  const neon = useMemo(() => NEON, []);
 
   useEffect(() => {
     let alive = true;
@@ -217,24 +230,30 @@ export function BackWall() {
             key={texture.uuid}
             map={texture}
             emissiveMap={texture}
-            emissive="#ffffff"
-            emissiveIntensity={0.34}
-            roughness={0.5}
-            metalness={0.05}
-            envMapIntensity={0.45}
+            // A cool white, not plain white: everything lighting this room is
+            // amber, and a pale wall takes a warm cast far more readily than a
+            // dark one did. Letting the tile put back a little of its own
+            // value in a cold key is what keeps the grey grey.
+            emissive="#cfd9e0"
+            emissiveIntensity={0.2}
+            roughness={0.52}
+            metalness={0.04}
+            envMapIntensity={0.22}
           />
         ) : (
-          <meshStandardMaterial key="unglazed" color="#0d2b38" roughness={0.6} />
+          <meshStandardMaterial key="unglazed" color="#9aa1a6" roughness={0.6} />
         )}
       </mesh>
 
-      <NeonRun color={accent} />
+      <NeonRun color={neon} />
 
-      {/* What the tubes actually do to the room. Short reach, so the neon
+      {/* What the tube actually does to the room. Short reach, so the neon
           colours the wall and the top of the fixture without reaching the
-          stock, which has its own light. */}
-      <pointLight position={[-4.6, 2.2, -1.2]} intensity={8} distance={5.6} decay={2} color={accent} />
-      <pointLight position={[0.6, 3.5, -1.1]} intensity={5} distance={4.8} decay={2} color={accent} />
+          stock, which has its own light. One lamp on the corner where the run
+          turns: that is where the light would pool, and a second one along the
+          straight was paying for itself in every lit pixel to say the same
+          thing twice. */}
+      <pointLight position={[-4.2, 3.0, -1.2]} intensity={5.5} distance={6} decay={2} color={neon} />
     </group>
   );
 }

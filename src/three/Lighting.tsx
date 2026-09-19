@@ -1,5 +1,9 @@
+import { useRef } from 'react';
+import { useFrame } from '@react-three/fiber';
 import { Environment, Lightformer } from '@react-three/drei';
+import { SpotLight as SpotLightImpl } from 'three';
 import { palette } from './tokens';
+import { pendulum, PENDANT_DROP } from './pendulum';
 
 /**
  * The shop lights itself.
@@ -14,6 +18,18 @@ import { palette } from './tokens';
 export function Lighting({ shelfY, shelfX }: { shelfY: number[]; shelfX: number }) {
   const amber = palette.amber300();
   const warm = palette.amber400();
+  const pendant = useRef<SpotLightImpl>(null);
+
+  // The pendant's light goes where the pendant goes. Geometry that swings over
+  // a pool of light nailed to the counter is the tell that gives a room away.
+  useFrame(() => {
+    if (!pendant.current) return;
+    pendant.current.position.set(
+      1.7 + Math.sin(pendulum.tiltZ) * PENDANT_DROP,
+      2.5 - (1 - Math.cos(pendulum.tiltZ)) * PENDANT_DROP * 0.5,
+      1.7 - Math.sin(pendulum.tiltX) * PENDANT_DROP,
+    );
+  });
 
   return (
     <>
@@ -35,6 +51,7 @@ export function Lighting({ shelfY, shelfX }: { shelfY: number[]; shelfX: number 
 
       {/* The pendant over the counter, off to the right. */}
       <spotLight
+        ref={pendant}
         position={[1.7, 2.5, 1.7]}
         angle={0.62}
         penumbra={0.85}
@@ -52,10 +69,15 @@ export function Lighting({ shelfY, shelfX }: { shelfY: number[]; shelfX: number 
           silhouette. Kept cool so it never competes with the practicals. */}
       <pointLight position={[1.4, 2.4, 5.2]} intensity={5} distance={14} decay={1.9} color="#9fb3c2" />
       <pointLight position={[-2.6, 2.2, 4.4]} intensity={3.4} distance={12} decay={1.9} color="#8aa0b0" />
-      <pointLight position={[2.2, 2.15, 1.25]} intensity={2.3} distance={4.2} decay={2} color={palette.amber200()} />
-      {/* A soft key on the person behind the counter. Without it the only
-          face in the room is a silhouette, which is the opposite of the job. */}
-      <pointLight position={[2.7, 2.05, 2.1]} intensity={7} distance={4.6} decay={2} color={palette.amber200()} />
+      {/* A soft key on the person behind the counter, and on the props in
+          front of them. Without it the only face in the room is a silhouette,
+          which is the opposite of the job.
+
+          This used to be two lamps a few centimetres apart doing almost the
+          same thing. Every light in a scene is arithmetic in every lit pixel
+          of it, so two that overlap are worth merging even when neither is
+          expensive on its own. */}
+      <pointLight position={[2.6, 2.05, 2.15]} intensity={8.4} distance={4.8} decay={2} color={palette.amber200()} />
 
       <Environment resolution={128}>
         {shelfY.map((y, i) => (

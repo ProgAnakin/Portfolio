@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { PerformanceMonitor } from '@react-three/drei';
 import { ACESFilmicToneMapping } from 'three';
 import { projects } from '../data/projects';
 import { Lighting } from './Lighting';
@@ -61,6 +62,26 @@ function CameraRig({ enabled }: { enabled: boolean }) {
 export default function ShopCanvas({ tier }: { tier: SceneTier }) {
   const [awake, setAwake] = useState(true);
 
+  /**
+   * Resolution follows the machine, measured rather than guessed.
+   *
+   * A fixed device pixel ratio is a bet that every visitor's GPU is the one it
+   * was tuned on. On a 4K laptop running on battery, 1.75 is four times the
+   * pixels of 0.875, and the room stops feeling like a room the moment it
+   * drops frames. `PerformanceMonitor` watches the real frame rate and hands
+   * back a factor; the scene spends it on resolution, which is the one setting
+   * that can be given up smoothly. `onFallback` fires if it keeps oscillating,
+   * and pins the floor rather than pumping between two values.
+   */
+  const ceiling = tier === 'full' ? 1.75 : 1.25;
+  const [dpr, setDpr] = useState(Math.min(1.25, ceiling));
+  const onPerformance = useCallback(
+    ({ factor }: { factor: number }) => {
+      setDpr(Math.round((0.85 + (ceiling - 0.85) * factor) * 20) / 20);
+    },
+    [ceiling],
+  );
+
   // Stop rendering when the tab is in the background. A shop nobody is
   // looking at does not need to draw itself sixty times a second.
   useEffect(() => {
@@ -73,20 +94,34 @@ export default function ShopCanvas({ tier }: { tier: SceneTier }) {
     <Canvas
       aria-hidden="true"
       frameloop={awake ? 'always' : 'never'}
-      dpr={tier === 'full' ? [1, 1.75] : [1, 1.25]}
+      dpr={dpr}
       // Transparent, so the oversized type sitting behind the canvas shows
       // through everywhere the room is empty — and is cropped by the shelves.
       gl={{ antialias: tier === 'full', alpha: true, powerPreference: 'high-performance' }}
       camera={{ position: [0.3, 1.72, 6.9], fov: 40 }}
-      onCreated={({ gl }) => {
+      onCreated={({ gl, scene, camera }) => {
         gl.toneMapping = ACESFilmicToneMapping;
         gl.toneMappingExposure = 1.06;
+        // A way to ask the running scene what it costs. Stripped from the
+        // production bundle, and the only way to answer "which object is the
+        // expensive one" without guessing from the source.
+        if (import.meta.env.DEV) {
+          (window as unknown as Record<string, unknown>).__shop = { gl, scene, camera };
+        }
       }}
       style={{ position: 'absolute', inset: 0 }}
     >
       {/* Petrol, not soot: distance should read as the far end of a tiled
           room, not as the drawing running out. */}
       <fog attach="fog" args={[WALL_DEEP, 9, 21]} />
+
+      <PerformanceMonitor
+        bounds={() => [48, 58]}
+        flipflops={3}
+        factor={1}
+        onChange={onPerformance}
+        onFallback={() => setDpr(0.85)}
+      />
 
       <CameraRig enabled={tier === 'full'} />
       <Lighting shelfY={SHELF_Y} shelfX={SHELF_X} />
