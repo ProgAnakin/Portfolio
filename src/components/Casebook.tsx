@@ -2,6 +2,7 @@ import { contacts, profile } from '../data/profile';
 import { projects, shelfSummary } from '../data/projects';
 import { mediaFor } from '../data/media';
 import { ProjectDetail } from './ProjectDetail';
+import { ProjectMedia } from './ProjectMedia';
 
 /**
  * The same shelf, laid out flat.
@@ -67,59 +68,7 @@ export function Casebook({ onPrintReceipt }: { onPrintReceipt: () => void }) {
               <li key={project.id} id={`case-${project.id}`} className="scroll-mt-6">
                 <article className="bg-ink-700 border-ink-500 overflow-hidden border shadow-[0_18px_50px_rgba(6,5,4,0.5)]">
                   <ProjectDetail project={project} as="h3">
-                    {media.length > 0 && (
-                      <ul className="border-ink-500 flex snap-x snap-mandatory gap-3 overflow-x-auto border-b p-3">
-                        {media.map((item) => (
-                          <li
-                            key={item.src}
-                            className={
-                              // One shot fills the card. Two or more become a
-                              // strip you swipe, and the part-visible next one
-                              // is what says there is a next one.
-                              media.length === 1
-                                ? 'w-full shrink-0'
-                                : 'w-[min(36rem,86%)] shrink-0 snap-start sm:w-[min(36rem,70%)]'
-                            }
-                          >
-                            <figure className="h-full">
-                              <div className="bg-ink-900 border-ink-500/70 overflow-hidden border">
-                                {item.kind === 'video' ? (
-                                  <video
-                                    // `#t=0.1` makes a browser paint the first
-                                    // frame instead of a black rectangle, with
-                                    // no autoplay and no download until asked.
-                                    src={`${item.src}#t=0.1`}
-                                    controls
-                                    loop
-                                    muted
-                                    playsInline
-                                    preload="metadata"
-                                    className="block aspect-[16/10] w-full object-contain"
-                                  />
-                                ) : (
-                                  <img
-                                    src={item.src}
-                                    alt={
-                                      item.caption
-                                        ? `${project.name} — ${item.caption}`
-                                        : `${project.name} screenshot`
-                                    }
-                                    loading="lazy"
-                                    decoding="async"
-                                    className="block aspect-[16/10] w-full object-contain"
-                                  />
-                                )}
-                              </div>
-                              {item.caption && (
-                                <figcaption className="font-till text-paper-500 mt-2 px-0.5 text-[0.56rem] tracking-[0.14em] uppercase">
-                                  {item.caption}
-                                </figcaption>
-                              )}
-                            </figure>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
+                    {media.length > 0 && <ProjectMedia project={project} media={media} />}
                   </ProjectDetail>
                 </article>
               </li>
