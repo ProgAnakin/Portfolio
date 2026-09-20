@@ -1,8 +1,11 @@
 name: Deploy to GitHub Pages
 
+# Every push, filtered to the default branch by the job below rather than by
+# name. This workflow spent its whole life listening for pushes to `main` in a
+# repository that has no `main`: zero runs, and nothing to show it. Asking the
+# event what the default branch *is* survives the rename to `main` as well.
 on:
   push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -17,6 +20,7 @@ concurrency:
 
 jobs:
   build:
+    if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
