@@ -72,8 +72,12 @@ export const profile = {
     markets: ['Portugal', 'Italy', 'Remote (EU)'],
   } satisfies OpenTo,
 
-  /** Empty on purpose. See `Proof` — these have to be your real numbers. */
-  proof: [] as Proof[],
+  /** Costanzo's own figures. Anything added here has to survive being asked about. */
+  proof: [
+    { value: '5', label: 'clubs onboarded' },
+    { value: '3', label: 'analysts onboarded' },
+    { value: '3', label: 'products built' },
+  ] as Proof[],
 };
 
 export const contacts: ContactLink[] = [
