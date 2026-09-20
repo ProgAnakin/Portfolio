@@ -87,9 +87,11 @@ export const contacts: ContactLink[] = [
   {
     id: 'linkedin',
     label: 'LinkedIn',
-    value: '/in/costanzo-annichini',
-    // TODO(costanzo): confirm the exact LinkedIn vanity URL.
-    href: 'https://www.linkedin.com/in/costanzo-annichini',
+    value: '/in/costanzoannichini',
+    // `www`, not the `it.` subdomain the profile is usually copied from:
+    // `www` hands each visitor LinkedIn in their own language, and half the
+    // people this page is aimed at are reading it in Portuguese.
+    href: 'https://www.linkedin.com/in/costanzoannichini',
   },
   {
     id: 'github',
