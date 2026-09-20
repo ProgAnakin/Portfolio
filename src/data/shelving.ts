@@ -13,6 +13,13 @@ import { projects } from './projects';
  * order in `projects`, the gondola widens when a row fills up, and the
  * backstock fills whatever is left. Adding a project is adding one object.
  *
+ * It is *reading order*, not category. Grouping each kind of project onto its
+ * own shelf was tried and does not fit: a kiosk stands 1.26 high and the clear
+ * air under a plank is 0.79, so the tall shapes can only ever stand on the top
+ * shelf — and the tall shapes belong to different categories. The room says
+ * what it can with furniture; the categories are said in words, on the shelf
+ * talker, the price tag, the product sheet and the store directory.
+ *
  * This lives in the data layer rather than in `three/` because the drawn shop,
  * the store directory and the 3D room all need the same answer, and only one
  * of them is allowed to know what a metre is.

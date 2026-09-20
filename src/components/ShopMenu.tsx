@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { projects, statusLabel } from '../data/projects';
+import { projects, statusLabel, type ProjectNature } from '../data/projects';
 import { useShop } from '../state/ShopContext';
 import { slotFor } from '../data/shelving';
 
@@ -26,8 +26,24 @@ interface Row {
   aisle: string;
   label: string;
   note: string;
+  /** Printed above this row, with a rule, when it opens a new group. */
+  section?: string;
   onPick: () => void;
 }
+
+/**
+ * What each group of shelves is called, singular or plural as it lands.
+ *
+ * A directory that lists a co-founded company and two unpaid builds as one
+ * undifferentiated column is the thing this card exists to stop. The headings
+ * come out of the data, so a fourth project files itself.
+ */
+function sectionName(nature: ProjectNature, count: number): string {
+  if (nature === 'venture') return count === 1 ? 'OWN VENTURE' : 'OWN VENTURES';
+  return count === 1 ? 'PORTFOLIO BUILD' : 'PORTFOLIO BUILDS';
+}
+
+const GROUPS: ProjectNature[] = ['venture', 'portfolio'];
 
 /**
  * The store directory, on a tag by the door.
@@ -75,18 +91,23 @@ export function ShopMenu({ onPrintReceipt }: { onPrintReceipt: () => void }) {
   };
 
   const rows: Row[] = [
-    ...projects.map((project) => ({
-      key: project.id,
-      aisle: `A${slotFor(project.id).shelf + 1}`,
-      label: project.name,
-      note: statusLabel[project.status],
-      onPick: pick(() => openProject(project.id)),
-    })),
+    ...GROUPS.flatMap((nature) => {
+      const inGroup = projects.filter((project) => project.nature === nature);
+      return inGroup.map((project, index) => ({
+        key: project.id,
+        aisle: `A${slotFor(project.id).shelf + 1}`,
+        label: project.name,
+        note: statusLabel[project.status],
+        section: index === 0 ? sectionName(nature, inGroup.length) : undefined,
+        onPick: pick(() => openProject(project.id)),
+      }));
+    }),
     {
       key: 'about',
       aisle: '—',
       label: 'About',
       note: "TODAY'S MENU",
+      section: 'THE REST OF THE SHOP',
       onPick: pick(() => goTo('about')),
     },
     {
@@ -163,8 +184,18 @@ export function ShopMenu({ onPrintReceipt }: { onPrintReceipt: () => void }) {
                     animate={prefersReduced ? undefined : { opacity: 1, y: 0 }}
                     transition={{ delay: prefersReduced ? 0 : 0.14 + index * 0.055 }}
                   >
-                    {index === projects.length && (
-                      <div aria-hidden="true" className="border-ink-900/35 my-2 border-t border-dashed" />
+                    {row.section && (
+                      <>
+                        {index > 0 && (
+                          <div
+                            aria-hidden="true"
+                            className="border-ink-900/35 my-2 border-t border-dashed"
+                          />
+                        )}
+                        <p className="px-1 pt-0.5 pb-1 text-[0.5rem] font-bold tracking-[0.2em] opacity-45">
+                          {row.section}
+                        </p>
+                      </>
                     )}
                     <button
                       type="button"
@@ -190,7 +221,7 @@ export function ShopMenu({ onPrintReceipt }: { onPrintReceipt: () => void }) {
               </ul>
 
               <p className="mt-2 text-center text-[0.5rem] tracking-[0.16em] opacity-45 uppercase">
-                Annichini &amp; Co. · open late
+                Aisle numbers are the real shelves
               </p>
             </motion.div>
 

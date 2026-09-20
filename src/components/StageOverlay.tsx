@@ -1,5 +1,6 @@
 import { motion, useTransform } from 'framer-motion';
 import { contacts, menu, profile } from '../data/profile';
+import { shelfSummary } from '../data/projects';
 import { usePointerParallax } from '../hooks/usePointerParallax';
 
 /**
@@ -52,23 +53,14 @@ export function StageOverlay() {
         <p className="text-paper-300 pointer-events-auto max-w-[38ch] text-[clamp(0.85rem,1.05vw,1rem)] leading-relaxed [@media(max-height:640px)]:max-w-[44ch] [@media(max-height:640px)]:text-[0.78rem]">
           {profile.standfirst}
         </p>
-        {/* Figures first, when there are any. Nothing renders while `proof`
-            is empty, which is how it ships — see `data/profile`. */}
-        {profile.proof.length > 0 && (
-          <dl className="mt-3.5 flex flex-wrap gap-x-6 gap-y-2">
-            {profile.proof.map((item) => (
-              <div key={item.label}>
-                <dt className="sr-only">{item.label}</dt>
-                <dd className="text-amber-300 text-[1.35rem] leading-none font-semibold">
-                  {item.value}
-                </dd>
-                <dd className="font-till text-paper-500 mt-1 text-[0.5rem] tracking-[0.16em] uppercase">
-                  {item.label}
-                </dd>
-              </div>
-            ))}
-          </dl>
-        )}
+        {/* What is on the shelves, counted from the shelves. This replaced a
+            row of totals: figures now sit on the project that earned them,
+            because summing a co-founded company and two unpaid builds into one
+            number is the single reading of this room that is not true. See
+            `ProjectMetric` in `data/projects`. */}
+        <p className="text-paper-500 pointer-events-auto mt-2 text-[clamp(0.76rem,0.9vw,0.86rem)] leading-relaxed [@media(max-height:640px)]:text-[0.7rem]">
+          {shelfSummary()}
+        </p>
 
         <p className="font-till text-paper-500 pointer-events-auto mt-3 text-[0.58rem] leading-relaxed tracking-[0.14em] uppercase [@media(max-height:560px)]:hidden">
           <span className="text-paper-300">Open to</span> {profile.openTo.roles.join(' · ')}

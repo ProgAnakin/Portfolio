@@ -192,3 +192,23 @@ export function productLimits(project: Project): DragLimits {
     side,
   };
 }
+
+// The layout puts products where reading order says, and reading order knows
+// nothing about height. A kiosk stands 1.26 high; the clear air under a plank
+// is 0.79. Land a tall shape on a lower shelf and it is simply drawn through
+// the plank above it — no error, no clue, just a picture that is wrong. Say it
+// out loud in development, where there is someone to hear it.
+if (import.meta.env.DEV) {
+  for (const project of projects) {
+    const gap = shelfGap(slotFor(project.id).shelf);
+    if (gap === null) continue;
+    const height = shapeHeight[project.shape] * PRODUCT_SCALE;
+    if (height > gap) {
+      console.warn(
+        `[shop] ${project.name} is a ${project.shape}, ${height.toFixed(2)} tall, on a shelf ` +
+          `with ${gap.toFixed(2)} of clearance — it will be drawn through the plank above. ` +
+          'Move it earlier in `projects` so it lands on the top shelf, or give it a shorter shape.',
+      );
+    }
+  }
+}

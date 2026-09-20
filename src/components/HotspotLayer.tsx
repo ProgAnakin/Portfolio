@@ -73,8 +73,41 @@ function HotspotButton({ spot }: { spot: Hotspot }) {
   const popover = useRef<HTMLDivElement>(null);
   const moved = useRef(false);
 
+  /**
+   * Show the card, and put it somewhere it can actually be read.
+   *
+   * It opens above the control, which is right for something standing on a
+   * counter. For a product on the top shelf it is not: the control is already
+   * near the top of the window and the card opens off the top edge of it —
+   * which is how the shelf talker came to be a card with no heading. So it is
+   * measured once on open and flipped below when there is no room above, and
+   * nudged sideways when it would run off either edge.
+   */
   const showPopover = (show: boolean) => {
-    if (popover.current) popover.current.style.display = show ? 'block' : 'none';
+    const el = popover.current;
+    if (!el) return;
+
+    el.style.display = show ? 'block' : 'none';
+    if (!show) return;
+
+    // Back to the default placement first, or the previous nudge is measured
+    // as if it were where the card naturally wants to sit.
+    el.style.top = '';
+    el.style.bottom = '';
+    el.style.marginLeft = '';
+
+    const EDGE = 10;
+    const above = el.getBoundingClientRect();
+    if (above.top < EDGE) {
+      el.style.bottom = 'auto';
+      el.style.top = '115%';
+    }
+
+    const box = el.getBoundingClientRect();
+    const overflowLeft = EDGE - box.left;
+    const overflowRight = box.right - (window.innerWidth - EDGE);
+    if (overflowLeft > 0) el.style.marginLeft = `${Math.round(overflowLeft)}px`;
+    else if (overflowRight > 0) el.style.marginLeft = `${-Math.round(overflowRight)}px`;
   };
 
   return (

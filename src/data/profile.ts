@@ -12,24 +12,18 @@ export interface ContactLink {
 }
 
 /**
- * A number a recruiter can act on.
+ * Figures used to live here, as a row under the headline. They don't any more.
  *
- * This array ships **empty**, and everything that renders it renders nothing
- * while it is. That is deliberate and it is the one thing on this site that
- * cannot be designed around: a sales portfolio without figures is a design
- * portfolio, and a sales portfolio with figures somebody else made up is a
- * liability in the first interview that asks about them.
+ * A site-wide stat band is a sum over the shelf, and the shelf is not a
+ * homogeneous thing: most of what is on it was built unpaid. Totalling it
+ * implies a commercial record that isn't there, and it goes stale the moment a
+ * fourth project lands. Numbers now belong to the project that earned them —
+ * see `ProjectMetric` in `data/projects`.
  *
- * Fill it with numbers you can defend out loud, from your own records — quota
- * attainment, units or revenue, accounts opened, clubs onboarded, retention.
- * Three is plenty. Four is showing off.
- *
- *   { value: '112%', label: 'of target, FY25' }
+ * If a personal career figure ever belongs up front — quota attainment from
+ * the shop floor, say — it comes back here deliberately, on its own terms,
+ * and not as an average of three unrelated things.
  */
-export interface Proof {
-  value: string;
-  label: string;
-}
 
 /** What you want next, said plainly, where it is read first. */
 export interface OpenTo {
@@ -72,12 +66,6 @@ export const profile = {
     markets: ['Portugal', 'Italy', 'Remote (EU)'],
   } satisfies OpenTo,
 
-  /** Costanzo's own figures. Anything added here has to survive being asked about. */
-  proof: [
-    { value: '5', label: 'clubs onboarded' },
-    { value: '3', label: 'analysts onboarded' },
-    { value: '3', label: 'products built' },
-  ] as Proof[],
 };
 
 export const contacts: ContactLink[] = [

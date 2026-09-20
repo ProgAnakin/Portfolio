@@ -1,4 +1,4 @@
-import type { Project, ProjectStatus } from '../../data/projects';
+import { natureShort, type Project, type ProjectStatus } from '../../data/projects';
 
 /**
  * The card clipped to the shelf edge under a product.
@@ -32,6 +32,13 @@ export function PriceTag({ project }: { project: Project }) {
         {soldOut ? 'OUT OF STOCK' : project.tag.kind}
       </span>
       <span className="opacity-70">{project.tag.year}</span>
+      {/* Whether this is a company or something built for free. On the tag
+          rather than on the shelf edge because the shelf holds whatever fits,
+          not whatever matches — see `data/shelving`. */}
+      <span aria-hidden="true" className="mt-1 mb-0.5 h-px w-full bg-current opacity-25" />
+      <span className="text-[0.44rem] tracking-[0.14em] opacity-60 sm:text-[0.48rem]">
+        {natureShort[project.nature]}
+      </span>
     </span>
   );
 }

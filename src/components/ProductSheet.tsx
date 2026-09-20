@@ -1,7 +1,7 @@
 import { motion, useReducedMotion } from 'framer-motion';
 import { Modal } from './Modal';
 import { BrandMark } from './BrandMark';
-import { statusLabel, type Project } from '../data/projects';
+import { natureLabel, natureNote, statusLabel, type Project } from '../data/projects';
 
 const STATUS_NOTE: Record<Project['status'], string> = {
   'in-stock': 'Shipped and running',
@@ -45,16 +45,26 @@ export function ProductSheet({ project, onClose }: { project: Project; onClose: 
             </span>
 
             <div className="min-w-0 pt-0.5">
-              <p
-                className="font-till inline-flex items-center gap-1.5 px-2 py-1 text-[0.56rem] tracking-[0.18em] uppercase"
-                style={{
-                  backgroundColor: soldOut ? brand.paper : brand.accent,
-                  color: brand.ink,
-                }}
-              >
-                <span aria-hidden="true">{soldOut ? '◷' : '●'}</span>
-                {statusLabel[project.status]}
-              </p>
+              <div className="flex flex-wrap items-center gap-1.5">
+                <p
+                  className="font-till inline-flex items-center gap-1.5 px-2 py-1 text-[0.56rem] tracking-[0.18em] uppercase"
+                  style={{
+                    backgroundColor: soldOut ? brand.paper : brand.accent,
+                    color: brand.ink,
+                  }}
+                >
+                  <span aria-hidden="true">{soldOut ? '◷' : '●'}</span>
+                  {statusLabel[project.status]}
+                </p>
+                {/* Second chip, outlined rather than filled: it qualifies the
+                    first one instead of competing with it. */}
+                <p
+                  className="font-till inline-flex items-center px-2 py-1 text-[0.56rem] tracking-[0.18em] uppercase"
+                  style={{ border: `1px solid ${brand.paper}`, color: brand.paper, opacity: 0.85 }}
+                >
+                  {natureLabel[project.nature]}
+                </p>
+              </div>
               <h2 id="sheet-heading" className="font-sign mt-2 text-3xl sm:text-[2.6rem]">
                 {project.name}
               </h2>
@@ -65,10 +75,38 @@ export function ProductSheet({ project, onClose }: { project: Project; onClose: 
           <p className="font-till mt-4 text-[0.58rem] tracking-[0.14em] uppercase opacity-70">
             {STATUS_NOTE[project.status]} · {project.tag.kind} · {project.tag.year}
           </p>
+          <p className="mt-1.5 text-[0.82rem] leading-snug opacity-75">
+            {natureNote[project.nature]}
+          </p>
         </header>
 
         <div className="space-y-6 px-6 py-6 sm:px-8">
           <p className="text-paper-300 leading-relaxed">{project.description}</p>
+
+          {/* A list rather than a <dl>: the figure is read before its label,
+              and a <dl> that puts its <dd> first is not a <dl>. */}
+          {project.metrics && project.metrics.length > 0 && (
+            <ul className="border-ink-500 flex flex-wrap gap-x-9 gap-y-4 border-y py-4">
+              {project.metrics.map((metric) => (
+                <li key={metric.label} className="max-w-[13rem] min-w-[5.5rem]">
+                  <span
+                    className="block text-[1.7rem] leading-none font-semibold"
+                    style={{ color: brand.accent }}
+                  >
+                    {metric.value}
+                  </span>
+                  <span className="font-till text-paper-500 mt-1.5 block text-[0.54rem] tracking-[0.18em] uppercase">
+                    {metric.label}
+                  </span>
+                  {metric.note && (
+                    <span className="text-paper-500/70 mt-1 block text-[0.72rem] leading-snug">
+                      {metric.note}
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
 
           <div className="grid gap-5 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
             <div>

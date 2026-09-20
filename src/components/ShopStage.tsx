@@ -5,6 +5,7 @@ import { useShop } from '../state/ShopContext';
 import { StageOverlay } from './StageOverlay';
 import { HotspotLayer, type Hotspot } from './HotspotLayer';
 import { ContactsCard } from './ContactsCard';
+import { ShelfTalker } from './ShelfTalker';
 import { SceneBoundary } from './SceneBoundary';
 import { projects, statusLabel } from '../data/projects';
 import { productHitSize, productLimits } from '../three/shapeMetrics';
@@ -31,6 +32,7 @@ export function ShopStage({ onPrintReceipt }: { onPrintReceipt: () => void }) {
         size: productHitSize(project),
         onActivate: () => open(project.id),
         drag: productLimits(project),
+        popover: <ShelfTalker project={project} />,
       })),
       {
         id: 'telephone',

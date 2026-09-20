@@ -1,5 +1,5 @@
 import { contacts, menu, profile } from '../data/profile';
-import { projects, statusLabel } from '../data/projects';
+import { natureLabel, natureNote, projects, shelfSummary, statusLabel } from '../data/projects';
 
 /**
  * The same content the shop shows, as plain semantic HTML.
@@ -26,26 +26,31 @@ export function ReadableIndex() {
         Open to {profile.openTo.roles.join(', ')} roles in{' '}
         {profile.openTo.markets.join(', ')}.
       </p>
-      {profile.proof.length > 0 && (
-        <ul>
-          {profile.proof.map((item) => (
-            <li key={item.label}>
-              {item.value} — {item.label}
-            </li>
-          ))}
-        </ul>
-      )}
 
       <h2>Projects</h2>
+      <p>{shelfSummary()}</p>
       {projects.map((project) => (
         <article key={project.id}>
           <h3>
             {project.name} — {project.tagline}
           </h3>
+          <p>
+            {natureLabel[project.nature]} — {natureNote[project.nature]}
+          </p>
           <p>Status: {statusLabel[project.status]}.</p>
           <p>{project.description}</p>
           <p>Role: {project.role}</p>
           <p>Built with: {project.stack.join(', ')}.</p>
+          {project.metrics && project.metrics.length > 0 && (
+            <ul>
+              {project.metrics.map((metric) => (
+                <li key={metric.label}>
+                  {metric.value} — {metric.label}
+                  {metric.note ? ` (${metric.note})` : ''}
+                </li>
+              ))}
+            </ul>
+          )}
           {project.links.length > 0 && (
             <ul>
               {project.links.map((link) => (
