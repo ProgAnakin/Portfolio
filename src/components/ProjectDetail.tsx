@@ -31,7 +31,12 @@ export function ProjectDetail({
   /** `h2` in the modal, `h3` under the casebook's own heading. */
   as?: 'h2' | 'h3';
   headingId?: string;
-  /** Media, when there is any. Sits above the header, full bleed. */
+  /**
+   * The media strip, when there is any. It sits under the description —
+   * what the thing is, then what it looks like — and it is a slot rather
+   * than a field because the product sheet in the room does not take one:
+   * a viewer opening out of a modal is a modal on a modal.
+   */
   children?: React.ReactNode;
 }) {
   const { brand } = project;
@@ -39,8 +44,6 @@ export function ProjectDetail({
 
   return (
     <>
-      {children}
-
       {/* Header, in the project's own colours. */}
       <header
         className="relative px-6 pt-6 pb-5 sm:px-8"
@@ -90,13 +93,15 @@ export function ProjectDetail({
         </p>
       </header>
 
-      <div className="space-y-6 px-6 py-6 sm:px-8">
-        <p className="text-paper-300 leading-relaxed">{project.description}</p>
+      <div className="space-y-6 py-6">
+        <p className="text-paper-300 px-6 leading-relaxed sm:px-8">{project.description}</p>
+
+        {children}
 
         {/* A list rather than a <dl>: the figure is read before its label,
             and a <dl> that puts its <dd> first is not a <dl>. */}
         {project.metrics && project.metrics.length > 0 && (
-          <ul className="border-ink-500 flex flex-wrap gap-x-9 gap-y-4 border-y py-4">
+          <ul className="border-ink-500 mx-6 flex flex-wrap gap-x-9 gap-y-4 border-y py-4 sm:mx-8">
             {project.metrics.map((metric) => (
               <li key={metric.label} className="max-w-[13rem] min-w-[5.5rem]">
                 <span
@@ -118,7 +123,7 @@ export function ProjectDetail({
           </ul>
         )}
 
-        <div className="grid gap-5 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+        <div className="grid gap-5 px-6 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] sm:px-8">
           <div>
             <h4 className="font-till text-paper-500 text-[0.56rem] tracking-[0.2em] uppercase">
               My role
@@ -144,7 +149,7 @@ export function ProjectDetail({
         </div>
 
         {/* The links are what this is for. */}
-        <div>
+        <div className="px-6 sm:px-8">
           <h4 className="font-till text-paper-500 text-[0.56rem] tracking-[0.2em] uppercase">
             {project.links.length > 0 ? 'Go and look' : 'Nothing to show yet'}
           </h4>

@@ -11,15 +11,16 @@ src/assets/shots/
   ai-call-trainer/
 ```
 
-## The shape the card is built for
+## How it shows up
 
-**One clip and three stills.** The clip runs full width across the top of the
-card; the stills sit in a row underneath, all three visible at once, each one
-clickable to open full size. Nothing is hidden behind a swipe.
+The card does not grow. It gets a thin strip — a few thumbnails, a count, and
+a way in — and everything opens in a viewer over the page: one screen at a
+time, with a rail underneath to pick from, arrow keys to move, Escape to
+close.
 
-It copes with other counts — one still fills the width, two sit side by side,
-four wrap onto a second row, no clip is fine and so is no media at all — but
-three across is the shape it was drawn for.
+So the number of files is yours to choose. **One clip and three stills** is a
+good shelf-life: enough to prove it runs, few enough that nobody has to work
+through a gallery. Four costs the same page height as one.
 
 ```
 kouci/
@@ -29,7 +30,7 @@ kouci/
   03-roster-management.webp
 ```
 
-Keep `00-` for the clip so it sorts first, and number the stills in the order
+Keep `00-` for the clip so it opens first, and number the stills in the order
 you want them read.
 
 ## The filename is the caption
