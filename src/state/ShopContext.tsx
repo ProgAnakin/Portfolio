@@ -5,7 +5,9 @@ import {
   useMemo,
   useRef,
   useState,
+  type Dispatch,
   type ReactNode,
+  type SetStateAction,
 } from 'react';
 import { projects, type Project } from '../data/projects';
 
@@ -25,6 +27,18 @@ interface ShopState {
   /** True once the till has printed. Stops the shop nagging about it. */
   receiptTaken: boolean;
   markReceiptTaken: () => void;
+  /**
+   * Whether the store directory is open.
+   *
+   * It lives here because two siblings need the same answer: the tag that
+   * opens it, and the menu board it opens on top of. Both hang in the
+   * right-hand corner — the directory by choice, the board because that is
+   * where the counter is — and a sheet of paper landing squarely on a lit
+   * panel reads as a collision. So the board steps back while the card is
+   * out, which is what a second panel in one corner has to do.
+   */
+  directoryOpen: boolean;
+  setDirectoryOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 const ShopContext = createContext<ShopState | null>(null);
@@ -33,6 +47,7 @@ export function ShopProvider({ children }: { children: ReactNode }) {
   const [openId, setOpenId] = useState<string | null>(null);
   const [basketIds, setBasketIds] = useState<string[]>([]);
   const [receiptTaken, setReceiptTaken] = useState(false);
+  const [directoryOpen, setDirectoryOpen] = useState(false);
   const arrivedAt = useRef(Date.now());
 
   const open = useCallback((id: string) => {
@@ -52,8 +67,10 @@ export function ShopProvider({ children }: { children: ReactNode }) {
       timeInShop: () => Math.round((Date.now() - arrivedAt.current) / 1000),
       receiptTaken,
       markReceiptTaken: () => setReceiptTaken(true),
+      directoryOpen,
+      setDirectoryOpen,
     };
-  }, [openId, basketIds, open, close, receiptTaken]);
+  }, [openId, basketIds, open, close, receiptTaken, directoryOpen]);
 
   return <ShopContext.Provider value={value}>{children}</ShopContext.Provider>;
 }

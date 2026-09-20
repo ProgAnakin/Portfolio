@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { projects, statusLabel, type ProjectNature } from '../data/projects';
 import { useShop } from '../state/ShopContext';
@@ -56,10 +56,16 @@ const GROUPS: ProjectNature[] = ['venture', 'portfolio'];
  *
  * It is a second route, not the only one: the skip link still jumps straight
  * to the shelves, and everything listed here is also a control in the room.
+ *
+ * Opening it used to drop a sheet of paper squarely on the menu board below —
+ * two panels of similar weight in one corner, reading as a collision rather
+ * than as a card in front of something. Hanging the tag on the left instead
+ * only moved the problem onto the headline, which owns that whole column on a
+ * short window. So they share the corner and take turns: the board steps back
+ * while the card is out. See `directoryOpen` in `state/ShopContext`.
  */
 export function ShopMenu({ onPrintReceipt }: { onPrintReceipt: () => void }) {
-  const { open: openProject } = useShop();
-  const [open, setOpen] = useState(false);
+  const { open: openProject, directoryOpen: open, setDirectoryOpen: setOpen } = useShop();
   const prefersReduced = useReducedMotion();
   const wrapper = useRef<HTMLDivElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);
@@ -165,13 +171,16 @@ export function ShopMenu({ onPrintReceipt }: { onPrintReceipt: () => void }) {
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: prefersReduced ? 'auto' : 0, opacity: prefersReduced ? 0 : 1 }}
             transition={{ duration: prefersReduced ? 0.15 : 0.5, ease: [0.16, 0.9, 0.3, 1] }}
-            className="absolute top-14 right-0 w-[17rem] origin-top overflow-hidden"
+            className="absolute top-14 right-0 w-[min(19rem,calc(100vw-2rem))] origin-top overflow-hidden"
           >
             <motion.div
               initial={prefersReduced ? undefined : { x: 0 }}
               animate={prefersReduced ? undefined : { x: [0, -1.4, 1.4, -0.8, 0] }}
               transition={{ duration: 0.16, repeat: 3 }}
-              className="bg-paper-100 text-ink-900 font-till px-4 pt-4 pb-3 shadow-[0_18px_44px_rgba(12,10,9,0.75)]"
+              // Capped and scrollable: the card grows a line per project, and
+              // on a window someone has dragged short it would otherwise run
+              // off the bottom with the receipt row below the fold.
+              className="bg-paper-100 text-ink-900 font-till max-h-[calc(100svh-5.5rem)] overflow-y-auto px-4 pt-4 pb-3 shadow-[0_18px_44px_rgba(12,10,9,0.75)]"
             >
               <p className="text-[0.62rem] font-bold tracking-[0.18em] uppercase">Store directory</p>
               <div aria-hidden="true" className="border-ink-900/35 my-2 border-t border-dashed" />

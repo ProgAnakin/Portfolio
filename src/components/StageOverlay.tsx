@@ -2,6 +2,7 @@ import { motion, useTransform } from 'framer-motion';
 import { contacts, menu, profile } from '../data/profile';
 import { shelfSummary } from '../data/projects';
 import { usePointerParallax } from '../hooks/usePointerParallax';
+import { useShop } from '../state/ShopContext';
 
 /**
  * The editorial layer.
@@ -27,6 +28,9 @@ const linkedIn = contacts.find((c) => c.href)?.href ?? '#contact';
 
 export function StageOverlay() {
   const { x, y, enabled } = usePointerParallax();
+  // The store directory opens into this corner. Rather than land a sheet of
+  // paper on a lit panel, the panel gets out of the way — see `directoryOpen`.
+  const { directoryOpen } = useShop();
 
   // The type sits in front of the room, so it travels further than the room
   // does — that difference is the whole effect.
@@ -97,6 +101,13 @@ export function StageOverlay() {
         id="about"
         aria-labelledby="about-heading"
         style={{ x: boardX, y: boardY }}
+        animate={{ opacity: directoryOpen ? 0 : 1, scale: directoryOpen ? 0.97 : 1 }}
+        transition={{ duration: 0.22, ease: [0.16, 0.9, 0.3, 1] }}
+        // Hidden from the pointer *and* from a screen reader while it is out
+        // of the way: a faded panel is still a tab stop, and a link nobody can
+        // see is a link nobody meant to follow.
+        aria-hidden={directoryOpen || undefined}
+        inert={directoryOpen || undefined}
         className="pointer-events-auto absolute top-[11%] right-[2.5%] hidden w-[min(20rem,28vw)] overflow-hidden rounded-[10px] bg-gradient-to-b from-[#12171b]/92 to-[#0b0f12]/94 px-4 pt-3 pb-3.5 ring-1 shadow-[0_22px_50px_rgba(6,9,12,0.65)] ring-white/10 backdrop-blur-[3px] lg:block xl:w-[23rem] xl:px-5 [@media(max-aspect-ratio:3/2)]:w-[min(23rem,36vw)] [@media(max-height:640px)]:top-[6%] [@media(max-height:640px)]:px-3 [@media(max-height:640px)]:pb-2.5"
       >
         {/* The bleed along the top edge, which is what makes a dark rectangle
