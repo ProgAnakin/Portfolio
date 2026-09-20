@@ -241,6 +241,18 @@ body {
 }
 
 /* Oversized signage type that the shelf stands in front of. */
+/* Type set over a room, not over a background.
+   The scene moves — the camera leans with the pointer, the strip lights are
+   emissive, a dragged product passes behind the copy — so any single line can
+   end up sitting on a lit plank edge, which is where the standfirst became
+   unreadable. The scrim behind the block does most of the work; this is for
+   the rest, and it costs nothing because it is never animated. */
+.shop-legible {
+  text-shadow:
+    0 1px 2px rgba(8, 6, 5, 0.82),
+    0 0 16px rgba(8, 6, 5, 0.55);
+}
+
 .shop-megatype {
   font-family: var(--font-sign);
   font-variation-settings: 'wdth' 75, 'opsz' 96;

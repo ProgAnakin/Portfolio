@@ -41,6 +41,24 @@ export function StageOverlay() {
 
   return (
     <div className="pointer-events-none absolute inset-0 z-20">
+      {/* The scrim.
+
+          Type over a photograph needs the photograph to get darker under it,
+          and this room is worse than a photograph: it moves. The camera leans
+          with the pointer, the strip lights are emissive, and a shelf edge
+          swinging under the standfirst put a bright bar straight through the
+          middle of a line. A radial anchored in the corner the copy lives in —
+          deep where the words are, gone by the middle of the room, no edge
+          anywhere to read as a box. */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0"
+        style={{
+          background:
+            'radial-gradient(118% 82% at 0% 100%, rgba(7,5,4,0.9) 0%, rgba(7,5,4,0.78) 22%, rgba(7,5,4,0.46) 44%, rgba(7,5,4,0.16) 64%, transparent 80%)',
+        }}
+      />
+
       {/* Bottom left: who this is, at the size a sign is. */}
       <motion.div
         style={{ x: headlineX, y: headlineY }}
@@ -54,7 +72,7 @@ export function StageOverlay() {
           <span className="text-amber-300 block">Annichini</span>
         </h1>
         <div className="bg-accent mt-3 mb-3 h-[3px] w-24 [@media(max-height:640px)]:mt-2 [@media(max-height:640px)]:mb-2" />
-        <p className="text-paper-300 pointer-events-auto max-w-[38ch] text-[clamp(0.85rem,1.05vw,1rem)] leading-relaxed [@media(max-height:640px)]:max-w-[44ch] [@media(max-height:640px)]:text-[0.78rem]">
+        <p className="shop-legible text-paper-300 pointer-events-auto max-w-[38ch] text-[clamp(0.85rem,1.05vw,1rem)] leading-relaxed [@media(max-height:640px)]:max-w-[44ch] [@media(max-height:640px)]:text-[0.78rem]">
           {profile.standfirst}
         </p>
         {/* What is on the shelves, counted from the shelves. This replaced a
@@ -62,11 +80,11 @@ export function StageOverlay() {
             because summing a co-founded company and two unpaid builds into one
             number is the single reading of this room that is not true. See
             `ProjectMetric` in `data/projects`. */}
-        <p className="text-paper-500 pointer-events-auto mt-2 text-[clamp(0.76rem,0.9vw,0.86rem)] leading-relaxed [@media(max-height:640px)]:text-[0.7rem]">
+        <p className="shop-legible text-paper-500 pointer-events-auto mt-2 text-[clamp(0.76rem,0.9vw,0.86rem)] leading-relaxed [@media(max-height:640px)]:text-[0.7rem]">
           {shelfSummary()}
         </p>
 
-        <p className="font-till text-paper-500 pointer-events-auto mt-3 text-[0.58rem] leading-relaxed tracking-[0.14em] uppercase [@media(max-height:560px)]:hidden">
+        <p className="shop-legible font-till text-paper-500 pointer-events-auto mt-3 text-[0.58rem] leading-relaxed tracking-[0.14em] uppercase [@media(max-height:560px)]:hidden">
           <span className="text-paper-300">Open to</span> {profile.openTo.roles.join(' · ')}
           <span className="block">
             {profile.openTo.markets.join(' · ')} —{' '}
@@ -81,7 +99,7 @@ export function StageOverlay() {
           </span>
         </p>
 
-        <p className="font-till text-paper-500/70 mt-2 text-[0.55rem] tracking-[0.18em] uppercase [@media(max-height:700px)]:hidden">
+        <p className="shop-legible font-till text-paper-500/70 mt-2 text-[0.55rem] tracking-[0.18em] uppercase [@media(max-height:700px)]:hidden">
           <span className="text-accent" aria-hidden="true">
             ●
           </span>{' '}

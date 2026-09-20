@@ -78,6 +78,24 @@ export function ShopStage({ onPrintReceipt }: { onPrintReceipt: () => void }) {
         <HotspotLayer hotspots={hotspots} />
         <StageOverlay />
       </SceneBoundary>
+
+      {/* The page below is the whole point of the page below: a room is
+          something a visitor has to agree to explore, and nothing on a stage
+          exactly one viewport tall says there is more. Only on this branch —
+          the drawn shop is a tall scrolling column already, and a "scroll
+          down" arrow on a page that is visibly scrolling is noise.
+
+          A real anchor, so it works with a keyboard, without JavaScript, and
+          as a link someone can copy. */}
+      <a
+        href="#casebook"
+        className="font-till text-paper-500 hover:text-paper-300 focus-visible:text-paper-300 absolute bottom-4 left-1/2 z-40 flex -translate-x-1/2 flex-col items-center gap-1 text-center text-[0.52rem] tracking-[0.2em] whitespace-nowrap uppercase transition-colors [@media(max-height:600px)]:hidden"
+      >
+        Screenshots and the write-up
+        <span aria-hidden="true" className="animate-bounce text-[0.85rem] leading-none">
+          ↓
+        </span>
+      </a>
     </div>
   );
 }

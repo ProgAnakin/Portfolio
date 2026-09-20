@@ -1,13 +1,17 @@
-import { contacts, menu, profile } from '../data/profile';
-import { natureLabel, natureNote, projects, shelfSummary, statusLabel } from '../data/projects';
+import { menu, profile } from '../data/profile';
 
 /**
- * The same content the shop shows, as plain semantic HTML.
+ * The few things the page says only in pictures.
  *
- * The scene is a drawing and the detail sheets only exist once opened, so this
- * is what a crawler indexes and what a screen reader can read straight through.
- * Links are not tab stops — the products on the shelves are the real controls —
- * but they are followable, and the text is identical to what is on screen.
+ * This used to be the whole site again in plain HTML — every project, every
+ * link, every contact — because the scene was a drawing and the detail sheets
+ * only existed once opened. The casebook below the shop is that now, as real
+ * visible content, so repeating it here would make a crawler read the same
+ * paragraphs twice and a screen reader announce every project two times over.
+ *
+ * What is left is what genuinely has no text form anywhere else: the menu
+ * board over the counter, which is set dressing on a wide screen and not
+ * rendered at all below `lg`.
  */
 export function ReadableIndex() {
   return (
@@ -22,65 +26,6 @@ export function ReadableIndex() {
         ))}
       </ul>
       <p>Languages: {profile.languages.join(', ')}.</p>
-      <p>
-        Open to {profile.openTo.roles.join(', ')} roles in{' '}
-        {profile.openTo.markets.join(', ')}.
-      </p>
-
-      <h2>Projects</h2>
-      <p>{shelfSummary()}</p>
-      {projects.map((project) => (
-        <article key={project.id}>
-          <h3>
-            {project.name} — {project.tagline}
-          </h3>
-          <p>
-            {natureLabel[project.nature]} — {natureNote[project.nature]}
-          </p>
-          <p>Status: {statusLabel[project.status]}.</p>
-          <p>{project.description}</p>
-          <p>Role: {project.role}</p>
-          <p>Built with: {project.stack.join(', ')}.</p>
-          {project.metrics && project.metrics.length > 0 && (
-            <ul>
-              {project.metrics.map((metric) => (
-                <li key={metric.label}>
-                  {metric.value} — {metric.label}
-                  {metric.note ? ` (${metric.note})` : ''}
-                </li>
-              ))}
-            </ul>
-          )}
-          {project.links.length > 0 && (
-            <ul>
-              {project.links.map((link) => (
-                <li key={link.href}>
-                  <a href={link.href} target="_blank" rel="noreferrer" tabIndex={-1}>
-                    {project.name} — {link.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          )}
-        </article>
-      ))}
-
-      <h2>Contact</h2>
-      <ul>
-        {contacts.map((contact) => (
-          <li key={contact.id}>
-            {contact.href ? (
-              <a href={contact.href} rel="noreferrer" tabIndex={-1}>
-                {contact.label}: {contact.value}
-              </a>
-            ) : (
-              <span>
-                {contact.label}: {contact.value}
-              </span>
-            )}
-          </li>
-        ))}
-      </ul>
     </div>
   );
 }
