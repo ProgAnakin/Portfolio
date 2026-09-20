@@ -11,6 +11,7 @@
     "audit:deps": "npm audit --audit-level=high --omit=dev",
     "verify": "npm run lint && npm run build && npm run audit:deps"
   },
+  "//react-pin": "react and react-dom are pinned exactly: @react-three/fiber declares react '>=19 <19.3', and 9.7.0 is its newest release. Widening this breaks `npm ci` with ERESOLVE. See .github/dependabot.yml for when to lift it.",
   "dependencies": {
     "@react-three/drei": "^10.7.8",
     "@react-three/fiber": "^9.7.0",

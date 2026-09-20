@@ -16,6 +16,34 @@ updates:
         patterns: ['three', '@types/three', '@react-three/*']
       build:
         patterns: ['vite', '@vitejs/*', 'typescript', 'tailwindcss', '@tailwindcss/*']
+    ignore:
+      # React is pinned to an exact version because @react-three/fiber declares
+      # `react: ">=19 <19.3"`, and 9.7.0 is the newest release there is — every
+      # later tag is a 10.x canary. So a bump to 19.3 cannot install: `npm ci`
+      # exits with ERESOLVE and every deploy of that branch fails. Dependabot
+      # was opening that pull request monthly and it could never be merged.
+      #
+      # Patches still come through, which is where React's own fixes land.
+      #
+      # LIFT THIS the day @react-three/fiber publishes a stable release whose
+      # react peer range allows 19.3 — check with:
+      #   npm view @react-three/fiber@latest version peerDependencies.react
+      # then unpin react/react-dom here and in package.json together.
+      #
+      # The cost of the rule: Dependabot's security updates honour `ignore`
+      # too, so a React advisory above 19.2.x will not open a PR by itself.
+      # For a page with no backend, no forms and no third-party script that is
+      # a small exposure, but it is a real one — so it is written down here
+      # rather than discovered later.
+      - dependency-name: 'react'
+        update-types: ['version-update:semver-minor', 'version-update:semver-major']
+      - dependency-name: 'react-dom'
+        update-types: ['version-update:semver-minor', 'version-update:semver-major']
+      - dependency-name: '@types/react'
+        update-types: ['version-update:semver-minor', 'version-update:semver-major']
+      - dependency-name: '@types/react-dom'
+        update-types: ['version-update:semver-minor', 'version-update:semver-major']
+
   - package-ecosystem: github-actions
     directory: /
     schedule:
