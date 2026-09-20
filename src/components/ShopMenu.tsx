@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { projects, statusLabel } from '../data/projects';
 import { useShop } from '../state/ShopContext';
+import { slotFor } from '../data/shelving';
 
 /** A ragged tear across the bottom of the strip. */
 function tornEdge(width = 200, tooth = 5): string {
@@ -76,7 +77,7 @@ export function ShopMenu({ onPrintReceipt }: { onPrintReceipt: () => void }) {
   const rows: Row[] = [
     ...projects.map((project) => ({
       key: project.id,
-      aisle: `A${project.shelf + 1}`,
+      aisle: `A${slotFor(project.id).shelf + 1}`,
       label: project.name,
       note: statusLabel[project.status],
       onPick: pick(() => openProject(project.id)),

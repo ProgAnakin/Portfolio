@@ -1,5 +1,5 @@
 import { motion, useTransform } from 'framer-motion';
-import { menu, profile } from '../data/profile';
+import { contacts, menu, profile } from '../data/profile';
 import { usePointerParallax } from '../hooks/usePointerParallax';
 
 /**
@@ -21,6 +21,9 @@ import { usePointerParallax } from '../hooks/usePointerParallax';
  * dragged down, and letting the headline run off the bottom of it is the sort
  * of thing that reads as a broken page rather than a cropped one.
  */
+/** The one contact that is a link. The rest live on the telephone. */
+const linkedIn = contacts.find((c) => c.href)?.href ?? '#contact';
+
 export function StageOverlay() {
   const { x, y, enabled } = usePointerParallax();
 
@@ -49,7 +52,40 @@ export function StageOverlay() {
         <p className="text-paper-300 pointer-events-auto max-w-[38ch] text-[clamp(0.85rem,1.05vw,1rem)] leading-relaxed [@media(max-height:640px)]:max-w-[44ch] [@media(max-height:640px)]:text-[0.78rem]">
           {profile.standfirst}
         </p>
-        <p className="font-till text-paper-500 mt-3 text-[0.58rem] tracking-[0.18em] uppercase [@media(max-height:560px)]:hidden">
+        {/* Figures first, when there are any. Nothing renders while `proof`
+            is empty, which is how it ships — see `data/profile`. */}
+        {profile.proof.length > 0 && (
+          <dl className="mt-3.5 flex flex-wrap gap-x-6 gap-y-2">
+            {profile.proof.map((item) => (
+              <div key={item.label}>
+                <dt className="sr-only">{item.label}</dt>
+                <dd className="text-amber-300 text-[1.35rem] leading-none font-semibold">
+                  {item.value}
+                </dd>
+                <dd className="font-till text-paper-500 mt-1 text-[0.5rem] tracking-[0.16em] uppercase">
+                  {item.label}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        )}
+
+        <p className="font-till text-paper-500 pointer-events-auto mt-3 text-[0.58rem] leading-relaxed tracking-[0.14em] uppercase [@media(max-height:560px)]:hidden">
+          <span className="text-paper-300">Open to</span> {profile.openTo.roles.join(' · ')}
+          <span className="block">
+            {profile.openTo.markets.join(' · ')} —{' '}
+            <a
+              href={linkedIn}
+              target="_blank"
+              rel="noreferrer"
+              className="text-accent underline decoration-dotted underline-offset-4"
+            >
+              LinkedIn
+            </a>
+          </span>
+        </p>
+
+        <p className="font-till text-paper-500/70 mt-2 text-[0.55rem] tracking-[0.18em] uppercase [@media(max-height:700px)]:hidden">
           <span className="text-accent" aria-hidden="true">
             ●
           </span>{' '}

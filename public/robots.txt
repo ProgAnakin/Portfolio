@@ -1,2 +1,4 @@
+# Everything here is meant to be found. The one thing deliberately absent is a
+# personal email address; there is nothing to disallow.
 User-agent: *
 Allow: /

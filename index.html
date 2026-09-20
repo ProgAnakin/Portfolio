@@ -5,6 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="theme-color" content="#14110f" />
+    <meta name="color-scheme" content="dark" />
+
+    <!--
+      This page loads nothing from anywhere else: no analytics, no tag manager,
+      no font CDN, no embedded video. That is a security decision as much as a
+      performance one — a third-party script is someone else's supply chain
+      running with your visitors' trust — and it is what makes a policy this
+      narrow possible. `frame-ancestors` is deliberately absent: a meta tag
+      cannot carry it, and declaring it here only logs a warning in every
+      visitor's console. The header in `vercel.json` has it, along with HSTS
+      and the rest that only a header can set; this tag is the floor for hosts
+      that cannot set headers at all, such as GitHub Pages.
+    -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; upgrade-insecure-requests" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
     <link
       rel="preload"
       as="font"
@@ -30,7 +45,36 @@
       property="og:description"
       content="Sales professional, 23. Tech retail by trade, software by habit. Every project is a product on the shelf."
     />
-    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta property="og:locale" content="en" />
+    <meta property="og:site_name" content="Costanzo Annichini" />
+    <link rel="canonical" href="__SITE_URL__/" />
+    <meta property="og:url" content="__SITE_URL__/" />
+    <meta property="og:image" content="__SITE_URL__/og.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="An illustrated shop at night. Each product on the shelf is one of Costanzo Annichini's projects."
+    />
+
+    <!--
+      A recruiter's first move is usually a search, not a link. This is the
+      only structured thing on the page a search engine can lift straight into
+      a knowledge panel, and it costs nothing to serve.
+    -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Costanzo Annichini",
+        "jobTitle": "Sales professional",
+        "knowsLanguage": ["it", "pt", "en"],
+        "sameAs": ["https://www.linkedin.com/in/costanzo-annichini", "https://github.com/ProgAnakin"],
+        "description": "Sales professional in tech retail who builds the software the shop floor was missing. Co-founder of Kouci."
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -1,6 +1,7 @@
 import { projects, type Project, type ProductShape } from '../data/projects';
-import { OPEN_LIFT, SHELF_HALF_WIDTH, SHELF_X, shelfGap, SLOT_GAP } from './shelfLayout';
-import { STOCK, stockX } from './shelfStock';
+import { slotFor } from '../data/shelving';
+import { OPEN_LIFT, SHELF_HALF_WIDTH, SHELF_X, shelfGap, SLOT_GAP, slotX } from './shelfLayout';
+import { backstock } from './shelfStock';
 
 /**
  * Sizes, with no three.js in sight.
@@ -115,7 +116,11 @@ export interface DragLimits {
 
 /** What stands in the next slot along, if anything does. */
 function neighbour(project: Project, direction: -1 | 1): Project | undefined {
-  return projects.find((p) => p.shelf === project.shelf && p.slot === project.slot + direction);
+  const here = slotFor(project.id);
+  return projects.find((p) => {
+    const there = slotFor(p.id);
+    return there.shelf === here.shelf && there.slot === here.slot + direction;
+  });
 }
 
 /**
@@ -138,7 +143,8 @@ function sideRoom(project: Project, direction: -1 | 1): number {
 
   // Never off the end of the plank, and never into the backstock — those
   // boxes are scenery, but they are scenery that does not get out of the way.
-  const centre = SHELF_X - 0.75 + project.slot * SLOT_GAP;
+  const here = slotFor(project.id);
+  const centre = slotX(here.slot);
   const edge =
     direction < 0
       ? centre - (SHELF_X - SHELF_HALF_WIDTH + mine)
@@ -146,9 +152,9 @@ function sideRoom(project: Project, direction: -1 | 1): number {
 
   const leading = centre + direction * mine;
   let stock = Infinity;
-  for (const box of STOCK) {
-    if (box.shelf !== project.shelf) continue;
-    const face = stockX(box) - (direction * box.w) / 2;
+  for (const box of backstock()) {
+    if (box.shelf !== here.shelf) continue;
+    const face = box.x - (direction * box.w) / 2;
     const room = (face - leading) * direction;
     if (room >= 0) stock = Math.min(stock, room - GAP_PAD);
   }
@@ -176,7 +182,7 @@ export function productLimits(project: Project): DragLimits {
   // Nothing overhead on the top shelf, so it gets a full lift. Below it, the
   // lift is whatever is left between the product's own head and the strip
   // light under the plank above.
-  const gap = shelfGap(project.shelf);
+  const gap = shelfGap(slotFor(project.id).shelf);
   const up = gap === null ? OPEN_LIFT : Math.max(0, gap - height - roll - 0.02);
 
   return {

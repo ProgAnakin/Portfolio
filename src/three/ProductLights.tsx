@@ -2,6 +2,7 @@ import { projects } from '../data/projects';
 import { placement } from './ShelfRig';
 import { shapeHeight, PRODUCT_SCALE } from './shapeMetrics';
 import { palette } from './tokens';
+import { slotFor } from '../data/shelving';
 
 /**
  * A light per product.
@@ -21,7 +22,8 @@ export function ProductLights() {
   return (
     <>
       {projects.map((project) => {
-        const [x, y, z] = placement(project.shelf, project.slot);
+        const { shelf, slot } = slotFor(project.id);
+        const [x, y, z] = placement(shelf, slot);
         const height = shapeHeight[project.shape] * PRODUCT_SCALE;
         const lit = project.status === 'in-stock';
 

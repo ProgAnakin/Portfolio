@@ -31,10 +31,17 @@ jobs:
       - name: Typecheck
         run: npm run lint
 
+      - name: Audit runtime dependencies
+        run: npm run audit:deps
+
       - name: Build
         env:
           # A project page is served from /<repo>/, so assets need that prefix.
           VITE_BASE: /${{ github.event.repository.name }}/
+          # The canonical link and the share image have to be absolute, and
+          # this is the one place the origin is actually knowable. Without it
+          # those tags are dropped rather than pointed at a guess.
+          VITE_SITE_URL: https://${{ github.repository_owner }}.github.io
         run: npm run build
 
       - name: Single-page fallback

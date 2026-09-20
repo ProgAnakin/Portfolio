@@ -22,6 +22,19 @@ export function ReadableIndex() {
         ))}
       </ul>
       <p>Languages: {profile.languages.join(', ')}.</p>
+      <p>
+        Open to {profile.openTo.roles.join(', ')} roles in{' '}
+        {profile.openTo.markets.join(', ')}.
+      </p>
+      {profile.proof.length > 0 && (
+        <ul>
+          {profile.proof.map((item) => (
+            <li key={item.label}>
+              {item.value} — {item.label}
+            </li>
+          ))}
+        </ul>
+      )}
 
       <h2>Projects</h2>
       {projects.map((project) => (

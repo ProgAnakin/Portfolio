@@ -6,17 +6,31 @@ import { projects } from '../data/projects';
 import { Lighting } from './Lighting';
 import { ProductLights } from './ProductLights';
 import { ProductObject } from './ProductObject';
-import { Counter3D } from './Counter3D';
+import { Counter3D, COUNTER_X } from './Counter3D';
 import { HotspotProjector } from './HotspotProjector';
 import { ShelfDressing } from './ShelfDressing';
 import { BackWall, WALL_DEEP } from './BackWall';
 import { Ceiling } from './Ceiling';
-import { placement, SHELF_X, SHELF_Y, ShelfRig } from './ShelfRig';
+import { placement, SHELF_HALF_WIDTH, SHELF_X, SHELF_Y, ShelfRig } from './ShelfRig';
 import { Floor } from './Floor';
 import type { SceneTier } from './useSceneQuality';
+import { slotFor } from '../data/shelving';
 
-/** Everything that has to stay in shot, in world units. */
-const ROOM = { width: 8.4, height: 3.5, centreX: 0.05, centreY: 1.78 };
+/**
+ * Everything that has to stay in shot, in world units.
+ *
+ * Derived from the fixture rather than fixed, because the fixture grows with
+ * the inventory: a camera framed to a constant would simply crop the fourth
+ * row of products off the left-hand side and never mention it.
+ */
+const LEFT = SHELF_X - SHELF_HALF_WIDTH - 0.4;
+const RIGHT = COUNTER_X + 1.73;
+const ROOM = {
+  width: RIGHT - LEFT,
+  height: 3.5,
+  centreX: (LEFT + RIGHT) / 2,
+  centreY: 1.78,
+};
 
 /**
  * The camera leans with the cursor, and always frames the whole room.
@@ -139,7 +153,7 @@ export default function ShopCanvas({ tier }: { tier: SceneTier }) {
         <ProductObject
           key={project.id}
           project={project}
-          position={placement(project.shelf, project.slot)}
+          position={placement(slotFor(project.id).shelf, slotFor(project.id).slot)}
         />
       ))}
 

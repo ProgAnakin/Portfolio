@@ -11,6 +11,33 @@ export interface ContactLink {
   href?: string;
 }
 
+/**
+ * A number a recruiter can act on.
+ *
+ * This array ships **empty**, and everything that renders it renders nothing
+ * while it is. That is deliberate and it is the one thing on this site that
+ * cannot be designed around: a sales portfolio without figures is a design
+ * portfolio, and a sales portfolio with figures somebody else made up is a
+ * liability in the first interview that asks about them.
+ *
+ * Fill it with numbers you can defend out loud, from your own records — quota
+ * attainment, units or revenue, accounts opened, clubs onboarded, retention.
+ * Three is plenty. Four is showing off.
+ *
+ *   { value: '112%', label: 'of target, FY25' }
+ */
+export interface Proof {
+  value: string;
+  label: string;
+}
+
+/** What you want next, said plainly, where it is read first. */
+export interface OpenTo {
+  roles: string[];
+  markets: string[];
+  note?: string;
+}
+
 export interface MenuItem {
   name: string;
   note: string;
@@ -33,6 +60,20 @@ export const profile = {
     'Sales professional, 23. Tech retail by trade, software by habit — everything on these shelves is something I built, sold, or both.',
   location: 'Portugal · Italy',
   languages: ['Italian (native)', 'Portuguese (native)', 'English'],
+
+  /**
+   * A recruiter's first two questions are "what are they after" and "can I
+   * reach them". Both used to be behind a telephone you had to find and click.
+   * The charm was costing conversions; this says it in the first screen and
+   * the room still holds the detail.
+   */
+  openTo: {
+    roles: ['Sales', 'Business development', 'Customer-facing tech'],
+    markets: ['Portugal', 'Italy', 'Remote (EU)'],
+  } satisfies OpenTo,
+
+  /** Empty on purpose. See `Proof` — these have to be your real numbers. */
+  proof: [] as Proof[],
 };
 
 export const contacts: ContactLink[] = [

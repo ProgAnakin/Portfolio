@@ -5,6 +5,7 @@ import { LightPool } from './LightPool';
 import { EmptyShelfTag, PriceTag } from './PriceTag';
 import { ProductOnShelf } from './ProductOnShelf';
 import { ShelfPlank } from './ShelfPlank';
+import { slotFor } from '../../data/shelving';
 
 /**
  * Groups the inventory into shelves.
@@ -16,7 +17,9 @@ import { ShelfPlank } from './ShelfPlank';
  */
 function buildRows(shelved: boolean): Project[][] {
   const byShelf = Array.from({ length: SHELF_COUNT }, (_, shelf) =>
-    projects.filter((project) => project.shelf === shelf).sort((a, b) => a.slot - b.slot),
+    projects
+      .filter((project) => slotFor(project.id).shelf === shelf)
+      .sort((a, b) => slotFor(a.id).slot - slotFor(b.id).slot),
   );
   if (shelved) return byShelf;
   return byShelf.flatMap((shelf) => (shelf.length ? shelf.map((project) => [project]) : [[]]));

@@ -5,6 +5,7 @@ import { useShop } from '../state/ShopContext';
 import { StageOverlay } from './StageOverlay';
 import { HotspotLayer, type Hotspot } from './HotspotLayer';
 import { ContactsCard } from './ContactsCard';
+import { SceneBoundary } from './SceneBoundary';
 import { projects, statusLabel } from '../data/projects';
 import { productHitSize, productLimits } from '../three/shapeMetrics';
 
@@ -68,11 +69,13 @@ export function ShopStage({ onPrintReceipt }: { onPrintReceipt: () => void }) {
       aria-label="The shop floor"
       className="relative h-[100svh] min-h-[min(38rem,100svh)] w-full overflow-hidden outline-none"
     >
-      <Suspense fallback={null}>
-        <ShopCanvas tier={tier} />
-      </Suspense>
-      <HotspotLayer hotspots={hotspots} />
-      <StageOverlay />
+      <SceneBoundary fallback={<ShopScene onPrintReceipt={onPrintReceipt} />}>
+        <Suspense fallback={null}>
+          <ShopCanvas tier={tier} />
+        </Suspense>
+        <HotspotLayer hotspots={hotspots} />
+        <StageOverlay />
+      </SceneBoundary>
     </div>
   );
 }

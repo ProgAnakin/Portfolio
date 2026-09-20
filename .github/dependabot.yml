@@ -1,0 +1,22 @@
+# The whole runtime is four dependencies and a build tool, and the site talks
+# to nobody — but three.js, React and Vite all ship security fixes, and a
+# portfolio nobody touches for a year is exactly where an unpatched build
+# dependency sits unnoticed. Monthly, grouped, so it is one review not nine.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 3
+    groups:
+      react:
+        patterns: ['react', 'react-dom', '@types/react', '@types/react-dom']
+      three:
+        patterns: ['three', '@types/three', '@react-three/*']
+      build:
+        patterns: ['vite', '@vitejs/*', 'typescript', 'tailwindcss', '@tailwindcss/*']
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

@@ -2,7 +2,9 @@
  * The shelf inventory.
  *
  * Adding a project to the shop means adding one object to this array — the
- * shelves, lighting, price tags and mobile sections all derive from it.
+ * shelves, lighting, price tags and mobile sections all derive from it, and
+ * so does *where it stands*: position is reading order, and the fixture grows
+ * to fit. See `data/shelving`.
  *
  * `shape` picks which SVG product component renders on the shelf. Reuse an
  * existing shape or add a new one to `components/shop/products`.
@@ -53,9 +55,6 @@ export interface Project {
   /** One line, read at a glance on hover. */
   tagline: string;
   status: ProjectStatus;
-  /** Which shelf (0 = top) and where along it the product sits. */
-  shelf: number;
-  slot: number;
   shape: ProductShape;
   brand: Brand;
   finish: ProductFinish;
@@ -74,8 +73,6 @@ export const projects: Project[] = [
     name: 'Suaipe',
     tagline: 'In-store product discovery kiosk',
     status: 'in-stock',
-    shelf: 0,
-    slot: 0,
     shape: 'kiosk',
     brand: {
       base: '#1c4fd0',
@@ -100,8 +97,6 @@ export const projects: Project[] = [
     name: 'Kouci',
     tagline: 'Sports-analytics SaaS for water polo',
     status: 'in-stock',
-    shelf: 0,
-    slot: 1,
     shape: 'boxed-set',
     brand: {
       base: '#7d9166',
@@ -127,8 +122,6 @@ export const projects: Project[] = [
     name: 'AI Call Trainer',
     tagline: 'An AI simulator for cold calls',
     status: 'out-of-stock',
-    shelf: 1,
-    slot: 0,
     shape: 'crate',
     brand: {
       base: '#c2632f',

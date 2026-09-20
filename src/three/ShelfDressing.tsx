@@ -1,26 +1,26 @@
 import { palette } from './tokens';
 import { SHELF_Y } from './ShelfRig';
-import { STOCK, stockX } from './shelfStock';
+import { backstock } from './shelfStock';
 
 /**
  * Backstock.
  *
  * Plain, unbranded, unlit boxes filling the gaps — no labels, no hover, no hit
- * target, and plain boxes rather than rounded ones — cardboard has hard
- * edges, and eight of them rounded cost more geometry than every product in
- * the shop put together. They exist so the shelves look stocked and so the products that
- * *are* projects have something to stand out against. Where each one goes is
- * in `shelfStock`, because the drag clamp has to treat them as solid.
+ * target, and plain boxes rather than rounded ones, because cardboard has hard
+ * edges and eight of them rounded cost more geometry than every product in the
+ * shop put together. Where each one goes is worked out in `shelfStock` from
+ * the slots the inventory did not take.
  */
 export function ShelfDressing() {
   const board = palette.oak700();
+  const boxes = backstock();
 
   return (
     <group>
-      {STOCK.map((box, i) => (
+      {boxes.map((box, i) => (
         <mesh
           key={i}
-          position={[stockX(box), (SHELF_Y[box.shelf] ?? 0) + box.h / 2, -0.1]}
+          position={[box.x, (SHELF_Y[box.shelf] ?? 0) + box.h / 2, -0.1]}
           rotation={[0, box.rot, 0]}
         >
           <boxGeometry args={[box.w, box.h, box.d]} />

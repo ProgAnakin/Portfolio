@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "lint": "tsc -b --noEmit"
+    "lint": "tsc -b --noEmit",
+    "audit:deps": "npm audit --audit-level=high --omit=dev",
+    "verify": "npm run lint && npm run build && npm run audit:deps"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.8",
