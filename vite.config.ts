@@ -8,26 +8,37 @@ import tailwindcss from '@tailwindcss/vite';
 const base = process.env.VITE_BASE ?? '/';
 
 /**
- * Absolute URLs, or none.
+ * Where this site actually lives.
  *
- * A canonical link and an `og:image` have to be absolute, and this repo
- * deploys to two hosts with different origins — so the origin is passed in at
- * build time rather than guessed. If nobody passes one, every tag that needs
- * it is *removed*: a canonical pointing at the wrong domain tells Google the
- * real site is a duplicate, which is worse than having no canonical at all.
+ * The production host, declared once. Vercel serves it; the repository's
+ * homepage field says so, and every absolute tag on the page — the canonical
+ * link, `og:url`, `og:image` — has to name it, because a scraper resolves
+ * nothing relative and a canonical aimed at the wrong domain tells a search
+ * engine the real site is the duplicate.
+ *
+ * Override it with `VITE_SITE_URL` when building for somewhere else. The full
+ * public address, including any path the site is served under — it is used
+ * verbatim, not joined to `base`, because the host and the path prefix do not
+ * always belong to each other.
  */
+const site = (process.env.VITE_SITE_URL ?? 'https://portfolio-beige-sigma-29.vercel.app').replace(
+  /\/+$/,
+  '',
+);
+
 function absoluteUrls(): Plugin {
-  const site = (process.env.VITE_SITE_URL ?? '').replace(/\/+$/, '');
   return {
     name: 'shop:absolute-urls',
     transformIndexHtml(html) {
+      // Blank on purpose is a valid answer: drop the tags rather than ship a
+      // guess. `VITE_SITE_URL=` does that.
       if (!site) {
         return html
           .split('\n')
           .filter((line) => !line.includes('__SITE_URL__'))
           .join('\n');
       }
-      return html.replaceAll('__SITE_URL__', site + base.replace(/\/$/, ''));
+      return html.replaceAll('__SITE_URL__', site);
     },
   };
 }

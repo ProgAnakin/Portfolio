@@ -1,11 +1,20 @@
 name: Deploy to GitHub Pages
 
-# Every push, filtered to the default branch by the job below rather than by
-# name. This workflow spent its whole life listening for pushes to `main` in a
-# repository that has no `main`: zero runs, and nothing to show it. Asking the
-# event what the default branch *is* survives the rename to `main` as well.
+# Run by hand, on purpose.
+#
+# Vercel serves this site and does it on every push. Pages would be a second
+# copy of the same thing, and it cannot even start until someone ticks
+# Settings → Pages → Source: GitHub Actions — `configure-pages` fails in one
+# second until they do, and `enablement: true` could not do it for them
+# either. A workflow that fails on every push of a portfolio repository is
+# worse than no workflow: the red cross is the first thing a visitor sees.
+#
+# To publish to Pages as well: tick that setting, run this from the Actions
+# tab, and if you want it automatic again put back
+#   push:
+# above, with the `if:` on the build job already filtering to the default
+# branch by asking the event what the default branch is.
 on:
-  push:
   workflow_dispatch:
 
 permissions:
@@ -42,10 +51,10 @@ jobs:
         env:
           # A project page is served from /<repo>/, so assets need that prefix.
           VITE_BASE: /${{ github.event.repository.name }}/
-          # The canonical link and the share image have to be absolute, and
-          # this is the one place the origin is actually knowable. Without it
-          # those tags are dropped rather than pointed at a guess.
-          VITE_SITE_URL: https://${{ github.repository_owner }}.github.io
+          # No `VITE_SITE_URL` override on purpose: a Pages build inherits the
+          # Vercel address as its canonical, which is what it is — a mirror.
+          # Two copies each claiming to be the original is how a small site
+          # competes with itself in search results.
         run: npm run build
 
       - name: Single-page fallback
