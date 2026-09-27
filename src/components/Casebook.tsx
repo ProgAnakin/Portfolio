@@ -1,7 +1,8 @@
 import { contacts, profile } from '../data/profile';
-import { projects, shelfSummary } from '../data/projects';
+import { natureShort, projects, shelfSummary } from '../data/projects';
 import { mediaFor } from '../data/media';
 import { ProjectDetail } from './ProjectDetail';
+import { ProjectCover } from './ProjectCover';
 import { ProjectMedia } from './ProjectMedia';
 
 /**
@@ -58,6 +59,31 @@ export function Casebook({ onPrintReceipt }: { onPrintReceipt: () => void }) {
             hold. {shelfSummary()} Each one says which it is, because a company and something I
             built for free on a Sunday are not the same claim.
           </p>
+          {/* A way past the reading. Somebody who came for one project — the
+              SaaS, usually — should not have to scroll three cards to find it,
+              and the row doubles as a contents page for the section. */}
+          <nav aria-label="The projects" className="mt-8">
+            <ul className="flex flex-wrap gap-2">
+              {projects.map((project) => (
+                <li key={project.id}>
+                  <a
+                    href={`#case-${project.id}`}
+                    className="font-till border-ink-500 text-paper-300 hover:border-paper-500 hover:text-paper-100 group flex items-center gap-2 border px-3 py-2 text-[0.58rem] tracking-[0.12em] transition-colors"
+                  >
+                    <span
+                      aria-hidden="true"
+                      className="size-2 shrink-0 rounded-full"
+                      style={{ backgroundColor: project.brand.accent }}
+                    />
+                    {project.name}
+                    <span className="text-paper-500 text-[0.5rem] tracking-[0.16em]">
+                      {natureShort[project.nature]}
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
         </header>
 
         <ol className="mt-14 space-y-14 sm:mt-20 sm:space-y-20">
@@ -67,6 +93,7 @@ export function Casebook({ onPrintReceipt }: { onPrintReceipt: () => void }) {
             return (
               <li key={project.id} id={`case-${project.id}`} className="scroll-mt-6">
                 <article className="bg-ink-700 border-ink-500 overflow-hidden border shadow-[0_18px_50px_rgba(6,5,4,0.5)]">
+                  <ProjectCover project={project} />
                   <ProjectDetail project={project} as="h3">
                     {media.length > 0 && <ProjectMedia project={project} media={media} />}
                   </ProjectDetail>

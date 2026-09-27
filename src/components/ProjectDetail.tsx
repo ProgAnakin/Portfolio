@@ -47,12 +47,51 @@ export function ProjectDetail({
 
   return (
     <>
-      {/* Header, in the project's own colours. */}
+      {/* Header, in the project's own colours — and the only coloured block on
+          the card, which is why the mark lives *behind* it rather than in a
+          band of its own above. A second brand-coloured panel on top of this
+          one was mostly empty space and twice the colour. */}
       <header
-        className="relative px-6 pt-6 pb-5 sm:px-8"
-        style={{ backgroundColor: brand.base, color: brand.paper }}
+        className="relative overflow-hidden px-6 pt-6 pb-5 sm:px-8"
+        style={{
+          background: `linear-gradient(118deg, color-mix(in oklab, ${brand.base} 74%, ${brand.ink}) 0%, ${brand.base} 62%, color-mix(in oklab, ${brand.base} 88%, ${brand.accent}) 100%)`,
+          color: brand.paper,
+        }}
       >
-        <div className="flex items-start gap-4">
+        {/* Hairline rules, the project's accent at a whisper: enough that a
+            flat rectangle reads as a printed surface. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background: `repeating-linear-gradient(126deg, transparent 0 15px, ${brand.accent}14 15px 16px)`,
+          }}
+        />
+        {/* The mark, far too big and half off the edge. A sleeve device, and
+            the one thing here that is genuinely the project's own. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -right-10 -bottom-12 rotate-[-8deg] opacity-[0.16] sm:-right-4"
+        >
+          <BrandMark brand={brand} size={230} />
+        </div>
+
+        {/* A scrim down the side the words are on.
+
+            A brand is picked to look like itself, not to carry body copy.
+            Kouci's sage against its own near-white came out at 3.1:1 — under
+            the 4.5:1 a paragraph needs, and that is at full opacity, before
+            the muted lines. Rather than repaint somebody's brand, the field
+            under the text gets darker and the colour stays what it is. The
+            project's own ink does the darkening, so each card stays in its
+            own palette. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0"
+          style={{ background: `linear-gradient(100deg, ${brand.ink}5c 0%, ${brand.ink}1f 44%, transparent 68%)` }}
+        />
+
+        <div className="relative flex items-start gap-4">
           <span
             className="flex size-16 shrink-0 items-center justify-center rounded-sm sm:size-20"
             style={{ backgroundColor: brand.ink }}
@@ -84,14 +123,14 @@ export function ProjectDetail({
             <Heading id={headingId} className="font-sign mt-2 text-3xl sm:text-[2.6rem]">
               {project.name}
             </Heading>
-            <p className="mt-0.5 text-sm opacity-80">{project.tagline}</p>
+            <p className="mt-0.5 text-sm opacity-90">{project.tagline}</p>
           </div>
         </div>
 
-        <p className="font-till mt-4 text-[0.58rem] tracking-[0.14em] uppercase opacity-70">
+        <p className="font-till relative mt-4 text-[0.58rem] tracking-[0.14em] uppercase opacity-85">
           {STATUS_NOTE[project.status]} · {project.tag.kind} · {project.tag.year}
         </p>
-        <p className="mt-1.5 text-[0.82rem] leading-snug opacity-75">
+        <p className="relative mt-1.5 text-[0.82rem] leading-snug opacity-90">
           {natureNote[project.nature]}
         </p>
       </header>
@@ -99,12 +138,44 @@ export function ProjectDetail({
       <div className="space-y-6 py-6">
         <p className="text-paper-300 px-6 leading-relaxed sm:px-8">{project.description}</p>
 
-        {children}
+        {/* Why it needed to exist, and what came of it.
+
+            A recruiter reading three cards of features in a row is reading a
+            list. Three problems with an answer each is a case. `outcome` is
+            missing on anything that has not shipped, and the column simply
+            does not appear — better than a sentence written to fill it. */}
+        <div className="border-ink-500 mx-6 grid gap-5 border-y py-5 sm:mx-8 sm:grid-cols-2 sm:gap-8">
+          <div>
+            <Sub
+              className="font-till text-[0.56rem] tracking-[0.2em] uppercase"
+              style={{ color: brand.accent }}
+            >
+              The problem
+            </Sub>
+            <p className="text-paper-300 mt-2 text-[0.92rem] leading-relaxed">
+              {project.story.problem}
+            </p>
+          </div>
+
+          {project.story.outcome && (
+            <div>
+              <Sub
+                className="font-till text-[0.56rem] tracking-[0.2em] uppercase"
+                style={{ color: brand.accent }}
+              >
+                What came of it
+              </Sub>
+              <p className="text-paper-300 mt-2 text-[0.92rem] leading-relaxed">
+                {project.story.outcome}
+              </p>
+            </div>
+          )}
+        </div>
 
         {/* A list rather than a <dl>: the figure is read before its label,
             and a <dl> that puts its <dd> first is not a <dl>. */}
         {project.metrics && project.metrics.length > 0 && (
-          <ul className="border-ink-500 mx-6 flex flex-wrap gap-x-9 gap-y-4 border-y py-4 sm:mx-8">
+          <ul className="border-ink-500 mx-6 flex flex-wrap gap-x-9 gap-y-4 border-b pb-5 sm:mx-8">
             {project.metrics.map((metric) => (
               <li key={metric.label} className="max-w-[13rem] min-w-[5.5rem]">
                 <span
@@ -125,6 +196,8 @@ export function ProjectDetail({
             ))}
           </ul>
         )}
+
+        {children}
 
         <div className="grid gap-5 px-6 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] sm:px-8">
           <div>

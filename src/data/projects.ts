@@ -78,6 +78,26 @@ export interface ProjectMetric {
 }
 
 /**
+ * The two sentences a recruiter is actually reading for.
+ *
+ * `description` says what the thing is; `role` says what I did on it; the
+ * metrics say how it went. What none of them said is *why it needed to exist*
+ * — and a project with no problem behind it reads as an exercise, however well
+ * built. Three cards of features in a row is a list; three problems with an
+ * answer each is a case for hiring someone.
+ *
+ * `outcome` is absent while there is nothing honest to put in it. Something
+ * still being built has a problem and no result yet, and saying so is better
+ * than a sentence written to fill the space.
+ */
+export interface ProjectStory {
+  /** The situation that made it worth doing. */
+  problem: string;
+  /** What came of it. Prose — the numbers are in `metrics`. */
+  outcome?: string;
+}
+
+/**
  * A project's own identity.
  *
  * Three products sharing one muted palette read as three of the same thing.
@@ -117,6 +137,8 @@ export interface Project {
   tag: { kind: string; year: string };
   /** Full description shown in the product sheet. */
   description: string;
+  /** Why it exists, and what came of it. */
+  story: ProjectStory;
   role: string;
   stack: string[];
   /** Left off entirely when there is no figure worth defending yet. */
@@ -143,6 +165,12 @@ export const projects: Project[] = [
     tag: { kind: 'SPORTS SAAS', year: '2025' },
     description:
       'A tactical and statistical analysis app for water polo: live match stats, penalty-shot mapping, roster management and animated tactics, built for coaches, clubs and federations.',
+    story: {
+      problem:
+        'Football and basketball clubs have analytics software to choose from. Water polo has whiteboards, phone video and whatever the coach remembers of the second quarter.',
+      outcome:
+        'Live at kouci.app, with clubs signed as partners and analysts using it week to week. My half of it is the going-out-and-finding-them half: the positioning, the outreach to clubs and federations, and the partnerships that come out of it.',
+    },
     role:
       'Co-founder — marketing, social media, outreach to clubs and federations, and partnerships.',
     stack: ['SaaS', 'Go-to-market', 'Partnerships'],
@@ -173,6 +201,12 @@ export const projects: Project[] = [
     tag: { kind: 'PWA KIOSK', year: '2025' },
     description:
       'An interactive iPad kiosk app built solo. An 8-question swipe quiz that recommends the best-fit product for a customer and generates a discount code in under 60 seconds. Includes an analytics dashboard with conversion funnel, multi-store product management, a 5-language interface, and production-grade security: bcrypt PIN, 2FA/TOTP, rate limiting and audit logging.',
+    story: {
+      problem:
+        'On a shop floor the same eight questions get asked all day, and the answer is only as good as whoever happens to be free to give it. A customer who cannot decide leaves to think about it, and mostly does not come back.',
+      outcome:
+        'Eight swipes and the customer walks out with a recommendation and a discount code, in under a minute, without needing anyone. Five languages, and a dashboard behind it that shows where people drop out — so the quiz can be argued with rather than guessed at.',
+    },
     role: 'Solo — product, design and build.',
     stack: ['React 18', 'TypeScript', 'Supabase', 'Tailwind', 'Vercel'],
     metrics: [
@@ -203,6 +237,11 @@ export const projects: Project[] = [
     tag: { kind: 'AI TRAINER', year: 'IN DEV' },
     description:
       'An AI simulator for cold calls. It runs realistic prospect scenarios and returns visual feedback on call structure, objection handling and recurring bad habits. Built to train sales fundamentals — the ones that are usually learned by burning real leads.',
+    story: {
+      problem:
+        'Cold calling is learned by doing it badly on real prospects. The feedback is a burnt lead and somebody\u2019s memory of how the call went — which is the most expensive training material there is.',
+      // No outcome yet, on purpose: it has not shipped. The status chip says so.
+    },
     role: 'Solo — product and build.',
     stack: ['In development'],
     // No metrics on purpose: it is still being built, so there is nothing to count.
