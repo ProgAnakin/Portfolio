@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
-import { projects, SHELF_COUNT, type Project } from '../../data/projects';
+import { projects, type Project } from '../../data/projects';
 import { useShelvedLayout } from '../../hooks/useMediaQuery';
 import { LightPool } from './LightPool';
 import { EmptyShelfTag, PriceTag } from './PriceTag';
 import { ProductOnShelf } from './ProductOnShelf';
 import { ShelfPlank } from './ShelfPlank';
-import { slotFor } from '../../data/shelving';
+import { SHELVES, slotFor } from '../../data/shelving';
 
 /**
  * Groups the inventory into shelves.
@@ -16,7 +16,7 @@ import { slotFor } from '../../data/shelving';
  * shelves, tags and lighting all survive the trip.
  */
 function buildRows(shelved: boolean): Project[][] {
-  const byShelf = Array.from({ length: SHELF_COUNT }, (_, shelf) =>
+  const byShelf = Array.from({ length: SHELVES }, (_, shelf) =>
     projects
       .filter((project) => slotFor(project.id).shelf === shelf)
       .sort((a, b) => slotFor(a.id).slot - slotFor(b.id).slot),

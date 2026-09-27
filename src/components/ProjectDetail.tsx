@@ -41,6 +41,9 @@ export function ProjectDetail({
 }) {
   const { brand } = project;
   const soldOut = project.status !== 'in-stock';
+  // One level under whatever the project's own name is set at, so the sheet
+  // (h2) and the casebook (h3) both produce an outline without a hole in it.
+  const Sub = Heading === 'h2' ? 'h3' : 'h4';
 
   return (
     <>
@@ -125,16 +128,16 @@ export function ProjectDetail({
 
         <div className="grid gap-5 px-6 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] sm:px-8">
           <div>
-            <h4 className="font-till text-paper-500 text-[0.56rem] tracking-[0.2em] uppercase">
+            <Sub className="font-till text-paper-500 text-[0.56rem] tracking-[0.2em] uppercase">
               My role
-            </h4>
+            </Sub>
             <p className="text-paper-300 mt-1.5 text-[0.92rem] leading-relaxed">{project.role}</p>
           </div>
 
           <div>
-            <h4 className="font-till text-paper-500 text-[0.56rem] tracking-[0.2em] uppercase">
+            <Sub className="font-till text-paper-500 text-[0.56rem] tracking-[0.2em] uppercase">
               Built with
-            </h4>
+            </Sub>
             <ul className="mt-2 flex flex-wrap gap-1.5">
               {project.stack.map((item) => (
                 <li
@@ -150,9 +153,9 @@ export function ProjectDetail({
 
         {/* The links are what this is for. */}
         <div className="px-6 sm:px-8">
-          <h4 className="font-till text-paper-500 text-[0.56rem] tracking-[0.2em] uppercase">
+          <Sub className="font-till text-paper-500 text-[0.56rem] tracking-[0.2em] uppercase">
             {project.links.length > 0 ? 'Go and look' : 'Nothing to show yet'}
-          </h4>
+          </Sub>
           {project.links.length > 0 ? (
             <ul className="mt-2.5 flex flex-wrap gap-2">
               {project.links.map((link, index) => (

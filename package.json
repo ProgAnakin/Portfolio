@@ -11,24 +11,23 @@
     "audit:deps": "npm audit --audit-level=high --omit=dev",
     "verify": "npm run lint && npm run build && npm run audit:deps"
   },
-  "//react-pin": "react and react-dom are pinned exactly: @react-three/fiber declares react '>=19 <19.3', and 9.7.0 is its newest release. Widening this breaks `npm ci` with ERESOLVE. See .github/dependabot.yml for when to lift it.",
   "dependencies": {
-    "@react-three/drei": "^10.7.8",
-    "@react-three/fiber": "^9.7.0",
-    "framer-motion": "^13.4.0",
-    "react": "19.2.8",
-    "react-dom": "19.2.8",
-    "three": "^0.186.0"
+    "@react-three/drei": "^10.7.9",
+    "@react-three/fiber": "^9.8.1",
+    "framer-motion": "^13.4.4",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "three": "^0.186.1"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.3",
-    "@types/node": "^26.6.1",
-    "@types/react": "19.2.14",
-    "@types/react-dom": "19.2.4",
+    "@types/node": "^26.6.3",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "@types/three": "^0.186.0",
     "@vitejs/plugin-react": "^6.1.1",
     "tailwindcss": "^4.3.3",
     "typescript": "^7.0.2",
-    "vite": "^8.3.0"
+    "vite": "^8.3.1"
   }
 }

@@ -28,6 +28,14 @@ export function ReceiptNudge({ onPrint }: { onPrint: () => void }) {
 
   // Follow the till. In the room it is tracked to a 3D object, so its position
   // changes every frame; in the drawing it just sits still.
+  //
+  // And hide it when the till is not on screen. The page scrolls now — there
+  // is a casebook under the shop — so a visitor can be a thousand pixels past
+  // the counter when the pointer heads for the address bar. The arrow was
+  // still being placed at the till's coordinates, which by then are above the
+  // top of the window: an arrow saying "click here" pointing at nothing. The
+  // card says the same thing and has the button on it, so losing the arrow
+  // costs nothing.
   useEffect(() => {
     if (!showing) return;
     let raf = 0;
@@ -36,8 +44,9 @@ export function ReceiptNudge({ onPrint }: { onPrint: () => void }) {
       const node = arrow.current;
       if (till && node) {
         const r = till.getBoundingClientRect();
+        const onScreen = r.width > 0 && r.bottom > 0 && r.top < window.innerHeight;
         node.style.transform = `translate3d(${r.left + r.width / 2}px, ${r.top}px, 0) translate(-50%, -100%)`;
-        node.style.opacity = r.width > 0 ? '1' : '0';
+        node.style.opacity = onScreen ? '1' : '0';
       }
       raf = requestAnimationFrame(tick);
     };

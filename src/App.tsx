@@ -3,7 +3,6 @@ import { AnimatePresence } from 'framer-motion';
 import { GrainOverlay } from './components/GrainOverlay';
 import { ProductSheet } from './components/ProductSheet';
 import { Casebook } from './components/Casebook';
-import { ReadableIndex } from './components/ReadableIndex';
 import { Receipt } from './components/Receipt';
 import { ReceiptNudge } from './components/ReceiptNudge';
 import { ShopMenu } from './components/ShopMenu';
@@ -41,7 +40,6 @@ function Shop() {
       <main>
         <ShopStage onPrintReceipt={printReceipt} />
         <Casebook onPrintReceipt={printReceipt} />
-        <ReadableIndex />
       </main>
 
       <ReceiptNudge onPrint={printReceipt} />

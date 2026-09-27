@@ -18,6 +18,9 @@ export function ProductSheet({ project, onClose }: { project: Project; onClose: 
       <motion.article
         initial={prefersReduced ? { opacity: 0 } : { opacity: 0, y: 26 }}
         animate={{ opacity: 1, y: 0 }}
+        // Without an explicit exit, `AnimatePresence` waits on whatever else
+        // is unmounting and the sheet lingers after Close.
+        exit={prefersReduced ? { opacity: 0 } : { opacity: 0, y: 14 }}
         transition={{ type: 'spring', stiffness: 240, damping: 28 }}
         className="bg-ink-700 border-ink-500 relative overflow-hidden border shadow-[0_24px_60px_rgba(12,10,9,0.8)]"
       >

@@ -239,9 +239,6 @@ export function shelfSummary(): string {
   return `${line[0].toUpperCase()}${line.slice(1)}.`;
 }
 
-/** Shelves are drawn from the inventory, so an empty shelf still gets a tag. */
-export const SHELF_COUNT = 3;
-
 export const statusLabel: Record<ProjectStatus, string> = {
   'in-stock': 'IN STOCK',
   'out-of-stock': 'OUT OF STOCK',

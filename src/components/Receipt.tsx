@@ -78,6 +78,7 @@ export function Receipt({ basket, seconds, onClose }: ReceiptProps) {
       <motion.div
         initial={{ height: prefersReduced ? 'auto' : 0 }}
         animate={{ height: 'auto' }}
+        exit={{ opacity: 0, transition: { duration: prefersReduced ? 0 : 0.18 } }}
         transition={{ duration: prefersReduced ? 0 : 1.7, ease: [0.16, 0.9, 0.3, 1] }}
         onAnimationComplete={() => setPrinted(true)}
         className="mx-auto w-full max-w-[22rem] overflow-hidden"

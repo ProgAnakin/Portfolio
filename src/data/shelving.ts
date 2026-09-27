@@ -39,8 +39,6 @@ export const SLOTS_PER_SHELF = Math.max(
   Math.min(MAX_SLOTS_PER_SHELF, Math.ceil(projects.length / SHELVES)),
 );
 
-export const CAPACITY = SHELVES * SLOTS_PER_SHELF;
-
 export interface Slot {
   shelf: number;
   slot: number;
