@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion, useReducedMotion } from 'motion/react';
 import { Modal } from './Modal';
 import { contacts, profile, receipt as till } from '../data/profile';
 import type { Project } from '../data/projects';

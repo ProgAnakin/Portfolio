@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { projects, statusLabel, type ProjectNature } from '../data/projects';
 import { useShop } from '../state/ShopContext';
 import { slotFor } from '../data/shelving';

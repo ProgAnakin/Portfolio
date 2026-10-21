@@ -1,4 +1,5 @@
 import { BrandMark } from './BrandMark';
+import { MetricValue } from './MetricValue';
 import { natureLabel, natureNote, statusLabel, type Project } from '../data/projects';
 
 const STATUS_NOTE: Record<Project['status'], string> = {
@@ -178,12 +179,11 @@ export function ProjectDetail({
           <ul className="border-ink-500 mx-6 flex flex-wrap gap-x-9 gap-y-4 border-b pb-5 sm:mx-8">
             {project.metrics.map((metric) => (
               <li key={metric.label} className="max-w-[13rem] min-w-[5.5rem]">
-                <span
+                <MetricValue
+                  value={metric.value}
                   className="block text-[1.7rem] leading-none font-semibold"
                   style={{ color: brand.accent }}
-                >
-                  {metric.value}
-                </span>
+                />
                 <span className="font-till text-paper-500 mt-1.5 block text-[0.54rem] tracking-[0.18em] uppercase">
                   {metric.label}
                 </span>

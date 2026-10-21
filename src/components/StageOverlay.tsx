@@ -1,4 +1,4 @@
-import { motion, useTransform } from 'framer-motion';
+import { motion, useTransform } from 'motion/react';
 import { contacts, menu, profile } from '../data/profile';
 import { shelfSummary } from '../data/projects';
 import { usePointerParallax } from '../hooks/usePointerParallax';

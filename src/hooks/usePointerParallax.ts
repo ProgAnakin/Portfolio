@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useMotionValue, useSpring, useReducedMotion, type MotionValue } from 'framer-motion';
+import { useMotionValue, useSpring, useReducedMotion, type MotionValue } from 'motion/react';
 import { useHasFinePointer, useIsStage } from './useMediaQuery';
 
 export interface Parallax {

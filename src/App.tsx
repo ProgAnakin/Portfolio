@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'motion/react';
 import { GrainOverlay } from './components/GrainOverlay';
 import { ProductSheet } from './components/ProductSheet';
 import { Casebook } from './components/Casebook';

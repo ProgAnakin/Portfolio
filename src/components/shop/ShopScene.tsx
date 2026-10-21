@@ -1,4 +1,4 @@
-import { motion, useTransform, type MotionValue } from 'framer-motion';
+import { motion, useTransform, type MotionValue } from 'motion/react';
 import type { ReactNode } from 'react';
 import { usePointerParallax } from '../../hooks/usePointerParallax';
 import { Chalkboard } from './Chalkboard';

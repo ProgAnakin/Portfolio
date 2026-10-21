@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion, useReducedMotion } from 'motion/react';
 import type { Project } from '../../data/projects';
 import { statusLabel } from '../../data/projects';
 import { tintVars } from '../../lib/tints';

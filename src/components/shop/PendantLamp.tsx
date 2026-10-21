@@ -1,4 +1,4 @@
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion, useReducedMotion } from 'motion/react';
 
 /** The lamp over the counter, and the cone of light it drops. */
 export function PendantLamp({ className }: { className?: string }) {
