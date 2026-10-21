@@ -1,11 +1,12 @@
-import { contacts, profile } from "../data/profile";
-import { natureShort, projects, shelfSummary } from "../data/projects";
-import { mediaFor } from "../data/media";
-import { ProjectDetail } from "./ProjectDetail";
-import { BlurFade } from "./magicui/blur-fade";
-import { GridPattern } from "./magicui/grid-pattern";
-import { ProjectCover } from "./ProjectCover";
-import { ProjectMedia } from "./ProjectMedia";
+import { contacts, profile, receipt } from '../data/profile';
+import { natureShort, projects, shelfSummary } from '../data/projects';
+import { mediaFor } from '../data/media';
+import { ProjectDetail } from './ProjectDetail';
+import { BlurFade } from './magicui/blur-fade';
+import { GridPattern } from './magicui/grid-pattern';
+import { ProjectCover } from './ProjectCover';
+import { ProjectMedia } from './ProjectMedia';
+import { ReceiptCard } from './ReceiptCard';
 
 /**
  * The same shelf, laid out flat.
@@ -65,18 +66,16 @@ export function Casebook({ onPrintReceipt }: { onPrintReceipt: () => void }) {
             <div aria-hidden="true" className="bg-accent mt-4 h-[3px] w-24" />
 
             <p className="text-paper-300 mt-6 leading-relaxed">
-              I sell for a living, so the portfolio is a shop. Every project up
-              there is a product on a shelf — pick it up, turn it over, read the
-              tag, take a receipt on the way out. It is built the way I would
-              want a shop floor built: the thing does the explaining, not a
+              I sell for a living, so the portfolio is a shop. Every project up there is a product
+              on a shelf — pick it up, turn it over, read the tag, take a receipt on the way out. It
+              is built the way I would want a shop floor built: the thing does the explaining, not a
               paragraph about the thing.
             </p>
             <p className="text-paper-500 mt-4 leading-relaxed">
-              This is the same inventory laid out flat, for anyone who would
-              rather read than explore. Same projects, same figures, same links
-              — and the screenshots a shelf cannot hold. {shelfSummary()} Each
-              one says which it is, because a company and something I built for
-              free on a Sunday are not the same claim.
+              This is the same inventory laid out flat, for anyone who would rather read than
+              explore. Same projects, same figures, same links — and the screenshots a shelf cannot
+              hold. {shelfSummary()} Each one says which it is, because a company and something I
+              built for free on a Sunday are not the same claim.
             </p>
             {/* A way past the reading. Somebody who came for one project — the
               SaaS, usually — should not have to scroll three cards to find it,
@@ -111,18 +110,12 @@ export function Casebook({ onPrintReceipt }: { onPrintReceipt: () => void }) {
             const media = mediaFor(project.id);
 
             return (
-              <li
-                key={project.id}
-                id={`case-${project.id}`}
-                className="scroll-mt-6"
-              >
+              <li key={project.id} id={`case-${project.id}`} className="scroll-mt-6">
                 <BlurFade inView inViewMargin="-80px">
                   <article className="bg-ink-700 border-ink-500 overflow-hidden border shadow-[0_18px_50px_rgba(6,5,4,0.5)]">
                     <ProjectCover project={project} />
                     <ProjectDetail project={project} as="h3">
-                      {media.length > 0 && (
-                        <ProjectMedia project={project} media={media} />
-                      )}
+                      {media.length > 0 && <ProjectMedia project={project} media={media} />}
                     </ProjectDetail>
                   </article>
                 </BlurFade>
@@ -131,55 +124,93 @@ export function Casebook({ onPrintReceipt }: { onPrintReceipt: () => void }) {
           })}
         </ol>
 
-        {/* The way out, for anyone who read this far and never touched the
-            telephone in the room. */}
-        <footer className="border-ink-500 mt-16 border-t pt-10 sm:mt-24">
-          <h3 className="font-sign text-paper-100 text-2xl sm:text-3xl">
-            What I am after
-          </h3>
-          <p className="text-paper-300 mt-3 max-w-2xl leading-relaxed">
-            {profile.openTo.roles.join(", ")} roles in{" "}
-            {profile.openTo.markets.join(", ")}. {profile.languages.join(" · ")}
-            .
-          </p>
+        {/* The close.
 
-          <div className="mt-6 flex flex-wrap items-center gap-2.5">
-            {linkable.map((contact, index) => (
-              <a
-                key={contact.id}
-                href={contact.href}
-                target="_blank"
-                rel="noreferrer"
-                className={`font-till group inline-flex items-center gap-2 px-4 py-3 text-[0.62rem] tracking-[0.14em] uppercase transition-transform hover:-translate-y-0.5 ${
-                  index === 0
-                    ? "bg-accent text-ink-900"
-                    : "border-paper-500/50 text-paper-300 border"
-                }`}
-              >
-                {contact.label}
-                <span
-                  aria-hidden="true"
-                  className="transition-transform group-hover:translate-x-0.5"
-                >
-                  ↗
-                </span>
-              </a>
-            ))}
+            Three cards explain the work very well and the person behind it
+            barely at all. So the page ends with both: the receipt says what he
+            does all day in the shop's own language, and beside it the thing a
+            recruiter came for — what he is after and how to reach him. One
+            block, not two weak ones. */}
+        <BlurFade inView inViewMargin="-80px">
+          <footer className="border-ink-500 mt-16 border-t pt-12 sm:mt-24">
+            <div className="grid gap-10 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:gap-16">
+              <ReceiptCard />
 
-            <button
-              type="button"
-              onClick={onPrintReceipt}
-              className="font-till border-paper-500/50 text-paper-300 hover:border-accent hover:text-accent cursor-pointer border px-4 py-3 text-[0.62rem] tracking-[0.14em] uppercase transition-colors"
-            >
-              Print a receipt
-            </button>
-          </div>
+              <div className="lg:pt-2">
+                <p className="font-till text-accent text-[0.58rem] tracking-[0.22em] uppercase">
+                  Who is behind the counter
+                </p>
+                <h3 className="font-sign text-paper-100 mt-3 text-3xl sm:text-4xl">
+                  What I am after
+                </h3>
+                <div aria-hidden="true" className="bg-accent mt-4 h-[3px] w-20" />
 
-          <p className="font-till text-paper-500 mt-6 text-[0.56rem] tracking-[0.14em] uppercase">
-            {contacts.find((contact) => contact.id === "email")?.label}:{" "}
-            {contacts.find((contact) => contact.id === "email")?.value}
-          </p>
-        </footer>
+                <p className="text-paper-300 mt-6 max-w-xl text-[1.05rem] leading-relaxed">
+                  {receipt.pitch}
+                </p>
+
+                <dl className="border-ink-500 mt-7 grid gap-5 border-t pt-6 sm:grid-cols-2">
+                  <div>
+                    <dt className="font-till text-paper-500 text-[0.54rem] tracking-[0.2em] uppercase">
+                      Open to
+                    </dt>
+                    <dd className="text-paper-300 mt-1.5 text-[0.92rem] leading-relaxed">
+                      {profile.openTo.roles.join(' · ')}
+                      <span className="text-paper-500 block">
+                        {profile.openTo.markets.join(' · ')}
+                      </span>
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="font-till text-paper-500 text-[0.54rem] tracking-[0.2em] uppercase">
+                      Languages
+                    </dt>
+                    <dd className="text-paper-300 mt-1.5 text-[0.92rem] leading-relaxed">
+                      {profile.languages.join(' · ')}
+                    </dd>
+                  </div>
+                </dl>
+
+                <div className="mt-8 flex flex-wrap items-center gap-2.5">
+                  {linkable.map((contact, index) => (
+                    <a
+                      key={contact.id}
+                      href={contact.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      className={`font-till group inline-flex items-center gap-2 px-4 py-3 text-[0.62rem] tracking-[0.14em] uppercase transition-transform hover:-translate-y-0.5 ${
+                        index === 0
+                          ? 'bg-accent text-ink-900'
+                          : 'border-paper-500/50 text-paper-300 border'
+                      }`}
+                    >
+                      {contact.label}
+                      <span
+                        aria-hidden="true"
+                        className="transition-transform group-hover:translate-x-0.5"
+                      >
+                        ↗
+                      </span>
+                    </a>
+                  ))}
+
+                  <button
+                    type="button"
+                    onClick={onPrintReceipt}
+                    className="font-till border-paper-500/50 text-paper-300 hover:border-accent hover:text-accent cursor-pointer border px-4 py-3 text-[0.62rem] tracking-[0.14em] uppercase transition-colors"
+                  >
+                    Print your own receipt
+                  </button>
+                </div>
+
+                <p className="font-till text-paper-500 mt-6 text-[0.56rem] tracking-[0.14em] uppercase">
+                  {contacts.find((contact) => contact.id === 'email')?.label}:{' '}
+                  {contacts.find((contact) => contact.id === 'email')?.value}
+                </p>
+              </div>
+            </div>
+          </footer>
+        </BlurFade>
       </div>
     </section>
   );

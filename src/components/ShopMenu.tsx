@@ -3,15 +3,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { projects, statusLabel, type ProjectNature } from '../data/projects';
 import { useShop } from '../state/ShopContext';
 import { slotFor } from '../data/shelving';
-
-/** A ragged tear across the bottom of the strip. */
-function tornEdge(width = 200, tooth = 5): string {
-  let d = `M0 0 H${width} V2.5 `;
-  for (let x = width; x > 0; x -= tooth) {
-    d += `L${(x - tooth / 2).toFixed(2)} 7 L${Math.max(x - tooth, 0).toFixed(2)} 2.5 `;
-  }
-  return `${d}Z`;
-}
+import { tornEdge } from '../lib/tornEdge';
 
 /** Sends focus somewhere in the page, scrolling to it if it is off screen. */
 function goTo(id: string) {

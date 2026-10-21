@@ -173,18 +173,31 @@ export function ProjectDetail({
           )}
         </div>
 
-        {/* A list rather than a <dl>: the figure is read before its label,
-            and a <dl> that puts its <dd> first is not a <dl>. */}
+        {/* A row of stat tiles — a handful of headline numbers, which is a KPI
+            row and not a chart.
+
+            The figure wears text ink, not the project's colour. Painting the
+            number itself is the habit that conflates identity with value, and
+            it costs legibility for nothing: the brand is already the whole
+            card. A rule above each tile carries it instead — colour as a mark
+            beside the number rather than on it.
+
+            A list rather than a <dl>: the figure is read before its label, and
+            a <dl> that puts its <dd> first is not a <dl>. */}
         {project.metrics && project.metrics.length > 0 && (
-          <ul className="border-ink-500 mx-6 flex flex-wrap gap-x-9 gap-y-4 border-b pb-5 sm:mx-8">
+          <ul className="border-ink-500 mx-6 flex flex-wrap gap-x-10 gap-y-5 border-b pb-6 sm:mx-8">
             {project.metrics.map((metric) => (
               <li key={metric.label} className="max-w-[13rem] min-w-[5.5rem]">
+                <span
+                  aria-hidden="true"
+                  className="mb-2.5 block h-[3px] w-7 rounded-full"
+                  style={{ backgroundColor: brand.accent }}
+                />
                 <MetricValue
                   value={metric.value}
-                  className="block text-[1.7rem] leading-none font-semibold"
-                  style={{ color: brand.accent }}
+                  className="text-paper-100 block text-[1.8rem] leading-none font-semibold"
                 />
-                <span className="font-till text-paper-500 mt-1.5 block text-[0.54rem] tracking-[0.18em] uppercase">
+                <span className="font-till text-paper-500 mt-2 block text-[0.54rem] tracking-[0.18em] uppercase">
                   {metric.label}
                 </span>
                 {metric.note && (

@@ -15,6 +15,13 @@ const PARTS = /^(\D*)(\d+(?:[.,]\d+)?)(.*)$/;
  * The moving part is hidden from assistive technology and the real value sits
  * beside it in an `sr-only` span: the ticker rewrites its own text on every
  * frame, and a screen reader handed that reads a slot machine.
+ *
+ * It keeps `tabular-nums`, which a standalone figure this size would normally
+ * not — proportional digits sit better at display sizes. But these digits
+ * change sixty times a second on the way up, and proportional ones change
+ * width as they go, so the number jitters sideways while it counts and drags
+ * its label with it. Every value here is two or three glyphs, where the
+ * looseness is not visible; the jitter would be.
  */
 export function MetricValue({
   value,
