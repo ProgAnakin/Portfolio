@@ -21,8 +21,8 @@ export type ProjectStatus = 'in-stock' | 'out-of-stock' | 'restocking';
  * Why a project exists, which is a different question from whether it shipped.
  *
  * Two of the three things on these shelves were built unpaid, on my own time,
- * because the problem was worth solving; one is a company with partner clubs
- * and people using it. A page that presents those identically makes a reader
+ * because the problem was worth solving; one is a company, pre-revenue and
+ * still being built. A page that presents those identically makes a reader
  * guess, and a guess about a stranger is usually the unflattering one — either
  * "he calls a side project a company" or "he buried the company among demos".
  * `status` says whether a thing is finished. This says what the thing is.
@@ -42,7 +42,7 @@ export const natureShort: Record<ProjectNature, string> = {
 
 /** The same distinction in a full sentence, for the sheet and the index. */
 export const natureNote: Record<ProjectNature, string> = {
-  venture: 'A company: partner clubs, people using it, a market to sell to.',
+  venture: 'A company I co-founded — pre-revenue, with a market to sell to.',
   portfolio: 'Built unpaid, on my own time and my own brief — not a business.',
 };
 
@@ -151,7 +151,7 @@ export const projects: Project[] = [
     id: 'kouci',
     name: 'Kouci',
     tagline: 'Sports-analytics SaaS for water polo',
-    status: 'in-stock',
+    status: 'out-of-stock',
     nature: 'venture',
     shape: 'boxed-set',
     brand: {
@@ -168,16 +168,16 @@ export const projects: Project[] = [
     story: {
       problem:
         'Football and basketball clubs have analytics software to choose from. Water polo has whiteboards, phone video and whatever the coach remembers of the second quarter.',
+      // Pre-revenue, and said so. There are no signed clubs: one club runs an
+      // unpaid pilot, used to test ideas against a real squad. A co-founder
+      // who claims customers he does not have is found out in the first
+      // reference call, and the honest version is a better story anyway.
       outcome:
-        'Live at kouci.app, with clubs signed as partners and analysts using it week to week. My half of it is the going-out-and-finding-them half: the positioning, the outreach to clubs and federations, and the partnerships that come out of it.',
+        'Still being built, and pre-revenue. One club runs an unpaid pilot with us, so the ideas get tested against a real squad before there is anything to sell. My half of it is the going-out-and-finding-them half: the positioning, the outreach to clubs and federations, and the partnerships that come out of it.',
     },
     role:
       'Co-founder — marketing, social media, outreach to clubs and federations, and partnerships.',
     stack: ['SaaS', 'Go-to-market', 'Partnerships'],
-    metrics: [
-      { value: '3', label: 'partner clubs', note: 'Signed as partners, not trials.' },
-      { value: '3', label: 'analysts on board' },
-    ],
     links: [
       { label: 'kouci.app', href: 'https://www.kouci.app/' },
       { label: 'Earlier build', href: 'https://kouci-web.vercel.app' },
