@@ -1,9 +1,14 @@
-# Costanzo Annichini — portfolio
+# Costanzo Annichini, portfolio
 
-The portfolio of a salesperson who builds software. One page, black and white:
-the record from the shop floor first, then the products, then how to get in
-touch. The page has no colour of its own — the only colour on it belongs to the
-work, and each project takes its colour back when you point at it.
+The portfolio of a salesperson who builds software. One page, laid out like a
+printed brochure: a black cover (who he is, four numbers), white pages (the
+sales record, then the work) and a black back cover (contact). Black, white
+and greys only; the colour on the page belongs to the projects, which sit in
+greyscale until they are pointed at.
+
+Type is Archivo, one variable family: its widest cut in capitals for the name
+and section labels, normal width for everything else. Copy is short, first
+person and plain: no slogans, no em dashes.
 
 The 3D shop this site used to be is kept on the `archive/3d-shop` branch.
 
@@ -32,7 +37,8 @@ Deploys two ways from the same commit:
 |---|---|
 | Name, headline figures, the shop-floor record, how I sell, contacts | [`src/data/profile.ts`](src/data/profile.ts) |
 | The projects, in reading order | [`src/data/projects.ts`](src/data/projects.ts) |
-| Screenshots and clips | [`src/assets/shots/<project id>/`](src/assets/shots/README.md) — drop files in |
+| A project's case media | [`src/assets/shots/<project id>/`](src/assets/shots/README.md), drop files in |
+| A project's card loop | `src/assets/previews/<project id>.mp4` and `.webp`, imported in `projects.ts` |
 | Project logos | `src/assets/logos/` |
 | Colours and type | [`src/index.css`](src/index.css) |
 
@@ -54,5 +60,6 @@ does not grow with it.
   `vercel.json` would block anything else.
 - It does not publish a personal email address. Contact is LinkedIn; email is
   "available on request".
-- Motion respects `prefers-reduced-motion`: reduced, nothing moves and every
-  number is its final value from the first frame.
+- Nothing animates on scroll. The card videos play only while on screen, and
+  not at all under `prefers-reduced-motion`.
+- Runtime dependencies are React and React DOM, nothing else.

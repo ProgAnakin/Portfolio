@@ -1,17 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { mediaFor, type ProjectMedia } from '../data/media';
-import { natureLabel, type Project } from '../data/projects';
-import { MetricValue } from './MetricValue';
+import { natureLabel, type Chapter, type Project } from '../data/projects';
 import { ArrowOut } from './ui';
 
 /**
  * A project's case, over the page.
  *
- * The main page stays short — a recruiter scanning it sees four lines of work,
- * not four screens — and the detail is one click away for the one they care
- * about. A native `<dialog>`, opened with `showModal()`: it traps focus, closes
- * on Escape, makes the page behind it inert and hands focus back to whatever
- * opened it, all without a line of code here doing any of that.
+ * The main page stays short and the detail is one click away. A native
+ * `<dialog>` opened with `showModal()`: it traps focus, closes on Escape, makes
+ * the page behind it inert and hands focus back to whatever opened it.
  */
 export function ProjectDialog({
   project,
@@ -38,7 +35,7 @@ export function ProjectDialog({
       // A click on the backdrop lands on the dialog element itself.
       onClick={(event) => event.target === event.currentTarget && ref.current?.close()}
       aria-labelledby="case-name"
-      className="bg-ink-950 text-chalk-300 border-ink-700 m-auto h-full max-h-none w-full max-w-none overflow-y-auto border p-0 backdrop:bg-black/80 sm:h-[min(92vh,980px)] sm:w-[min(94vw,1100px)] sm:rounded-3xl"
+      className="bg-paper text-ink-2 m-auto h-full max-h-none w-full max-w-none overflow-y-auto p-0 sm:h-[min(94vh,1000px)] sm:w-[min(94vw,1160px)]"
     >
       {project && (
         <CaseBody
@@ -65,72 +62,87 @@ function CaseBody({
 
   return (
     <article>
-      {/* The brand's colour, once — the project has been opened, so it gets to
-          be itself. Everything else stays in the page's greys. */}
-      <div aria-hidden="true" className="h-1" style={{ background: project.accent }} />
+      {/* The brand's own colour, once: the project has been opened, so it
+          gets to be itself. */}
+      <div aria-hidden="true" className="h-1.5" style={{ background: project.accent }} />
 
-      <header className="bg-ink-950/90 border-ink-700 sticky top-0 z-10 flex items-center justify-between gap-4 border-b px-5 py-4 backdrop-blur sm:px-8">
+      <header className="bg-paper/95 border-line sticky top-0 z-10 flex items-center justify-between gap-4 border-b px-5 py-3 backdrop-blur sm:px-10">
         <div className="flex min-w-0 items-center gap-3">
           <img
             src={project.logo}
             alt=""
-            width={32}
-            height={32}
-            className="size-8 shrink-0 rounded-[22%] object-contain"
+            width={28}
+            height={28}
+            className="size-7 shrink-0 rounded-[22%] object-contain"
           />
-          <p className="label truncate">
-            {natureLabel[project.nature]} · {project.year}
-          </p>
+          <p className="text-ink truncate text-sm font-semibold">{project.name}</p>
         </div>
         <button
           type="button"
           onClick={onClose}
-          // Autofocus the way out rather than the first link, so a keyboard
-          // user lands somewhere harmless and a screen reader starts at the top.
+          // Focus lands on the way out, so a keyboard user starts somewhere
+          // harmless and a screen reader starts at the top.
           autoFocus
-          className="border-ink-600 text-chalk-100 hover:bg-ink-800 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm"
+          className="border-ink text-ink hover:bg-ink hover:text-paper border px-4 py-1.5 text-sm font-medium transition-colors"
         >
           Close
-          <span aria-hidden="true" className="text-chalk-500 hidden sm:inline">
-            Esc
-          </span>
         </button>
       </header>
 
-      <div className="px-5 pt-8 pb-12 sm:px-8 sm:pt-10">
-        <h2 id="case-name" className="font-display text-chalk-100 text-4xl sm:text-6xl">
-          {project.name}
-        </h2>
-        <p className="text-chalk-100 mt-3 text-lg sm:text-xl">{project.tagline}</p>
-        <p className="text-chalk-500 mt-2 text-sm">{project.status}</p>
+      <div className="px-5 pt-10 pb-16 sm:px-10 sm:pt-14">
+        <div className="grid gap-8 lg:grid-cols-12 lg:gap-x-10">
+          <div className="lg:col-span-8">
+            <h2 id="case-name" className="head text-ink text-[clamp(2.25rem,5vw,4rem)]">
+              {project.name}
+            </h2>
+            <p className="text-ink mt-3 text-xl">{project.tagline}</p>
+          </div>
+          <dl className="grid grid-cols-2 gap-x-6 gap-y-4 self-end text-sm lg:col-span-4">
+            <Fact label="Type" value={natureLabel[project.nature]} />
+            <Fact label="Year" value={project.year} />
+            <Fact label="Status" value={project.status} wide />
+          </dl>
+        </div>
 
-        {media.length > 0 && <Gallery media={media} startAt={startAt} name={project.name} />}
+        {media.length > 0 && <Player media={media} startAt={startAt} project={project} />}
 
-        <div className="mt-12 grid gap-10 lg:grid-cols-12 lg:gap-8">
-          <div className="space-y-8 lg:col-span-7">
-            <Block title="The problem">{project.problem}</Block>
-            <Block title="What it does">{project.solution}</Block>
-            {project.outcome && <Block title="Where it stands">{project.outcome}</Block>}
+        <div className="mt-14 grid gap-12 lg:grid-cols-12 lg:gap-x-10">
+          <div className="space-y-10 lg:col-span-7">
+            <Block title="Why it exists">
+              <p>{project.context}</p>
+            </Block>
+            <Block title={project.steps.title}>
+              <ol className="border-line border-t">
+                {project.steps.items.map((item, i) => (
+                  <li
+                    key={item}
+                    className="border-line grid grid-cols-[2rem_1fr] gap-2 border-b py-3"
+                  >
+                    <span className="text-ink-3 text-sm tabular-nums">{i + 1}</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ol>
+            </Block>
+            <Block title="Where it stands">
+              <p>{project.outcome}</p>
+            </Block>
           </div>
 
-          <aside className="space-y-8 lg:col-span-4 lg:col-start-9">
-            <Block title="My role">{project.role}</Block>
-
+          <aside className="space-y-10 lg:col-span-5">
             {project.metrics && (
-              <div>
-                <h3 className="label">In numbers</h3>
-                <dl className="mt-3 space-y-4">
+              <Block title="In numbers">
+                <dl className="border-line border-t">
                   {project.metrics.map((metric) => (
                     <div
                       key={metric.label}
-                      className="border-ink-700 flex items-baseline gap-4 border-t pt-3"
+                      className="border-line flex items-baseline gap-5 border-b py-4"
                     >
                       <dt className="sr-only">{metric.label}</dt>
                       <dd className="contents">
-                        <MetricValue
-                          value={metric.value}
-                          className="text-chalk-100 w-20 shrink-0 text-2xl font-medium"
-                        />
+                        <span className="figure text-ink w-24 shrink-0 text-3xl">
+                          {metric.value}
+                        </span>
                         <span aria-hidden="true" className="text-sm">
                           {metric.label}
                         </span>
@@ -138,28 +150,22 @@ function CaseBody({
                     </div>
                   ))}
                 </dl>
-              </div>
+              </Block>
             )}
-
-            <div>
-              <h3 className="label">Built with</h3>
-              <ul className="mt-3 flex flex-wrap gap-2">
-                {project.stack.map((item) => (
-                  <li key={item} className="border-ink-600 rounded-full border px-3 py-1 text-xs">
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <ul className="space-y-2">
+            <Block title="My role">
+              <p>{project.role}</p>
+            </Block>
+            <Block title="Built with">
+              <p>{project.stack.join(', ')}</p>
+            </Block>
+            <ul className="space-y-3">
               {project.links.map((link) => (
                 <li key={link.href}>
                   <a
                     href={link.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-chalk-100 hover:text-white inline-flex items-center gap-1.5 underline decoration-ink-600 underline-offset-4 hover:decoration-chalk-300"
+                    className="text-ink inline-flex items-center gap-2 border-b border-current pb-0.5 font-medium"
                   >
                     {link.label}
                     <ArrowOut />
@@ -174,78 +180,134 @@ function CaseBody({
   );
 }
 
+function Fact({ label, value, wide }: { label: string; value: string; wide?: boolean }) {
+  return (
+    <div className={wide ? 'col-span-2' : ''}>
+      <dt className="text-ink-3">{label}</dt>
+      <dd className="text-ink mt-0.5">{value}</dd>
+    </div>
+  );
+}
+
 function Block({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section>
-      <h3 className="label">{title}</h3>
-      <p className="mt-3 leading-relaxed">{children}</p>
+      <h3 className="wide text-ink mb-4 text-[0.75rem] font-semibold">{title}</h3>
+      {children}
     </section>
   );
 }
 
+const time = (seconds: number) =>
+  `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, '0')}`;
+
 /**
- * One screen at a time, with a rail of the rest underneath.
- *
- * Nothing is cropped to fit: phone screenshots and a 16:9 tour share one
- * stage, letterboxed against the dark. A clip downloads nothing until someone
- * presses play — `preload="none"` with its poster — so a tour nobody watches
- * costs the page nothing.
+ * The case's media: one stage, a rail of everything underneath, and for the
+ * video a list of chapters that jump to the part of the demo someone wants to
+ * see. A clip downloads nothing until it is played (`preload="none"` with its
+ * poster); nothing is cropped to fit, phone screens and a 16:9 tour share one
+ * stage, letterboxed against black.
  */
-function Gallery({
+function Player({
   media,
   startAt,
-  name,
+  project,
 }: {
   media: ProjectMedia[];
   startAt: number;
-  name: string;
+  project: Project;
 }) {
   const [index, setIndex] = useState(Math.min(Math.max(startAt, 0), media.length - 1));
+  const [now, setNow] = useState(0);
+  const video = useRef<HTMLVideoElement>(null);
   const current = media[index];
+  const chapters: Chapter[] =
+    current.kind === 'video' && index === 0 ? (project.chapters ?? []) : [];
+  const active = chapters.reduce((found, chapter, i) => (now >= chapter.at ? i : found), 0);
+
+  const jump = (at: number) => {
+    const node = video.current;
+    if (!node) return;
+    node.currentTime = at;
+    node.play().catch(() => {});
+  };
 
   return (
     <div className="mt-10">
-      <div className="border-ink-700 bg-ink-900 relative flex aspect-[16/10] items-center justify-center overflow-hidden rounded-2xl border">
+      <div className="bg-night relative flex aspect-video max-h-[70vh] w-full items-center justify-center overflow-hidden">
         {current.kind === 'video' ? (
           <video
+            ref={video}
             key={current.src}
-            src={current.src}
             poster={current.poster}
             controls
+            muted
             playsInline
             preload="none"
-            aria-label={`${name}: ${current.caption}`}
+            onTimeUpdate={(event) => setNow(event.currentTarget.currentTime)}
+            aria-label={`${project.name}: ${current.caption}`}
             className="h-full w-full object-contain"
-          />
+          >
+            {current.sources?.map((source) => (
+              <source key={source.src} src={source.src} type={source.type} />
+            ))}
+          </video>
         ) : (
           <img
             key={current.src}
             src={current.src}
-            alt={`${name}: ${current.caption}`}
+            alt={`${project.name}: ${current.caption}`}
             decoding="async"
             className="h-full w-full object-contain p-3 sm:p-6"
           />
         )}
       </div>
-      <p className="text-chalk-500 mt-3 text-sm" aria-live="polite">
-        {current.caption}
-        <span className="tabular-nums">
-          {' '}
-          — {index + 1} of {media.length}
-        </span>
-      </p>
+
+      <div className="mt-3 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 text-sm">
+        <p className="text-ink" aria-live="polite">
+          {current.caption}
+        </p>
+        {current.kind === 'video' && project.videoNote && (
+          <p className="text-ink-3">{project.videoNote}</p>
+        )}
+      </div>
+
+      {chapters.length > 0 && (
+        <ol
+          aria-label="Chapters"
+          className="border-line mt-5 grid border-t sm:grid-cols-2 lg:grid-cols-4"
+        >
+          {chapters.map((chapter, i) => (
+            <li key={chapter.at} className="border-line border-b">
+              <button
+                type="button"
+                onClick={() => jump(chapter.at)}
+                aria-current={i === active && now > 0 ? 'step' : undefined}
+                className={`flex w-full items-baseline gap-3 py-3 pr-3 text-left text-sm transition-colors ${
+                  i === active && now > 0 ? 'text-ink font-semibold' : 'text-ink-2 hover:text-ink'
+                }`}
+              >
+                <span className="text-ink-3 w-9 shrink-0 font-normal tabular-nums">
+                  {time(chapter.at)}
+                </span>
+                {chapter.label}
+              </button>
+            </li>
+          ))}
+        </ol>
+      )}
 
       {media.length > 1 && (
-        <ul aria-label="Screens" className="mt-4 flex gap-3 overflow-x-auto pb-2">
+        <ul aria-label="Screens" className="mt-6 flex gap-3 overflow-x-auto pb-2">
           {media.map((item, i) => (
             <li key={item.src} className="shrink-0">
               <button
                 type="button"
                 onClick={() => setIndex(i)}
                 aria-current={i === index}
-                aria-label={item.caption}
-                className={`bg-ink-900 relative block h-16 w-24 overflow-hidden rounded-lg border transition-colors sm:h-20 sm:w-32 ${
-                  i === index ? 'border-chalk-100' : 'border-ink-700 hover:border-chalk-500'
+                aria-label={item.kind === 'video' ? `${item.caption}, video` : item.caption}
+                className={`bg-night relative block h-16 w-24 overflow-hidden border-2 transition-colors sm:h-20 sm:w-32 ${
+                  i === index ? 'border-ink' : 'border-transparent hover:border-line'
                 }`}
               >
                 <img
@@ -255,8 +317,8 @@ function Gallery({
                   className="h-full w-full object-contain"
                 />
                 {item.kind === 'video' && (
-                  <span className="bg-ink-950/80 text-chalk-100 absolute bottom-1 left-1 rounded px-1.5 py-0.5 text-[10px]">
-                    ▶ Video
+                  <span className="bg-night text-snow absolute bottom-0 left-0 px-1.5 py-0.5 text-[10px] font-medium">
+                    Video
                   </span>
                 )}
               </button>

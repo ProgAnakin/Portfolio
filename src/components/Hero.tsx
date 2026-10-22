@@ -1,98 +1,80 @@
 import { contacts, figures, profile } from '../data/profile';
-import { MetricValue } from './MetricValue';
-import { ArrowOut, ArrowRight, Container, Reveal, button } from './ui';
+import { ArrowOut, Container, button } from './ui';
 
 const linkedin = contacts.find((contact) => contact.id === 'linkedin');
 
+/** The black cover: who, what, and the four numbers that back it up. */
 export function Hero() {
   return (
-    <section id="top" aria-labelledby="hero-name" className="pt-16 pb-4 sm:pt-28 sm:pb-8">
-      <Container>
-        <Reveal>
-          <p className="label flex flex-wrap gap-x-3 gap-y-1">
-            <span className="text-chalk-300">{profile.role}</span>
-            <span aria-hidden="true">·</span>
-            <span>{profile.employer}</span>
-            <span aria-hidden="true">·</span>
-            <span>{profile.location}</span>
+    <section id="top" aria-labelledby="hero-name" className="bg-night text-snow-2">
+      <Container className="pt-14 pb-10 sm:pt-24 sm:pb-14">
+        <dl className="border-night-line grid gap-x-8 gap-y-4 border-t pt-5 text-sm sm:grid-cols-3">
+          <div>
+            <dt className="text-snow-3">Now</dt>
+            <dd className="text-snow mt-1">
+              {profile.role}, {profile.employer}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-snow-3">Languages</dt>
+            <dd className="text-snow mt-1">
+              {profile.languages.map((language) => language.name).join(', ')}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-snow-3">Open to</dt>
+            <dd className="text-snow mt-1">{profile.openTo}</dd>
+          </div>
+        </dl>
+
+        <h1
+          id="hero-name"
+          className="wide text-snow mt-16 text-[clamp(2.35rem,11.4vw,8.25rem)] leading-[0.9] font-[780] sm:mt-24"
+        >
+          {/* The space is for anything that reads the text rather than the
+              layout: without it the name is one word. */}
+          Costanzo <br />
+          Annichini
+        </h1>
+
+        <div className="mt-10 grid gap-8 lg:grid-cols-12 lg:gap-x-8">
+          <p className="text-snow text-xl leading-[1.45] sm:text-2xl lg:col-span-8">
+            {profile.lead}
           </p>
-        </Reveal>
-
-        <Reveal delay={0.06}>
-          <h1
-            id="hero-name"
-            className="font-display text-chalk-100 mt-6 text-[clamp(3.75rem,15vw,9rem)] leading-[0.9]"
-          >
-            {/* The space is for anything that reads the text rather than the
-                layout: without it the name is one word, "CostanzoAnnichini". */}
-            Costanzo <br />
-            <span className="text-chalk-300 italic">Annichini</span>
-          </h1>
-        </Reveal>
-
-        <div className="mt-10 grid gap-10 lg:grid-cols-12 lg:gap-8">
-          <Reveal delay={0.12} className="lg:col-span-7">
-            <p className="text-chalk-100 text-xl leading-snug text-balance sm:text-2xl">
-              {profile.lead}
-            </p>
-            <p className="mt-5 max-w-xl leading-relaxed">{profile.standfirst}</p>
-          </Reveal>
-
-          <Reveal delay={0.18} className="lg:col-span-4 lg:col-start-9 lg:pt-1.5">
-            <dl className="space-y-4 text-sm">
-              <div>
-                <dt className="label">Open to</dt>
-                <dd className="text-chalk-100 mt-1.5">{profile.openTo.roles.join(' · ')}</dd>
-              </div>
-              <div>
-                <dt className="label">Where</dt>
-                <dd className="text-chalk-100 mt-1.5">{profile.openTo.markets.join(' · ')}</dd>
-              </div>
-            </dl>
-            <div className="mt-7 flex flex-wrap gap-3">
-              {linkedin?.href && (
-                <a
-                  href={linkedin.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={button.primary}
-                >
-                  LinkedIn
-                  <ArrowOut />
-                </a>
-              )}
-              <a href="#work" className={button.secondary}>
-                See the work
-                <ArrowRight className="rotate-90" />
+          <div className="flex flex-wrap items-center gap-x-7 gap-y-4 lg:col-span-4 lg:justify-end lg:self-end">
+            {linkedin?.href && (
+              <a
+                href={linkedin.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={button.light}
+              >
+                Message me on LinkedIn
+                <ArrowOut />
               </a>
-            </div>
-          </Reveal>
+            )}
+            <a href="#work" className={`${button.link} text-snow`}>
+              See the work
+            </a>
+          </div>
         </div>
 
-        {/* The headline figures. Text in ink, never in colour; each with the
-            fine print that makes it honest sitting right under it. */}
-        <Reveal delay={0.24}>
-          {/* Hairlines between the tiles come from the gap showing the grid's
-              own background through — one rule system at every breakpoint. */}
-          <ul
-            aria-label="In numbers"
-            className="border-ink-700 bg-ink-700 mt-20 grid grid-cols-2 gap-px border-y sm:mt-24 lg:grid-cols-4"
-          >
-            {figures.map((figure) => (
-              <li
-                key={figure.label}
-                className="bg-ink-950 py-6 pr-4 [&:nth-child(2n)]:pl-5 lg:[&:not(:first-child)]:pl-6"
-              >
-                <MetricValue
-                  value={figure.value}
-                  className="text-chalk-100 block text-4xl font-medium tracking-tight sm:text-5xl"
-                />
-                <p className="text-chalk-100 mt-3 text-sm leading-snug">{figure.label}</p>
-                <p className="text-chalk-500 mt-1 text-xs leading-snug">{figure.note}</p>
-              </li>
-            ))}
-          </ul>
-        </Reveal>
+        <ul
+          aria-label="In numbers"
+          className="border-night-line mt-16 grid grid-cols-2 border-t sm:mt-20 lg:grid-cols-4"
+        >
+          {figures.map((figure, i) => (
+            <li
+              key={figure.label}
+              className={`border-night-line py-6 ${i % 2 ? 'border-l pl-5' : 'pr-5'} ${
+                i > 1 ? 'border-t lg:border-t-0' : ''
+              } ${i === 2 ? 'lg:border-l lg:pl-5' : ''}`}
+            >
+              <p className="figure text-snow text-[2.5rem] sm:text-6xl">{figure.value}</p>
+              <p className="mt-3 text-sm leading-snug">{figure.label}</p>
+            </li>
+          ))}
+        </ul>
       </Container>
     </section>
   );

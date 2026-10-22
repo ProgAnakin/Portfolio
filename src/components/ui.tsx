@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react';
-import { BlurFade } from './magicui/blur-fade';
 
-/** The page's one column: wide enough for a two-up, never wider. */
+/** The page's one column. */
 export function Container({
   children,
   className = '',
@@ -9,79 +8,72 @@ export function Container({
   children: ReactNode;
   className?: string;
 }) {
-  return <div className={`mx-auto w-full max-w-6xl px-5 sm:px-8 ${className}`}>{children}</div>;
+  return (
+    <div className={`mx-auto w-full max-w-[1200px] px-5 sm:px-8 ${className}`}>{children}</div>
+  );
 }
 
 /**
- * A numbered section: `01 — On the floor`, a hairline, then the content.
- *
- * The numbers are a reading order, not decoration — four sections, read top
- * to bottom, in the order a recruiter asks the questions: can he sell, what
- * has he built, how does he work, how do I reach him.
+ * A page section, laid out like a CV: the section's name in a narrow column on
+ * the left, the content on the right. On a phone the name sits on top.
  */
 export function Section({
   id,
-  index,
   name,
+  note,
+  tone = 'paper',
   children,
 }: {
   id: string;
-  index: string;
   name: string;
+  /** A short line under the name: a period, a count. */
+  note?: string;
+  tone?: 'paper' | 'night';
   children: ReactNode;
 }) {
+  const night = tone === 'night';
   return (
-    <section id={id} aria-labelledby={`${id}-label`} className="py-16 sm:py-24">
-      <Container>
-        <div className="border-ink-700 mb-10 flex items-baseline gap-4 border-t pt-5 sm:mb-14">
-          <span className="label tabular-nums">{index}</span>
-          <h2 id={`${id}-label`} className="label text-chalk-300!">
-            {name}
-          </h2>
+    <section
+      id={id}
+      aria-labelledby={`${id}-name`}
+      className={night ? 'bg-night text-snow-2' : 'bg-paper text-ink-2'}
+    >
+      <Container className="py-16 sm:py-24">
+        <div
+          className={`grid gap-y-8 border-t pt-6 lg:grid-cols-12 lg:gap-x-8 ${
+            night ? 'border-night-line' : 'border-line'
+          }`}
+        >
+          <div className="lg:col-span-3">
+            <h2
+              id={`${id}-name`}
+              className={`wide text-[0.8125rem] font-semibold ${night ? 'text-snow' : 'text-ink'}`}
+            >
+              {name}
+            </h2>
+            {note && (
+              <p className={`mt-2 text-sm ${night ? 'text-snow-3' : 'text-ink-3'}`}>{note}</p>
+            )}
+          </div>
+          <div className="lg:col-span-9">{children}</div>
         </div>
-        {children}
       </Container>
     </section>
   );
 }
 
-/** Content that settles into place as it scrolls in, once. */
-export function Reveal({
-  children,
-  delay = 0,
-  className,
-}: {
-  children: ReactNode;
-  delay?: number;
-  className?: string;
-}) {
-  return (
-    <BlurFade
-      inView
-      inViewMargin="-80px"
-      delay={delay}
-      offset={10}
-      blur="4px"
-      duration={0.5}
-      className={className}
-    >
-      {children}
-    </BlurFade>
-  );
-}
-
-/** ↗ for a link that leaves the page. Decorative: the link text says where it goes. */
+/** ↗ for a link that leaves the page. Decorative: the link text says where. */
 export function ArrowOut({ className = '' }: { className?: string }) {
   return (
     <svg
       viewBox="0 0 16 16"
       aria-hidden="true"
-      className={`size-3.5 ${className}`}
+      className={`size-3.5 shrink-0 ${className}`}
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.5"
+      strokeWidth="1.6"
     >
-      <path d="M5 11 11 5M6 5h5v5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M5 11 11 5M6 5h5v5" />
     </svg>
   );
 }
@@ -92,20 +84,26 @@ export function ArrowRight({ className = '' }: { className?: string }) {
     <svg
       viewBox="0 0 16 16"
       aria-hidden="true"
-      className={`size-4 ${className}`}
+      className={`size-4 shrink-0 ${className}`}
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.5"
+      strokeWidth="1.6"
     >
-      <path d="M3 8h10M9 4l4 4-4 4" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M2.5 8h11M9.5 4l4 4-4 4" />
     </svg>
   );
 }
 
-/** The two button weights the page has. */
+/**
+ * Buttons are rectangles with square corners: the page's only shapes are
+ * rules and blocks, and a pill would be the one rounded thing on it.
+ */
 export const button = {
-  primary:
-    'inline-flex items-center gap-2 rounded-full bg-chalk-100 px-5 py-2.5 text-sm font-medium text-ink-950 transition-colors hover:bg-white',
-  secondary:
-    'inline-flex items-center gap-2 rounded-full border border-ink-600 px-5 py-2.5 text-sm font-medium text-chalk-100 transition-colors hover:border-chalk-500 hover:bg-ink-900',
+  /** White on the black covers. */
+  light:
+    'inline-flex items-center gap-3 bg-snow px-5 py-3 text-[0.9375rem] font-medium text-ink transition-colors hover:bg-white',
+  /** Black on the white pages. */
+  dark: 'inline-flex items-center gap-3 bg-ink px-5 py-3 text-[0.9375rem] font-medium text-paper transition-colors hover:bg-black',
+  /** A text link with a rule under it. */
+  link: 'inline-flex items-center gap-2 border-b border-current pb-0.5 text-[0.9375rem] font-medium',
 };

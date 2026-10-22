@@ -7,8 +7,12 @@ and shown in the project's case.
 ```
 src/assets/shots/
   caderninho/
+  suaipe/
   ai-call-trainer/
 ```
+
+If the case video has chapters, they are listed on the project in
+`src/data/projects.ts` (`chapters`), in seconds.
 
 ## How it shows up
 

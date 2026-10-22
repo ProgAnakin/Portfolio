@@ -4,99 +4,104 @@
 /* ---------------------------------------------------------------------------
    Design tokens
 
-   Black, white and the greys between. The page has no colour of its own: the
-   only colour on it belongs to the work — each project's logo and screens —
-   and it arrives when someone points at that work. Monochrome is the frame;
-   the projects are the picture.
+   Laid out like a printed brochure: a black cover (the hero), white pages
+   (the record and the work) and a black back cover (contact). Black, white
+   and greys only. The colour on the page belongs to the projects, and each
+   one gets it back when someone points at it.
 
-   Every text step is measured against the page (`ink-950`) and the raised
-   surface (`ink-900`): chalk-100 16.9 / 16.1:1 · chalk-300 9.5 / 9.1:1 ·
-   chalk-500 5.9 / 5.6:1. Nothing that carries meaning goes below chalk-500.
+   Contrast, measured: ink-2 on paper 10.7:1, ink-3 on paper 5.1:1,
+   snow-2 on night 9.8:1, snow-3 on night 5.9:1.
    --------------------------------------------------------------------------- */
 @theme {
-  --color-ink-950: #0a0a0a; /* the page */
-  --color-ink-900: #111111; /* raised surfaces */
-  --color-ink-800: #181818; /* hover on a surface */
-  --color-ink-700: #242424; /* hairlines */
-  --color-ink-600: #333333; /* stronger rules, inactive marks */
+  /* The white pages. */
+  --color-paper: #f4f4f1;
+  --color-paper-2: #eaeae6; /* panels on the page */
+  --color-line: #d3d3ce; /* rules */
+  --color-ink: #0c0c0c; /* headings, figures */
+  --color-ink-2: #383836; /* body copy */
+  --color-ink-3: #686864; /* secondary text */
 
-  --color-chalk-100: #ededeb; /* headings, figures */
-  --color-chalk-300: #b4b4b0; /* body copy */
-  --color-chalk-500: #8c8c88; /* labels, captions */
+  /* The black covers. */
+  --color-night: #0c0c0c;
+  --color-night-2: #171717; /* panels on black */
+  --color-night-line: #2b2b2b;
+  --color-snow: #f4f4f1;
+  --color-snow-2: #b8b8b3;
+  --color-snow-3: #8e8e89;
 
-  /* A display serif for the few things meant to be remembered, a quiet sans
-     for everything meant to be read. */
-  --font-display: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
-  --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Archivo', ui-sans-serif, system-ui, sans-serif;
 }
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 html {
   scroll-behavior: smooth;
-  /* The sticky header is 56px; an anchor should land below it, not under it. */
-  scroll-padding-top: 72px;
+  scroll-padding-top: 64px;
 }
 
 body {
   margin: 0;
-  background-color: var(--color-ink-950);
-  color: var(--color-chalk-300);
+  background-color: var(--color-paper);
+  color: var(--color-ink-2);
   font-family: var(--font-sans);
+  font-size: 1.0625rem;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
 ::selection {
-  background: var(--color-chalk-100);
-  color: var(--color-ink-950);
+  background: var(--color-ink);
+  color: var(--color-paper);
 }
 
-.font-display {
-  font-family: var(--font-display);
-  font-weight: 400;
-  letter-spacing: -0.015em;
-}
-
-/* Small caps-style labels: the section index, a project's nature. */
-.label {
-  font-size: 0.6875rem;
-  font-weight: 500;
-  letter-spacing: 0.14em;
+/* The name, and the few labels that echo it: Archivo at its widest, in
+   capitals. A wide grotesk is what car brochures and property catalogues set
+   their names in, which is closer to the job than an editorial serif. */
+.wide {
+  font-stretch: 125%;
   text-transform: uppercase;
-  color: var(--color-chalk-500);
+  letter-spacing: 0.01em;
+}
+
+/* Headings: normal width, heavy, tight. */
+.head {
+  font-weight: 650;
+  letter-spacing: -0.025em;
+  line-height: 1.04;
+  text-wrap: balance;
+}
+
+/* Figures line up in columns and do not shift as they change. */
+.figure {
+  font-weight: 560;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-chalk-100);
+  outline: 2px solid currentColor;
   outline-offset: 3px;
-  border-radius: 2px;
 }
 
 /* ---------------------------------------------------------------------------
    Colour on approach
 
-   The work is shown in greyscale and takes its own colour back when someone
-   points at it, focuses it, or opens it. Only where hovering is a thing a
-   device can do: a phone has no hover, and on a phone the colour is simply
-   there — a touch screen that waits for a gesture it cannot make would show
-   the projects grey for ever.
+   Project media and logos sit in greyscale and take their colour back when the
+   project is pointed at or focused. Only on devices that can hover: a phone
+   has no pointer to wait for, so there the colour is always on.
    --------------------------------------------------------------------------- */
 @media (hover: hover) {
   .tint {
-    filter: grayscale(1) contrast(1.05);
-    opacity: 0.78;
-    transition:
-      filter 700ms cubic-bezier(0.22, 1, 0.36, 1),
-      opacity 700ms cubic-bezier(0.22, 1, 0.36, 1);
+    filter: grayscale(1);
+    transition: filter 600ms cubic-bezier(0.22, 1, 0.36, 1);
   }
   .tint-group:hover .tint,
-  .tint-group:focus-visible .tint,
   .tint-group:focus-within .tint {
-    filter: grayscale(0) contrast(1);
-    opacity: 1;
+    filter: grayscale(0);
   }
 }
 
@@ -105,10 +110,8 @@ html:has(dialog[open]) {
   overflow: hidden;
 }
 
-/* The native dialog's own backdrop. */
 dialog::backdrop {
-  background: rgb(0 0 0 / 0.78);
-  backdrop-filter: blur(4px);
+  background: rgb(12 12 12 / 0.72);
 }
 
 @media (prefers-reduced-motion: reduce) {

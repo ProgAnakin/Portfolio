@@ -12,8 +12,6 @@
     "verify": "npm run lint && npm run build && npm run audit:deps"
   },
   "dependencies": {
-    "clsx": "^2.1.1",
-    "motion": "^13.5.1",
     "react": "^19.3.0",
     "react-dom": "^19.3.0"
   },

@@ -1,179 +1,174 @@
-import { mediaFor } from '../data/media';
+import { useEffect, useRef, useState } from 'react';
 import { natureLabel, projects, type Project } from '../data/projects';
-import { MetricValue } from './MetricValue';
-import { ArrowRight, Reveal, Section, button } from './ui';
+import { ArrowRight, Section } from './ui';
 
 export type OpenProject = (project: Project, startAt?: number) => void;
 
-/** A project's mark, grey until the work around it is pointed at. */
-function Logo({ project, size }: { project: Project; size: number }) {
+const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/**
+ * A short silent loop of the product in use.
+ *
+ * It downloads nothing until the card is near the screen, plays only while it
+ * is on screen, and never plays at all for someone who has asked for reduced
+ * motion: they get the still. Each loop is 40 to 170 KB.
+ */
+function Preview({ project }: { project: Project }) {
+  const ref = useRef<HTMLVideoElement>(null);
+  const preview = project.preview!;
+
+  useEffect(() => {
+    const video = ref.current;
+    if (!video || reducedMotion()) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) video.play().catch(() => {});
+        else video.pause();
+      },
+      { threshold: 0.35 },
+    );
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <img
-      src={project.logo}
-      alt=""
-      width={size}
-      height={size}
-      className="tint shrink-0 rounded-[22%] object-contain"
-      style={{ width: size, height: size }}
-    />
+    <video
+      ref={ref}
+      poster={preview.poster}
+      muted
+      loop
+      playsInline
+      preload="none"
+      aria-hidden="true"
+      tabIndex={-1}
+      // Not a target of its own: a click on the panel belongs to the button
+      // around it, which is what focus should return to when the case closes.
+      className={`pointer-events-none h-full w-full ${preview.fit === 'cover' ? 'object-cover object-top' : 'object-contain'}`}
+    >
+      <source src={preview.video[0]} type="video/mp4" />
+      <source src={preview.video[1]} type="video/webm" />
+    </video>
   );
 }
 
-/**
- * The flagship, given the room. It is the one product here that exists to be
- * sold, and the one a sales recruiter should look at first: a salesperson who
- * wanted a better follow-up tool and built a CRM.
- */
-function Featured({ project, onOpen }: { project: Project; onOpen: OpenProject }) {
-  const media = mediaFor(project.id);
-  const still = media.find((item) => item.kind === 'image');
-  const clip = media.findIndex((item) => item.kind === 'video');
+/** Kouci has no screens to show yet, so its panel shows the mark and the pilot. */
+function MarkPanel({ project }: { project: Project }) {
+  return (
+    <div className="flex h-full flex-col items-center justify-center gap-6 p-8 text-center">
+      <img src={project.logo} alt="" width={112} height={112} className="size-28 object-contain" />
+      <p className="text-snow-2 max-w-[26ch] text-sm">
+        Pilot club: Vitória Sport Clube, Guimarães. Water polo.
+      </p>
+    </div>
+  );
+}
+
+function Card({
+  project,
+  index,
+  layout,
+  onOpen,
+}: {
+  project: Project;
+  index: number;
+  /** `wide` spans the grid; `lead` is wide with the bigger media panel. */
+  layout: 'lead' | 'wide' | 'half';
+  onOpen: OpenProject;
+}) {
+  const wide = layout !== 'half';
+  const media =
+    layout === 'lead'
+      ? 'aspect-[4/3] lg:col-span-7 lg:aspect-auto lg:min-h-[440px]'
+      : layout === 'wide'
+        ? 'aspect-[4/3] lg:col-span-5 lg:aspect-auto lg:min-h-[340px]'
+        : 'aspect-[4/3]';
+  const text = layout === 'lead' ? 'lg:col-span-5' : layout === 'wide' ? 'lg:col-span-7' : '';
 
   return (
     <article
       aria-labelledby={`${project.id}-name`}
-      className="tint-group border-ink-700 bg-ink-900 grid overflow-hidden rounded-3xl border lg:grid-cols-12"
+      className={`tint-group group bg-paper border-line flex flex-col border ${
+        wide ? 'md:col-span-2 lg:grid lg:grid-cols-12' : ''
+      }`}
     >
-      <div className="flex flex-col p-6 sm:p-10 lg:col-span-5">
-        <div className="flex items-center gap-4">
-          <Logo project={project} size={48} />
-          <div>
-            <p className="label">
-              {natureLabel[project.nature]} · {project.year}
-            </p>
-            <p className="text-chalk-300 mt-1 text-xs">{project.status}</p>
-          </div>
+      <button
+        type="button"
+        onClick={() => onOpen(project)}
+        aria-label={`Open the ${project.name} case`}
+        className={`tint bg-night relative block overflow-hidden ${media}`}
+        style={{ background: project.preview?.background }}
+      >
+        {project.preview ? <Preview project={project} /> : <MarkPanel project={project} />}
+      </button>
+
+      <div className={`flex flex-1 flex-col p-6 sm:p-8 ${text}`}>
+        <div className="text-ink-3 flex items-center justify-between gap-4 text-sm">
+          <span>
+            {natureLabel[project.nature]}, {project.year}
+          </span>
+          <span className="tabular-nums">{String(index).padStart(2, '0')}</span>
         </div>
-        <h3
-          id={`${project.id}-name`}
-          className="font-display text-chalk-100 mt-8 text-4xl sm:text-5xl"
-        >
-          {project.name}
-        </h3>
-        <p className="text-chalk-100 mt-3 text-lg">{project.tagline}</p>
-        <p className="mt-4 leading-relaxed">{project.problem}</p>
 
-        {project.metrics && (
-          <dl className="border-ink-700 mt-8 grid grid-cols-3 gap-4 border-t pt-6">
-            {project.metrics.map((metric) => (
-              <div key={metric.label}>
-                <dt className="sr-only">{metric.label}</dt>
-                <dd>
-                  <MetricValue
-                    value={metric.value}
-                    className="text-chalk-100 block text-2xl font-medium tracking-tight"
-                  />
-                  <span
-                    aria-hidden="true"
-                    className="text-chalk-500 mt-1 block text-xs leading-snug"
-                  >
-                    {metric.label}
-                  </span>
-                </dd>
-              </div>
-            ))}
-          </dl>
-        )}
+        <div className="mt-6 flex items-center gap-3">
+          <img
+            src={project.logo}
+            alt=""
+            width={36}
+            height={36}
+            className="tint size-9 shrink-0 rounded-[22%] object-contain"
+          />
+          <h3 id={`${project.id}-name`} className="head text-ink text-[1.75rem] sm:text-[2rem]">
+            {project.name}
+          </h3>
+        </div>
+        <p className="text-ink mt-3 font-medium">{project.tagline}</p>
+        <p className="mt-3">{project.summary}</p>
 
-        <div className="mt-8 flex flex-wrap gap-3 lg:mt-auto lg:pt-8">
-          <button type="button" className={button.primary} onClick={() => onOpen(project)}>
-            Read the case
-            <ArrowRight />
+        <p className="text-ink-3 mt-5 text-sm">{project.status}</p>
+
+        <div className="mt-auto pt-8">
+          <button
+            type="button"
+            onClick={() => onOpen(project)}
+            className="text-ink inline-flex items-center gap-2 border-b border-current pb-0.5 text-[0.9375rem] font-medium"
+          >
+            Open the case
+            <ArrowRight className="transition-transform duration-300 group-hover:translate-x-1" />
           </button>
-          {clip >= 0 && (
-            <button
-              type="button"
-              className={button.secondary}
-              onClick={() => onOpen(project, clip)}
-            >
-              Watch the tour
-            </button>
-          )}
         </div>
       </div>
-
-      {still && (
-        <button
-          type="button"
-          onClick={() => onOpen(project, media.indexOf(still))}
-          aria-label={`${project.name}: ${still.caption}. Open the case`}
-          className="bg-ink-950/40 relative flex items-center justify-center p-6 sm:p-10 lg:col-span-7"
-        >
-          <img
-            src={still.src}
-            alt=""
-            loading="lazy"
-            decoding="async"
-            className="tint w-full max-w-2xl rounded-xl"
-          />
-        </button>
-      )}
     </article>
   );
 }
 
-/** Everything else: one line each, opened on demand. */
-function Row({ project, index, onOpen }: { project: Project; index: number; onOpen: OpenProject }) {
-  return (
-    <li className="border-ink-700 border-b">
-      <button
-        type="button"
-        onClick={() => onOpen(project)}
-        className="tint-group group hover:bg-ink-900 grid w-full grid-cols-[auto_1fr_auto] items-center gap-4 py-6 text-left transition-colors sm:gap-6 sm:px-4 sm:py-7"
-      >
-        <Logo project={project} size={44} />
-        <span className="min-w-0">
-          <span className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-            <span className="font-display text-chalk-100 text-2xl sm:text-3xl">{project.name}</span>
-            <span className="text-chalk-300 text-sm">{project.tagline}</span>
-          </span>
-          <span className="mt-2 flex flex-wrap items-baseline gap-x-2 text-xs">
-            <span className="label">{natureLabel[project.nature]}</span>
-            <span aria-hidden="true" className="text-chalk-500">
-              ·
-            </span>
-            <span className="text-chalk-500">{project.status}</span>
-          </span>
-        </span>
-        <span className="text-chalk-500 group-hover:text-chalk-100 flex items-center gap-3 text-sm transition-colors">
-          <span className="hidden tabular-nums sm:inline">{String(index).padStart(2, '0')}</span>
-          <ArrowRight className="transition-transform duration-300 group-hover:translate-x-1" />
-        </span>
-      </button>
-    </li>
-  );
-}
-
 export function Work({ onOpen }: { onOpen: OpenProject }) {
-  const [flagship, ...rest] = projects;
+  // Only devices that can hover show the projects in grey, so only they are
+  // told how to bring the colour back.
+  const [canHover, setCanHover] = useState(false);
+  useEffect(() => setCanHover(window.matchMedia('(hover: hover)').matches), []);
 
   return (
-    <Section id="work" index="02" name="The work">
-      <div className="grid gap-6 lg:grid-cols-12 lg:gap-8">
-        <Reveal className="lg:col-span-6">
-          <h3 className="font-display text-chalk-100 text-4xl leading-[1.05] text-balance sm:text-5xl">
-            Built alongside the job.
-          </h3>
-        </Reveal>
-        <Reveal delay={0.08} className="leading-relaxed lg:col-span-5 lg:col-start-8">
-          <p>
-            I build the tools I wish the shop floor had. One is a product for sale, one is a company
-            I co-founded, two were built unpaid to learn — each one says which.
-          </p>
-        </Reveal>
+    <Section id="work" name="Work" note={`${projects.length} projects, built outside work`}>
+      <h3 className="head text-ink max-w-[24ch] text-[clamp(2rem,4.4vw,3.5rem)]">
+        Software for people who sell, built from the shop floor.
+      </h3>
+      <p className="mt-6 max-w-[60ch]">
+        One is a product I’m selling, one is a start-up I co-founded, and two I built unpaid to
+        learn. The videos are the real apps in use.
+        {canHover && ' Point at one to see it in colour.'}
+      </p>
+
+      <div className="mt-12 grid gap-6 md:grid-cols-2">
+        {projects.map((project, i) => (
+          <Card
+            key={project.id}
+            project={project}
+            index={i + 1}
+            layout={i === 0 ? 'lead' : i === projects.length - 1 && i % 2 === 1 ? 'wide' : 'half'}
+            onOpen={onOpen}
+          />
+        ))}
       </div>
-
-      <Reveal className="mt-14">
-        <Featured project={flagship} onOpen={onOpen} />
-      </Reveal>
-
-      <Reveal>
-        <ul aria-label="More projects" className="border-ink-700 mt-6 border-t">
-          {rest.map((project, i) => (
-            <Row key={project.id} project={project} index={i + 2} onOpen={onOpen} />
-          ))}
-        </ul>
-      </Reveal>
     </Section>
   );
 }
