@@ -2,89 +2,113 @@
 @import 'tailwindcss';
 
 /* ---------------------------------------------------------------------------
-   THE SHOP — design tokens
-   A dark shop interior at night. Warm amber light is the only warmth in the
-   scene; everything else is muted so the lighting does the work.
+   Design tokens
+
+   Black, white and the greys between. The page has no colour of its own: the
+   only colour on it belongs to the work — each project's logo and screens —
+   and it arrives when someone points at that work. Monochrome is the frame;
+   the projects are the picture.
+
+   Every text step is measured against the page (`ink-950`) and the raised
+   surface (`ink-900`): chalk-100 16.9 / 16.1:1 · chalk-300 9.5 / 9.1:1 ·
+   chalk-500 5.9 / 5.6:1. Nothing that carries meaning goes below chalk-500.
    --------------------------------------------------------------------------- */
 @theme {
-  /* Ink & ground — walls, floor, panels */
-  --color-ink-900: #0c0a09; /* deepest shadow, vignette edges */
-  --color-ink-800: #14110f; /* shop wall / page background */
-  --color-ink-700: #1d1917; /* panels, product sheet */
-  --color-ink-600: #2a2422; /* raised surfaces, counter front */
-  --color-ink-500: #3a3230; /* hairlines, drawn outlines */
+  --color-ink-950: #0a0a0a; /* the page */
+  --color-ink-900: #111111; /* raised surfaces */
+  --color-ink-800: #181818; /* hover on a surface */
+  --color-ink-700: #242424; /* hairlines */
+  --color-ink-600: #333333; /* stronger rules, inactive marks */
 
-  /* Wood — the shelving unit and the counter */
-  --color-oak-700: #3b2f27; /* shadow side of a plank */
-  --color-oak-500: #5a4636; /* plank body */
-  --color-oak-300: #7a6148; /* top edge catching the light */
+  --color-chalk-100: #ededeb; /* headings, figures */
+  --color-chalk-300: #b4b4b0; /* body copy */
+  --color-chalk-500: #8c8c88; /* labels, captions */
 
-  /* Light — amber pooling from under the shelves and above the counter */
-  --color-amber-400: #e8a33d; /* the lamp itself */
-  --color-amber-300: #f2c078; /* hot core, lit edges */
-  --color-amber-200: #f8dcae; /* specular highlight */
-
-  /* Paper — receipts, price tags, type */
-  --color-paper-100: #ede6da; /* headings, receipt stock */
-  --color-paper-300: #c9bfb0; /* body copy */
-  --color-paper-500: #8b8073; /* secondary / muted */
-
-  /* Accent — interactive hints, focus rings, SOLD OUT tags. Used sparingly. */
-  --color-accent: #e4572e;
-  --color-accent-dim: #a63d20;
-
-  /* Type — a wonky grotesque for signage, a quiet sans for reading, and a
-     mono for anything the till would have printed. */
-  --font-sign: 'Bricolage Grotesque', 'Arial Narrow', sans-serif;
-  --font-body: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
-  --font-till: 'Space Mono', ui-monospace, 'SFMono-Regular', monospace;
+  /* A display serif for the few things meant to be remembered, a quiet sans
+     for everything meant to be read. */
+  --font-display: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+  --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
 }
 
 :root {
   color-scheme: dark;
-
-  /* Product tints — desaturated, lit rather than coloured.
-     These live outside @theme on purpose: nothing generates a `bg-prod-sage`
-     utility from them, they are picked by name at runtime (see lib/tints.ts),
-     and Tailwind drops theme variables it cannot see referenced in source. */
-  --prod-sage: #6e7a62;
-  --prod-clay: #9a5f4b;
-  --prod-slate: #55636e;
-  --prod-mustard: #a88b46;
-  --prod-plum: #6b4f5e;
 }
 
 html {
   scroll-behavior: smooth;
+  /* The sticky header is 56px; an anchor should land below it, not under it. */
+  scroll-padding-top: 72px;
 }
 
 body {
   margin: 0;
-  background-color: var(--color-ink-800);
-  color: var(--color-paper-300);
-  font-family: var(--font-body);
+  background-color: var(--color-ink-950);
+  color: var(--color-chalk-300);
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
-  /* The scene is a stage, not a document: never let it scroll sideways. */
-  overflow-x: hidden;
+  text-rendering: optimizeLegibility;
 }
 
-/* Signage: condensed and heavy, the way a fascia board is painted. */
-.font-sign {
-  font-family: var(--font-sign);
-  font-variation-settings: 'wdth' 78, 'opsz' 48;
-  letter-spacing: 0.01em;
+::selection {
+  background: var(--color-chalk-100);
+  color: var(--color-ink-950);
 }
 
-.font-till {
-  font-family: var(--font-till);
+.font-display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.015em;
 }
 
-/* Visible focus for everything, everywhere. The scene is decoration; the
-   content underneath must be reachable with a keyboard alone. */
+/* Small caps-style labels: the section index, a project's nature. */
+.label {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-chalk-500);
+}
+
 :focus-visible {
-  outline: 2px solid var(--color-accent);
+  outline: 2px solid var(--color-chalk-100);
   outline-offset: 3px;
   border-radius: 2px;
+}
+
+/* ---------------------------------------------------------------------------
+   Colour on approach
+
+   The work is shown in greyscale and takes its own colour back when someone
+   points at it, focuses it, or opens it. Only where hovering is a thing a
+   device can do: a phone has no hover, and on a phone the colour is simply
+   there — a touch screen that waits for a gesture it cannot make would show
+   the projects grey for ever.
+   --------------------------------------------------------------------------- */
+@media (hover: hover) {
+  .tint {
+    filter: grayscale(1) contrast(1.05);
+    opacity: 0.78;
+    transition:
+      filter 700ms cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 700ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .tint-group:hover .tint,
+  .tint-group:focus-visible .tint,
+  .tint-group:focus-within .tint {
+    filter: grayscale(0) contrast(1);
+    opacity: 1;
+  }
+}
+
+/* While a case is open the page behind it holds still. */
+html:has(dialog[open]) {
+  overflow: hidden;
+}
+
+/* The native dialog's own backdrop. */
+dialog::backdrop {
+  background: rgb(0 0 0 / 0.78);
+  backdrop-filter: blur(4px);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -98,166 +122,4 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-}
-
-/* ---------------------------------------------------------------------------
-   Scene dimensions
-   Shelf and counter geometry lives in CSS variables so the same components can
-   be a wide stage on a desktop and a vertical scroll on a phone without either
-   layout knowing about the other.
-   --------------------------------------------------------------------------- */
-.shop-shelf {
-  --shelf-h: 200px;
-  --plank-h: 26px;
-}
-
-/* A shelf with nothing on it yet is a short one — it should read as space for
-   more stock, not as a hole in the page. */
-.shop-shelf--empty {
-  --shelf-h: 72px;
-}
-
-.shop-counter {
-  --counter-item-h: 76px;
-  --counter-block-h: 92px;
-}
-
-@media (min-width: 40rem) {
-  .shop-shelf {
-    --shelf-h: 216px;
-    --plank-h: 28px;
-  }
-  .shop-shelf--empty {
-    --shelf-h: 84px;
-  }
-  .shop-counter {
-    --counter-item-h: 96px;
-    --counter-block-h: 118px;
-  }
-}
-
-/* The wide stage has to hold the whole shop at once, so the shelves tighten
-   up and the empty one tucks in under them. */
-@media (min-width: 64rem) {
-  .shop-shelf {
-    --shelf-h: 168px;
-    --plank-h: 22px;
-  }
-  .shop-shelf--empty {
-    --shelf-h: 96px;
-  }
-  .shop-counter {
-    --counter-item-h: 84px;
-    --counter-block-h: 124px;
-  }
-}
-
-/* A strip light that is not quite well. Each shelf gets its own offset. */
-@keyframes shop-flicker {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  41% {
-    opacity: 0.94;
-  }
-  43% {
-    opacity: 0.72;
-  }
-  44.5% {
-    opacity: 0.97;
-  }
-  46% {
-    opacity: 0.8;
-  }
-  48% {
-    opacity: 1;
-  }
-  72% {
-    opacity: 0.9;
-  }
-}
-
-.shop-flicker {
-  animation: shop-flicker 11s ease-in-out infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .shop-flicker {
-    animation: none;
-  }
-}
-
-/* ---------------------------------------------------------------------------
-   Printing
-   The receipt is the only thing on this site anyone would ever print, so the
-   printout is the paper and nothing else.
-   --------------------------------------------------------------------------- */
-@media print {
-  body {
-    background: #fff;
-  }
-  body * {
-    visibility: hidden;
-  }
-  .receipt-printable,
-  .receipt-printable * {
-    visibility: visible;
-  }
-  .receipt-printable {
-    position: relative;
-    box-shadow: none !important;
-    color: #000;
-  }
-  .receipt-no-print {
-    display: none !important;
-  }
-}
-
-/* ---------------------------------------------------------------------------
-   3D stage
-   The canvas is the picture; these are the controls sitting on top of it.
-   --------------------------------------------------------------------------- */
-.shop-hotspot {
-  display: block;
-  cursor: grab;
-  background: transparent;
-  border: 0;
-  padding: 0;
-  border-radius: 6px;
-  touch-action: none;
-}
-
-.shop-hotspot:active {
-  cursor: grabbing;
-}
-
-/* The object is the affordance, so the ring is all the control needs to draw —
-   but it has to be unmissable against a dark room. */
-.shop-hotspot:focus-visible {
-  outline: 3px solid var(--color-accent);
-  outline-offset: 2px;
-  background: color-mix(in oklab, var(--color-accent) 12%, transparent);
-}
-
-/* Oversized signage type that the shelf stands in front of. */
-/* Type set over a room, not over a background.
-   The scene moves — the camera leans with the pointer, the strip lights are
-   emissive, a dragged product passes behind the copy — so any single line can
-   end up sitting on a lit plank edge, which is where the standfirst became
-   unreadable. The scrim behind the block does most of the work; this is for
-   the rest, and it costs nothing because it is never animated. */
-.shop-legible {
-  text-shadow:
-    0 1px 2px rgba(8, 6, 5, 0.82),
-    0 0 16px rgba(8, 6, 5, 0.55);
-}
-
-.shop-megatype {
-  font-family: var(--font-sign);
-  font-variation-settings: 'wdth' 75, 'opsz' 96;
-  font-weight: 800;
-  line-height: 0.78;
-  letter-spacing: -0.02em;
-  text-transform: uppercase;
 }

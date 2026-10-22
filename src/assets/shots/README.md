@@ -1,22 +1,21 @@
 # Screenshots and clips
 
 One folder per project, named after its `id` in `src/data/projects.ts`. Drop
-files in; there is nothing to edit anywhere else. The casebook picks them up at
-build time and the project's card grows a media block.
+files in; there is nothing to edit anywhere else. They are picked up at build time
+and shown in the project's case.
 
 ```
 src/assets/shots/
-  kouci/
-  suaipe/
+  caderninho/
   ai-call-trainer/
 ```
 
 ## How it shows up
 
-The card does not grow. It gets a thin strip — a few thumbnails, a count, and
-a way in — and everything opens in a viewer over the page: one screen at a
-time, with a rail underneath to pick from, arrow keys to move, Escape to
-close.
+The main page does not grow. Media is shown in the project's case, which
+opens over the page: one screen at a time, with a rail underneath to pick
+from, Escape to close. The featured project also shows its first still on the
+page itself.
 
 So the number of files is yours to choose. **One clip and three stills** is a
 good shelf-life: enough to prove it runs, few enough that nobody has to work
@@ -30,8 +29,12 @@ kouci/
   03-roster-management.webp
 ```
 
-Keep `00-` for the clip so it opens first, and number the stills in the order
-you want them read.
+Keep `00-` for the clip, and number the stills in the order you want them
+read. A case opens on the first still; the clip is one click away.
+
+A clip's poster — the frame shown before it plays — is a file with the same
+name plus `.poster`: `00-walkthrough.poster.webp` belongs to
+`00-walkthrough.mp4`, and is not shown as a still of its own.
 
 ## The filename is the caption
 

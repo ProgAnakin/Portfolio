@@ -21,16 +21,21 @@ const FILES = import.meta.glob('../assets/shots/*/*.{png,jpg,jpeg,webp,avif,mp4,
 export interface ProjectMedia {
   kind: 'image' | 'video';
   src: string;
-  /** Read off the filename: `02-the-swipe-quiz.webp` → "The swipe quiz". */
+  /** Read off the filename: `02-the-scorecard.webp` → "The scorecard". */
   caption: string;
+  /** A clip's first frame, from `<same name>.poster.<ext>` beside it. */
+  poster?: string;
 }
 
 const VIDEO = /\.(mp4|webm)$/i;
+/** `00-the-tour.poster.webp` belongs to `00-the-tour.mp4`; it is not a still. */
+const POSTER = /\.poster\.[^.]+$/i;
+
+const stem = (path: string) => path.replace(POSTER, '').replace(/\.[^./]+$/, '');
 
 function captionOf(path: string): string {
-  const name = path.split('/').pop() ?? '';
+  const name = stem(path).split('/').pop() ?? '';
   const words = name
-    .replace(/\.[^.]+$/, '')
     .replace(/^\d+[-_\s]*/, '')
     .replace(/[-_]+/g, ' ')
     .trim();
@@ -38,16 +43,24 @@ function captionOf(path: string): string {
   return words[0].toUpperCase() + words.slice(1);
 }
 
+const posters = new Map<string, string>();
+for (const path of Object.keys(FILES)) {
+  if (POSTER.test(path)) posters.set(stem(path), FILES[path]);
+}
+
 const byProject = new Map<string, ProjectMedia[]>();
 
 for (const path of Object.keys(FILES).sort((a, b) => a.localeCompare(b))) {
+  if (POSTER.test(path)) continue;
   const id = path.split('/').at(-2);
   if (!id) continue;
   const list = byProject.get(id) ?? [];
+  const video = VIDEO.test(path);
   list.push({
-    kind: VIDEO.test(path) ? 'video' : 'image',
+    kind: video ? 'video' : 'image',
     src: FILES[path],
     caption: captionOf(path),
+    poster: video ? posters.get(stem(path)) : undefined,
   });
   byProject.set(id, list);
 }

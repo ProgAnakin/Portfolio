@@ -1,73 +1,50 @@
 import { useState } from 'react';
-import { AnimatePresence } from 'motion/react';
-import { GrainOverlay } from './components/GrainOverlay';
-import { ProductSheet } from './components/ProductSheet';
-import { Casebook } from './components/Casebook';
-import { Receipt } from './components/Receipt';
-import { ReceiptNudge } from './components/ReceiptNudge';
-import { ShopMenu } from './components/ShopMenu';
-import { SceneDefs } from './components/shop/SceneDefs';
-import { ShopStage } from './components/ShopStage';
-import { ShopProvider, useShop } from './state/ShopContext';
-import { tillPrinted } from './three/tillState';
+import { Approach } from './components/Approach';
+import { Contact, SiteFooter } from './components/Contact';
+import { Floor } from './components/Floor';
+import { Hero } from './components/Hero';
+import { ProjectDialog } from './components/ProjectDialog';
+import { SiteHeader } from './components/SiteHeader';
+import { Work } from './components/Work';
+import { mediaFor } from './data/media';
+import type { Project } from './data/projects';
 
-function Shop() {
-  const { openProject, close, basket, timeInShop, markReceiptTaken } = useShop();
-  const [receipt, setReceipt] = useState<{ seconds: number } | null>(null);
+/** A case opens on a screen, not on a video waiting to be played. */
+const firstStill = (project: Project) =>
+  Math.max(
+    0,
+    mediaFor(project.id).findIndex((item) => item.kind === 'image'),
+  );
 
-  // Printing is what settles the visit, so it is also what stops the shop
-  // asking about it on the way out.
-  const printReceipt = () => {
-    markReceiptTaken();
-    // The machine in the room runs too, if there is a room. It reads this from
-    // a plain record rather than a prop, so the feed motor starting does not
-    // re-render the page around it.
-    tillPrinted();
-    setReceipt({ seconds: timeInShop() });
-  };
+export default function App() {
+  const [open, setOpen] = useState<{ project: Project; startAt: number } | null>(null);
 
   return (
     <>
       <a
-        href="#projects"
-        className="bg-paper-100 text-ink-900 font-till sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[70] focus:px-3 focus:py-2 focus:text-xs focus:uppercase"
+        href="#work"
+        className="bg-chalk-100 text-ink-950 sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-full focus:px-4 focus:py-2 focus:text-sm"
       >
-        Skip to the projects
+        Skip to the work
       </a>
-
-      <ShopMenu onPrintReceipt={printReceipt} />
-
+      <SiteHeader />
       <main>
-        <ShopStage onPrintReceipt={printReceipt} />
-        <Casebook onPrintReceipt={printReceipt} />
+        <Hero />
+        <Floor />
+        <Work
+          onOpen={(project, startAt) =>
+            setOpen({ project, startAt: startAt ?? firstStill(project) })
+          }
+        />
+        <Approach />
+        <Contact />
       </main>
-
-      <ReceiptNudge onPrint={printReceipt} />
-
-      <AnimatePresence>
-        {openProject && <ProductSheet key="sheet" project={openProject} onClose={close} />}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {receipt && (
-          <Receipt
-            key="receipt"
-            basket={basket}
-            seconds={receipt.seconds}
-            onClose={() => setReceipt(null)}
-          />
-        )}
-      </AnimatePresence>
+      <SiteFooter />
+      <ProjectDialog
+        project={open?.project ?? null}
+        startAt={open?.startAt ?? 0}
+        onClose={() => setOpen(null)}
+      />
     </>
-  );
-}
-
-export default function App() {
-  return (
-    <ShopProvider>
-      <SceneDefs />
-      <Shop />
-      <GrainOverlay />
-    </ShopProvider>
   );
 }

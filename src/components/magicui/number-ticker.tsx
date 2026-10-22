@@ -89,12 +89,7 @@ export function NumberTicker({
   }, [springValue, decimalPlaces, prefersReduced]);
 
   return (
-    <span
-      ref={ref}
-      aria-hidden="true"
-      className={cn('tabular-nums', className)}
-      {...props}
-    >
+    <span ref={ref} aria-hidden="true" className={cn('tabular-nums', className)} {...props}>
       {prefersReduced ? format(value) : format(startValue)}
     </span>
   );
