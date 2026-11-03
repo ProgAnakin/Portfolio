@@ -5,3 +5,6 @@ dist-ssr
 .DS_Store
 .vercel
 *.tsbuildinfo
+
+playwright-report
+test-results

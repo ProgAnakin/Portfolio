@@ -203,7 +203,7 @@ export const projects: Project[] = [
     summary:
       'Practise a cold call with an AI prospect who has their own objections and mood, then get a scorecard on what you said.',
     context:
-      'New SDRs learn cold calling on real prospects, and every bad call costs a lead. Roleplay with a manager helps, but nobody has time for it every day. I wanted somewhere to practise as often as I like, in Italian, Portuguese or English, with honest feedback straight after the call.',
+      'New SDRs learn cold calling on real prospects, and every bad call costs a lead. Roleplay with a manager helps, but nobody has time for it every day. I wanted somewhere to practise as often as I like, in multiple languages, with honest feedback straight after the call.',
     steps: {
       title: 'How it works',
       items: [

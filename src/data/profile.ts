@@ -29,6 +29,20 @@ export interface Fact {
   value: string;
 }
 
+// Totals supplied from the sales records. No reporting end date was supplied.
+export const sales = {
+  revenue: 112483.67,
+  receipts: 2186,
+  items: 3056,
+};
+
+const number = (value: number, decimals = 0) =>
+  new Intl.NumberFormat('en-GB', {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  }).format(value);
+const euros = (value: number) => `€${number(value, 2)}`;
+
 export const profile = {
   name: 'Costanzo Annichini',
   role: 'Technology Consultant',
@@ -38,7 +52,7 @@ export const profile = {
     { name: 'Portuguese', level: 'Native' },
     { name: 'English', level: 'Fluent' },
   ],
-  lead: 'I sell consumer technology in store. In my first eight months I sold €65,000, mostly in products under €100. Outside work I build software for people who sell.',
+  lead: `I sell consumer technology in store. My sales records total ${euros(sales.revenue)} across ${number(sales.receipts)} receipts and ${number(sales.items)} items. Outside work I build software for people who sell.`,
   openTo: 'Sales, SDR and business development roles in Portugal, Italy or remote in the EU.',
 };
 
@@ -47,32 +61,39 @@ export const profile = {
  * across the projects, most of which were built unpaid.
  */
 export const figures: Figure[] = [
-  { value: '€65k', label: 'sold in my first 8 months' },
-  { value: '25', label: 'items on one receipt, my record' },
-  { value: '#1', label: 'seller at every point of sale I’ve worked' },
-  { value: '4', label: 'products built outside work' },
+  { value: `€${number(sales.revenue / 1000)}k`, label: 'in recorded sales' },
+  { value: number(sales.receipts), label: 'receipts' },
+  { value: number(sales.items), label: 'items sold' },
+  { value: euros(sales.revenue / sales.receipts), label: 'average receipt' },
 ];
 
 export const record = {
-  period: 'Webidoo Store, 2025 to now',
-  heading: 'Most of what I sell costs under €100. The total comes from the basket.',
+  period: 'Webidoo Store · recorded sales',
+  heading: `${euros(sales.revenue / sales.items)} per item, on average. Thousands of sales add up.`,
   paragraphs: [
     'Webidoo Store sells technology from corners inside department stores. I’m the consultant on the corner: gadgets, gaming and beauty tech, from an €8 accessory to a €600 arcade cabinet. There are no appointments. People walk past, and some of them stop.',
-    'At these prices one sale doesn’t move the month. The second and third item do: something that goes with what the customer came for, or that answers a question they hadn’t asked yet.',
+    'I started on a 20-hour weekly contract, working across two locations. My hours increased to 30 a week, and I later received a permanent contract. My manager trusts me to run a point of sale on my own.',
   ],
   facts: [
-    { label: 'Revenue', value: '€65,000 in my first eight months' },
-    { label: 'Usual basket', value: '2 to 3 items per receipt' },
-    { label: 'Record basket', value: '25 items on one receipt, around €35 each' },
-    { label: 'Bigger receipts', value: '€450 on 7 or 8 items. The largest, around €700' },
+    { label: 'Recorded sales', value: euros(sales.revenue) },
+    { label: 'Receipts', value: number(sales.receipts) },
+    { label: 'Items sold', value: number(sales.items) },
+    { label: 'Average receipt', value: euros(sales.revenue / sales.receipts) },
+    { label: 'Items per receipt', value: number(sales.items / sales.receipts, 2) },
+    { label: 'Average item value', value: euros(sales.revenue / sales.items) },
+    { label: 'Record basket', value: '25 items on one receipt' },
     { label: 'Ranking', value: 'Top seller at every point of sale I’ve worked' },
     {
       label: 'Christmas',
       value:
         'Won the store’s daily prize for most receipts, on one of the busiest days of the season, running the corner alone. One of my superiors wanted to present it at a company event.',
     },
-    { label: 'Trust', value: 'My manager leaves me to run a point of sale on my own' },
   ] satisfies Fact[],
+  progression: [
+    { title: '20 hours a week', body: 'Started as a consultant, working across two locations.' },
+    { title: '30 hours a week', body: 'My weekly contract hours increased.' },
+    { title: 'Permanent contract', body: 'Later received a contract with no fixed end date.' },
+  ],
   /** Item prices, drawn as a scale. Euros. */
   scale: {
     min: 8,

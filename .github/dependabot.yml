@@ -1,32 +1,17 @@
-# The whole runtime is four dependencies and a build tool, and the site talks
-# to nobody — but three.js, React and Vite all ship security fixes, and a
-# portfolio nobody touches for a year is exactly where an unpatched build
-# dependency sits unnoticed. Monthly, grouped, so it is one review not nine.
 version: 2
 updates:
   - package-ecosystem: npm
     directory: /
     schedule:
-      interval: monthly
+      interval: weekly
     open-pull-requests-limit: 3
     groups:
       react:
         patterns: ['react', 'react-dom', '@types/react', '@types/react-dom']
-      three:
-        patterns: ['three', '@types/three', '@react-three/*']
       build:
         patterns: ['vite', '@vitejs/*', 'typescript', 'tailwindcss', '@tailwindcss/*']
-    # No `ignore` rules. There were four, holding react and react-dom below
-    # 19.3 because @react-three/fiber 9.7.0 declared `react: ">=19 <19.3"` and
-    # a bump could not install — `npm ci` exited with ERESOLVE and every deploy
-    # of that branch failed. 9.8.1 widened the range to `>=19 <19.4`, so the
-    # rules came off and react went to ^19.3 with it.
-    #
-    # Worth keeping in mind if this ever comes up again: `ignore` also
-    # suppresses Dependabot's *security* updates, so a rule like that quietly
-    # costs you the advisory PRs for the package it names. Pin narrowly, write
-    # down the condition for lifting it, and lift it.
-
+      tests:
+        patterns: ['@playwright/*', '@axe-core/*']
   - package-ecosystem: github-actions
     directory: /
     schedule:

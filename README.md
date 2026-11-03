@@ -20,16 +20,46 @@ npm run dev      # vite dev server
 npm run build    # typecheck + production build to dist/
 npm run preview  # serve the built site
 npm run lint     # typecheck only
+npm run verify   # typecheck + build + audit all dependencies
+npm test         # browser regression checks (Chromium)
 ```
 
 Deploys two ways from the same commit:
 
-- **Vercel** — `vercel.json` sets the security headers and long-lived cache
-  headers for fonts and hashed assets. Serves from `/`.
-- **GitHub Pages** — `.github/workflows/deploy.yml` builds and publishes on
-  every push to `main`. A project page is served from `/<repo>/`, so the
+- **Vercel** — `vercel.json` sets security headers, font revalidation and
+  long-lived cache headers for hashed assets. Serves from `/`.
+- **GitHub Pages** — `.github/workflows/deploy.yml` builds and publishes when
+  triggered manually in Actions. A project page is served from `/<repo>/`, so the
   workflow passes `VITE_BASE`; `vite.config.ts` reads it rather than
   hardcoding a base.
+
+## Validation and browser tests
+
+Use Node.js 24 (the CI uses the same major version) and `npm ci` with the
+committed lockfile. `npm run verify` checks types, builds and audits production
+and development dependencies. The Validate workflow runs on pull requests and
+pushes to `main`; Pages deployment is a separate manual workflow.
+
+Before the first browser test run, install Chromium with
+`npx playwright install --with-deps chromium`, then run `npm test`. If this
+machine already has Chromium, select it with
+`PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm test`.
+Tests start and stop their own local preview server. They cover sales figures,
+case links and browser history, focus return, media, preview pause controls,
+reduced motion, mobile navigation and automated accessibility checks.
+
+Cases can be shared with `#case/<project id>` (for example,
+`#case/caderninho`). Reloading retains the case, and Back returns to the page.
+The Work section has a pause/play control for preview loops. Reduced-motion
+preferences are applied both on load and when they change during a visit.
+
+Sales totals are maintained once in `src/data/profile.ts`; averages are derived
+from those totals. The reporting end date and exact contract dates have not
+been supplied, so the copy uses recorded totals and contract progression
+without assigning dates. Update the metadata in `index.html` and `public/og.jpg`
+when changing the headline figures. Run `npm run social` to regenerate the
+1200×630 social card from the profile data (requires Chromium as above). Source
+documents should stay private.
 
 ## Where things live
 

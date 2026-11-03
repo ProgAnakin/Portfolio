@@ -8,14 +8,18 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "lint": "tsc -b --noEmit",
-    "audit:deps": "npm audit --audit-level=high --omit=dev",
-    "verify": "npm run lint && npm run build && npm run audit:deps"
+    "audit:deps": "npm audit --audit-level=high",
+    "verify": "npm run lint && npm run build && npm run audit:deps",
+    "test": "playwright test",
+    "social": "node scripts/generate-social.mjs"
   },
   "dependencies": {
     "react": "^19.3.0",
     "react-dom": "^19.3.0"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "^1.64.1",
     "@tailwindcss/vite": "^4.3.3",
     "@types/node": "^26.6.3",
     "@types/react": "^19.3.0",
@@ -23,6 +27,6 @@
     "@vitejs/plugin-react": "^6.1.1",
     "tailwindcss": "^4.3.3",
     "typescript": "^7.0.2",
-    "vite": "^8.3.1"
+    "vite": "^8.3.5"
   }
 }

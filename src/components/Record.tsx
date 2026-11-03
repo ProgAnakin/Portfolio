@@ -90,6 +90,19 @@ export function Record() {
         ))}
       </dl>
 
+      <section className="mt-14" aria-labelledby="progression-name">
+        <h3 id="progression-name" className="wide text-ink text-sm font-semibold">
+          Progression at Webidoo Store
+        </h3>
+        <ol className="border-line mt-5 grid gap-6 border-t pt-5 sm:grid-cols-3">
+          {record.progression.map((step) => (
+            <li key={step.title}>
+              <p className="text-ink font-semibold">{step.title}</p>
+              <p className="mt-2 text-sm">{step.body}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
       <PriceScale />
     </Section>
   );

@@ -43,6 +43,19 @@ export function SiteHeader() {
           </a>
         )}
       </Container>
+      <nav aria-label="Sections on mobile" className="border-night-line border-t md:hidden">
+        <Container>
+          <ul className="flex justify-between gap-3">
+            {NAV.map((item) => (
+              <li key={item.href}>
+                <a href={item.href} className="text-snow-2 hover:text-snow block py-3 text-sm">
+                  {item.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </Container>
+      </nav>
     </header>
   );
 }

@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type MouseEvent } from 'react';
 import { natureLabel, projects, type Project } from '../data/projects';
 import { ArrowRight, Section } from './ui';
 
 export type OpenProject = (project: Project, startAt?: number) => void;
 
-const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const motionQuery = '(prefers-reduced-motion: reduce)';
 
 /**
  * A short silent loop of the product in use.
@@ -13,13 +13,17 @@ const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)'
  * is on screen, and never plays at all for someone who has asked for reduced
  * motion: they get the still. Each loop is 40 to 170 KB.
  */
-function Preview({ project }: { project: Project }) {
+function Preview({ project, paused }: { project: Project; paused: boolean }) {
   const ref = useRef<HTMLVideoElement>(null);
   const preview = project.preview!;
 
   useEffect(() => {
     const video = ref.current;
-    if (!video || reducedMotion()) return;
+    if (!video) return;
+    if (paused) {
+      video.pause();
+      return;
+    }
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) video.play().catch(() => {});
@@ -28,8 +32,11 @@ function Preview({ project }: { project: Project }) {
       { threshold: 0.35 },
     );
     observer.observe(video);
-    return () => observer.disconnect();
-  }, []);
+    return () => {
+      observer.disconnect();
+      video.pause();
+    };
+  }, [paused]);
 
   return (
     <video
@@ -56,6 +63,7 @@ function MarkPanel({ project }: { project: Project }) {
   return (
     <div className="flex h-full flex-col items-center justify-center gap-6 p-8 text-center">
       <img src={project.logo} alt="" width={112} height={112} className="size-28 object-contain" />
+      <p className="text-snow text-sm font-semibold">Open the {project.name} case</p>
       <p className="text-snow-2 max-w-[26ch] text-sm">
         Pilot club: Vitória Sport Clube, Guimarães. Water polo.
       </p>
@@ -68,13 +76,20 @@ function Card({
   index,
   layout,
   onOpen,
+  paused,
 }: {
   project: Project;
   index: number;
   /** `wide` spans the grid; `lead` is wide with the bigger media panel. */
   layout: 'lead' | 'wide' | 'half';
   onOpen: OpenProject;
+  paused: boolean;
 }) {
+  const openCase = (event: MouseEvent<HTMLAnchorElement>) => {
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    onOpen(project);
+  };
   const wide = layout !== 'half';
   const media =
     layout === 'lead'
@@ -91,15 +106,16 @@ function Card({
         wide ? 'md:col-span-2 lg:grid lg:grid-cols-12' : ''
       }`}
     >
-      <button
-        type="button"
-        onClick={() => onOpen(project)}
-        aria-label={`Open the ${project.name} case`}
+      <a
+        href={`#case/${project.id}`}
+        data-case-id={project.id}
+        onClick={openCase}
+        aria-label={project.preview ? `Open the ${project.name} case` : undefined}
         className={`tint bg-night relative block overflow-hidden ${media}`}
         style={{ background: project.preview?.background }}
       >
-        {project.preview ? <Preview project={project} /> : <MarkPanel project={project} />}
-      </button>
+        {project.preview ? <Preview project={project} paused={paused} /> : <MarkPanel project={project} />}
+      </a>
 
       <div className={`flex flex-1 flex-col p-6 sm:p-8 ${text}`}>
         <div className="text-ink-3 flex items-center justify-between gap-4 text-sm">
@@ -127,14 +143,14 @@ function Card({
         <p className="text-ink-3 mt-5 text-sm">{project.status}</p>
 
         <div className="mt-auto pt-8">
-          <button
-            type="button"
-            onClick={() => onOpen(project)}
+          <a
+            href={`#case/${project.id}`}
+            onClick={openCase}
             className="text-ink inline-flex items-center gap-2 border-b border-current pb-0.5 text-[0.9375rem] font-medium"
           >
             Open the case
             <ArrowRight className="transition-transform duration-300 group-hover:translate-x-1" />
-          </button>
+          </a>
         </div>
       </div>
     </article>
@@ -145,6 +161,14 @@ export function Work({ onOpen }: { onOpen: OpenProject }) {
   // Only devices that can hover show the projects in grey, so only they are
   // told how to bring the colour back.
   const [canHover, setCanHover] = useState(false);
+  const [previewsPaused, setPreviewsPaused] = useState(false);
+  const [motionReduced, setMotionReduced] = useState(() => window.matchMedia(motionQuery).matches);
+  useEffect(() => {
+    const preference = window.matchMedia(motionQuery);
+    const update = () => setMotionReduced(preference.matches);
+    preference.addEventListener('change', update);
+    return () => preference.removeEventListener('change', update);
+  }, []);
   useEffect(() => setCanHover(window.matchMedia('(hover: hover)').matches), []);
 
   return (
@@ -158,6 +182,16 @@ export function Work({ onOpen }: { onOpen: OpenProject }) {
         {canHover && ' Point at one to see it in colour.'}
       </p>
 
+      {!motionReduced && (
+        <button
+          type="button"
+          onClick={() => setPreviewsPaused((paused) => !paused)}
+          className="text-ink mt-6 border-b border-current pb-0.5 text-sm"
+        >
+          {previewsPaused ? 'Play previews' : 'Pause previews'}
+        </button>
+      )}
+
       <div className="mt-12 grid gap-6 md:grid-cols-2">
         {projects.map((project, i) => (
           <Card
@@ -166,6 +200,7 @@ export function Work({ onOpen }: { onOpen: OpenProject }) {
             index={i + 1}
             layout={i === 0 ? 'lead' : i === projects.length - 1 && i % 2 === 1 ? 'wide' : 'half'}
             onOpen={onOpen}
+            paused={previewsPaused || motionReduced}
           />
         ))}
       </div>

@@ -11,7 +11,7 @@ const base = process.env.VITE_BASE ?? '/';
  * Where this site actually lives.
  *
  * The production host, declared once. Vercel serves it; the repository's
- * homepage field says so, and every absolute tag on the page — the canonical
+ * deployment uses it, and every absolute tag on the page — the canonical
  * link, `og:url`, `og:image` — has to name it, because a scraper resolves
  * nothing relative and a canonical aimed at the wrong domain tells a search
  * engine the real site is the duplicate.
@@ -46,7 +46,4 @@ function absoluteUrls(): Plugin {
 export default defineConfig({
   base,
   plugins: [react(), tailwindcss(), absoluteUrls()],
-  // No manual chunking: the lazy import of the 3D scene already keeps three.js
-  // and react-three-fiber out of the entry bundle, and forcing a `three` chunk
-  // pulled the rest of the 3D stack *into* the entry instead.
 });

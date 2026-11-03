@@ -18,8 +18,7 @@ If the case video has chapters, they are listed on the project in
 
 The main page does not grow. Media is shown in the project's case, which
 opens over the page: one screen at a time, with a rail underneath to pick
-from, Escape to close. The featured project also shows its first still on the
-page itself.
+from, Escape to close. Project cards show their own preview loops and posters.
 
 So the number of files is yours to choose. **One clip and three stills** is a
 good shelf-life: enough to prove it runs, few enough that nobody has to work
@@ -34,7 +33,7 @@ kouci/
 ```
 
 Keep `00-` for the clip, and number the stills in the order you want them
-read. A case opens on the first still; the clip is one click away.
+read. A case opens on the first media item, normally the clip.
 
 A clip's poster — the frame shown before it plays — is a file with the same
 name plus `.poster`: `00-walkthrough.poster.webp` belongs to
