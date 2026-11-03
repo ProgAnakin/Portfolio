@@ -27,7 +27,7 @@ export type ProjectNature = 'product' | 'venture' | 'portfolio';
 export const natureLabel: Record<ProjectNature, string> = {
   product: 'Product',
   venture: 'Co-founded start-up',
-  portfolio: 'Built unpaid',
+  portfolio: 'Independent project',
 };
 
 export interface ProjectMetric {
@@ -118,8 +118,6 @@ export const projects: Project[] = [
     role: 'All of it: product, design and code. Now the selling.',
     metrics: [
       { value: '4', label: 'languages: Italian, Portuguese, Spanish, English' },
-      { value: '549', label: 'automated checks on every change' },
-      { value: '0.7 s', label: 'to open 1,500 cases on a slow phone' },
     ],
     chapters: [
       { at: 0, label: 'Intro' },
@@ -167,7 +165,6 @@ export const projects: Project[] = [
     outcome: 'Built unpaid, on my own time, and used on iPads in store.',
     role: 'On my own: product, design and code.',
     metrics: [
-      { value: '76%', label: 'usage conversion' },
       { value: '<60 s', label: 'from first tap to a recommendation' },
       { value: '5', label: 'languages' },
     ],
@@ -230,7 +227,10 @@ export const projects: Project[] = [
     videoNote:
       'Recorded in demo mode, where the prospect is simulated without the AI. My lines are typed live.',
     stack: ['React', 'TypeScript', 'Claude API', 'Web Speech', 'Supabase'],
-    links: [{ label: 'Source on GitHub', href: 'https://github.com/ProgAnakin/AI-Call-Trainer' }],
+    links: [
+      { label: 'Try AI Call Trainer', href: 'https://ai-call-trainer-xi.vercel.app' },
+      { label: 'Source on GitHub', href: 'https://github.com/ProgAnakin/AI-Call-Trainer' },
+    ],
   },
   {
     id: 'kouci',

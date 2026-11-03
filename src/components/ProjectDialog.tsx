@@ -303,7 +303,11 @@ function Player({
             <li key={item.src} className="shrink-0">
               <button
                 type="button"
-                onClick={() => setIndex(i)}
+                onClick={() => {
+                  if (i === index) return;
+                  setNow(0);
+                  setIndex(i);
+                }}
                 aria-current={i === index}
                 aria-label={item.kind === 'video' ? `${item.caption}, video` : item.caption}
                 className={`bg-night relative block h-16 w-24 overflow-hidden border-2 transition-colors sm:h-20 sm:w-32 ${

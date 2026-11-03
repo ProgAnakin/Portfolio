@@ -29,8 +29,8 @@ export function Contact() {
             The quickest way to reach me is LinkedIn.
           </h3>
           <p className="mt-6 max-w-[52ch]">
-            I’m looking for a sales, SDR or business development role. Longer term I want to build a
-            company of my own.
+            I’m looking for a sales, SDR or business development role where I can bring hands-on
+            selling experience, consistent follow-up and the ability to build tools for the team.
           </p>
           <dl className="mt-10 grid grid-cols-3 gap-6 text-sm">
             {profile.languages.map((language) => (

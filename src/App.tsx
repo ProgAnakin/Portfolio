@@ -19,7 +19,16 @@ export default function App() {
   useEffect(() => {
     if (open || !opener.current) return;
     // History can move focus to a section anchor after the dialog closes.
-    const frame = requestAnimationFrame(() => opener.current?.focus({ preventScroll: true }));
+    const frame = requestAnimationFrame(() => {
+      const target = opener.current;
+      if (!target) return;
+      const bounds = target.getBoundingClientRect();
+      const headerBottom = document.querySelector('header')?.getBoundingClientRect().bottom ?? 0;
+      if (bounds.bottom <= headerBottom || bounds.top >= window.innerHeight) {
+        target.scrollIntoView({ block: 'center', behavior: 'instant' });
+      }
+      target.focus({ preventScroll: true });
+    });
     return () => cancelAnimationFrame(frame);
   }, [open]);
 
@@ -65,7 +74,7 @@ export default function App() {
         <Hero />
         <Record />
         {/* A case opens on its video, the demo being the point of the case. */}
-        <Work onOpen={openCase} />
+        <Work onOpen={openCase} caseOpen={open !== null} />
         <Method />
         <Contact />
       </main>

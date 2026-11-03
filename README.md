@@ -95,3 +95,25 @@ does not grow with it.
 - Nothing animates on scroll. The card videos play only while on screen, and
   not at all under `prefers-reduced-motion`.
 - Runtime dependencies are React and React DOM, nothing else.
+
+## LinkedIn launch review
+
+The `review/linkedin-launch` branch contains the review changes. Publishing that
+branch to GitHub should request a Vercel Preview deployment through the existing
+Git integration; production remains on `main` until the review is approved.
+
+The browser tests cover visible focus after closing a directly shared case,
+video chapter state after switching media, and pausing background previews while
+a case is open. Closing the case preserves the visitor's manual pause setting.
+
+Before promoting the review:
+
+- Confirm the reporting period for the sales totals and the exact contract dates.
+- Restore Suaipe's 76% conversion figure only with its definition, period and sample.
+- Restore Caderninho's 0.7-second benchmark and 549-check count only with current,
+  reproducible evidence. Those project metrics are omitted from this preview.
+- Verify the AI Call Trainer destination. Its URL was taken from the repository's
+  public website field, not inferred from the project name.
+- Check the Vercel deployment and run the production URL through LinkedIn Post
+  Inspector before sharing. Local tests do not verify the deployed version or
+  LinkedIn's cached preview.

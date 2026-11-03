@@ -117,3 +117,58 @@ test('home and each case pass automated accessibility checks', async ({ page }) 
     await expect(page.getByRole('dialog')).not.toBeVisible();
   }
 });
+
+for (const width of [375, 1440]) {
+  test(`closing a directly shared case returns to a visible card at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/#case/caderninho');
+    await expect(page.getByRole('dialog')).toBeVisible();
+    await page.getByRole('button', { name: 'Close', exact: true }).click();
+    const card = page.locator('[data-case-id="caderninho"]');
+    await expect(page.getByRole('dialog')).not.toBeVisible();
+    await expect(card).toBeFocused();
+    await expect(card).toBeInViewport();
+    await expect.poll(() => card.evaluate((element) => {
+      const bounds = element.getBoundingClientRect();
+      const header = document.querySelector('header')!.getBoundingClientRect();
+      return bounds.top >= header.bottom && bounds.top < innerHeight;
+    })).toBe(true);
+  });
+}
+
+test('switching from a video to an image resets the highlighted chapter on return', async ({ page }) => {
+  await page.goto('/#case/caderninho');
+  const dialog = page.getByRole('dialog');
+  const chapter = dialog.getByRole('button', { name: '0:45 Under the hood', exact: true });
+  await chapter.click();
+  await expect(chapter).toHaveAttribute('aria-current', 'step');
+  await dialog.getByRole('button', { name: 'At the counter', exact: true }).click();
+  await dialog.getByRole('button', { name: 'The tour, video', exact: true }).click();
+  await expect.poll(() => dialog.locator('video').evaluate((v: HTMLVideoElement) => v.currentTime)).toBe(0);
+  await expect(dialog.locator('[aria-current="step"]')).toHaveCount(0);
+  await dialog.getByRole('button', { name: '0:12 A new case', exact: true }).click();
+  await expect(dialog.getByRole('button', { name: '0:12 A new case', exact: true })).toHaveAttribute('aria-current', 'step');
+});
+
+test('case dialogs pause previews and closing preserves the manual playback preference', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto('/#work');
+  const preview = page.locator('#work video').first();
+  const card = page.locator('[data-case-id="caderninho"]');
+  const allPaused = () => page.locator('#work video').evaluateAll((videos: HTMLVideoElement[]) => videos.every((video) => video.paused));
+  await preview.scrollIntoViewIfNeeded();
+  await expect.poll(() => preview.evaluate((v: HTMLVideoElement) => v.paused)).toBe(false);
+  await card.click();
+  await expect(page.getByRole('dialog')).toBeVisible();
+  await expect.poll(allPaused).toBe(true);
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('dialog')).not.toBeVisible();
+  await preview.scrollIntoViewIfNeeded();
+  await expect.poll(() => preview.evaluate((v: HTMLVideoElement) => v.paused)).toBe(false);
+  await page.getByRole('button', { name: 'Pause previews', exact: true }).click();
+  await card.click();
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('dialog')).not.toBeVisible();
+  await preview.scrollIntoViewIfNeeded();
+  await expect.poll(allPaused).toBe(true);
+});

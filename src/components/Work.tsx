@@ -157,7 +157,7 @@ function Card({
   );
 }
 
-export function Work({ onOpen }: { onOpen: OpenProject }) {
+export function Work({ onOpen, caseOpen }: { onOpen: OpenProject; caseOpen: boolean }) {
   // Only devices that can hover show the projects in grey, so only they are
   // told how to bring the colour back.
   const [canHover, setCanHover] = useState(false);
@@ -177,8 +177,8 @@ export function Work({ onOpen }: { onOpen: OpenProject }) {
         Software for people who sell, built from the shop floor.
       </h3>
       <p className="mt-6 max-w-[60ch]">
-        One is a product I’m selling, one is a start-up I co-founded, and two I built unpaid to
-        learn. The videos are the real apps in use.
+        One is a product I’m selling, one is a start-up I co-founded, and two are independent
+        projects. The videos show the products with demo data.
         {canHover && ' Point at one to see it in colour.'}
       </p>
 
@@ -200,7 +200,7 @@ export function Work({ onOpen }: { onOpen: OpenProject }) {
             index={i + 1}
             layout={i === 0 ? 'lead' : i === projects.length - 1 && i % 2 === 1 ? 'wide' : 'half'}
             onOpen={onOpen}
-            paused={previewsPaused || motionReduced}
+            paused={previewsPaused || motionReduced || caseOpen}
           />
         ))}
       </div>
