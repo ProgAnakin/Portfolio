@@ -34,6 +34,7 @@ export const sales = {
   revenue: 112483.67,
   receipts: 2186,
   items: 3056,
+  itemPrices: { lowest: 5, highest: 1600 },
 };
 
 const number = (value: number, decimals = 0) =>
@@ -41,7 +42,7 @@ const number = (value: number, decimals = 0) =>
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
   }).format(value);
-const euros = (value: number) => `€${number(value, 2)}`;
+const euros = (value: number, decimals = 2) => `€${number(value, decimals)}`;
 
 export const profile = {
   name: 'Costanzo Annichini',
@@ -64,23 +65,20 @@ export const figures: Figure[] = [
   { value: `€${number(sales.revenue / 1000)}k`, label: 'in recorded sales' },
   { value: number(sales.receipts), label: 'receipts' },
   { value: number(sales.items), label: 'items sold' },
-  { value: euros(sales.revenue / sales.receipts), label: 'average receipt' },
+  { value: euros(sales.itemPrices.highest, 0), label: 'highest-priced item sold' },
 ];
 
 export const record = {
   period: 'Webidoo Store · recorded sales',
-  heading: `${euros(sales.revenue / sales.items)} per item, on average. Thousands of sales add up.`,
+  heading: `From ${euros(sales.itemPrices.lowest, 0)} to ${euros(sales.itemPrices.highest, 0)} per item.`,
   paragraphs: [
-    'Webidoo Store sells technology from corners inside department stores. I’m the consultant on the corner: gadgets, gaming and beauty tech, from an €8 accessory to a €600 arcade cabinet. There are no appointments. People walk past, and some of them stop.',
+    `Webidoo Store sells technology from corners inside department stores. I’m the consultant on the corner: gadgets, gaming and beauty tech. I’ve sold individual items priced from ${euros(sales.itemPrices.lowest, 0)} to ${euros(sales.itemPrices.highest, 0)}. There are no appointments. People walk past, and some of them stop.`,
     'I started on a 20-hour weekly contract, working across two locations. My hours increased to 30 a week, and I later received a permanent contract. My manager trusts me to run a point of sale on my own.',
   ],
   facts: [
     { label: 'Recorded sales', value: euros(sales.revenue) },
     { label: 'Receipts', value: number(sales.receipts) },
     { label: 'Items sold', value: number(sales.items) },
-    { label: 'Average receipt', value: euros(sales.revenue / sales.receipts) },
-    { label: 'Items per receipt', value: number(sales.items / sales.receipts, 2) },
-    { label: 'Average item value', value: euros(sales.revenue / sales.items) },
     { label: 'Record basket', value: '25 items on one receipt' },
     { label: 'Ranking', value: 'Top seller at every point of sale I’ve worked' },
     {
@@ -94,13 +92,10 @@ export const record = {
     { title: '30 hours a week', body: 'My weekly contract hours increased.' },
     { title: 'Permanent contract', body: 'Later received a contract with no fixed end date.' },
   ],
-  /** Item prices, drawn as a scale. Euros. */
-  scale: {
-    min: 8,
-    max: 700,
-    bulkTo: 100,
-    rare: { from: 500, to: 600, label: 'LED masks and arcade cabinets, a handful a year' },
-  },
+  itemPrices: [
+    { label: 'Lowest-priced item sold', value: euros(sales.itemPrices.lowest, 0) },
+    { label: 'Highest-priced item sold', value: euros(sales.itemPrices.highest, 0) },
+  ],
 };
 
 /** How I work, in the order a sale happens. */
@@ -115,7 +110,7 @@ export const method = [
   },
   {
     title: 'Add the right second item',
-    body: 'I suggest what genuinely goes with the purchase. On a low ticket, that is where the month is made.',
+    body: 'I suggest what genuinely goes with the purchase, based on what the customer needs.',
   },
   {
     title: 'Follow up',

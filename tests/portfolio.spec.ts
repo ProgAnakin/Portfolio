@@ -8,15 +8,17 @@ const cases = [
   ['kouci', 'Kouci'],
 ];
 
-test('sales totals, derived averages and contract progression are published consistently', async ({ page }) => {
+test('sales totals, individual item prices and contract progression are published consistently', async ({ page }) => {
   await page.goto('/');
   const record = page.locator('#record');
-  for (const value of ['€112,483.67', '2,186', '3,056', '€51.46', '1.40', '€36.81']) {
+  for (const value of ['€112,483.67', '2,186', '3,056', '€5', '€1,600']) {
     await expect(record.getByText(value, { exact: true })).toBeVisible();
   }
   for (const title of ['20 hours a week', '30 hours a week', 'Permanent contract']) {
     await expect(record.getByText(title, { exact: true })).toBeVisible();
   }
+  await expect(page.getByText(/average receipt|average item value|items per receipt/i)).toHaveCount(0);
+  await expect(record.getByRole('heading', { name: 'From €5 to €1,600 per item.', exact: true })).toBeVisible();
   await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /€112,483.67.*2,186.*3,056/);
 });
 

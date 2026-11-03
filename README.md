@@ -53,9 +53,11 @@ Cases can be shared with `#case/<project id>` (for example,
 The Work section has a pause/play control for preview loops. Reduced-motion
 preferences are applied both on load and when they change during a visit.
 
-Sales totals are maintained once in `src/data/profile.ts`; averages are derived
-from those totals. The reporting end date and exact contract dates have not
-been supplied, so the copy uses recorded totals and contract progression
+Sales totals and the confirmed lowest/highest individual item prices are
+maintained in `src/data/profile.ts`. The page presents totals and price breadth;
+it does not present an average receipt as a typical sale. The reporting end date
+and exact contract dates have not been supplied, so the copy uses recorded
+totals and contract progression
 without assigning dates. Update the metadata in `index.html` and `public/og.jpg`
 when changing the headline figures. Run `npm run social` to regenerate the
 1200×630 social card from the profile data (requires Chromium as above). Source
