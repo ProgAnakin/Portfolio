@@ -4,15 +4,16 @@ import { ArrowOut, Container, Section } from './ui';
 export function Method() {
   return (
     <Section id="method" name="Method" note="How I sell, in the order a sale happens">
-      <ol className="border-line border-t">
+      <h3 className="head text-ink mb-10 max-w-[22ch] text-[clamp(2.25rem,4.4vw,3.5rem)]">A conversation first.<br />The right product next.</h3>
+      <ol className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
         {method.map((step, i) => (
           <li
             key={step.title}
-            className="border-line grid gap-2 border-b py-6 sm:grid-cols-[3rem_14rem_1fr] sm:gap-6"
+            className="border-line border-t pt-6"
           >
-            <span className="text-ink-3 text-sm tabular-nums sm:pt-1">{i + 1}</span>
-            <h3 className="text-ink text-lg font-semibold tracking-[-0.01em]">{step.title}</h3>
-            <p>{step.body}</p>
+            <span className="text-accent-dark figure text-4xl">{String(i + 1).padStart(2, '0')}</span>
+            <h3 className="text-ink mt-6 text-lg font-semibold tracking-[-0.01em]">{step.title}</h3>
+            <p className="mt-3 text-base">{step.body}</p>
           </li>
         ))}
       </ol>
@@ -25,8 +26,8 @@ export function Contact() {
     <Section id="contact" name="Contact" tone="night">
       <div className="grid gap-12 lg:grid-cols-9 lg:gap-x-8">
         <div className="lg:col-span-5">
-          <h3 className="head text-snow text-[clamp(2rem,4.4vw,3.5rem)]">
-            The quickest way to reach me is LinkedIn.
+          <h3 className="head text-snow text-[clamp(2.5rem,5.5vw,4.5rem)]">
+            Let’s talk about<br /><span className="text-accent">what’s next.</span>
           </h3>
           <p className="mt-6 max-w-[52ch]">
             I’m looking for a sales, SDR or business development role where I can bring hands-on

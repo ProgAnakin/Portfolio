@@ -1,17 +1,7 @@
 @import './fonts.css';
 @import 'tailwindcss';
 
-/* ---------------------------------------------------------------------------
-   Design tokens
-
-   Laid out like a printed brochure: a black cover (the hero), white pages
-   (the record and the work) and a black back cover (contact). Black, white
-   and greys only. The colour on the page belongs to the projects, and each
-   one gets it back when someone points at it.
-
-   Contrast, measured: ink-2 on paper 10.7:1, ink-3 on paper 5.1:1,
-   snow-2 on night 9.8:1, snow-3 on night 5.9:1.
-   --------------------------------------------------------------------------- */
+/* Warm paper, dark evidence panels and a restrained lime accent. */
 @theme {
   /* The white pages. */
   --color-paper: #f4f4f1;
@@ -28,6 +18,9 @@
   --color-snow: #f4f4f1;
   --color-snow-2: #b8b8b3;
   --color-snow-3: #8e8e89;
+
+  --color-accent: #d6ed83;
+  --color-accent-dark: #536622;
 
   --font-sans: 'Archivo', ui-sans-serif, system-ui, sans-serif;
 }
@@ -93,23 +86,23 @@ body {
   outline-offset: 3px;
 }
 
-/* ---------------------------------------------------------------------------
-   Colour on approach
-
-   Project media and logos sit in greyscale and take their colour back when the
-   project is pointed at or focused. Only on devices that can hover: a phone
-   has no pointer to wait for, so there the colour is always on.
-   --------------------------------------------------------------------------- */
-@media (hover: hover) {
-  .tint {
-    filter: grayscale(1);
-    transition: filter 600ms cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  .tint-group:hover .tint,
-  .tint-group:focus-within .tint {
-    filter: grayscale(0);
-  }
+.eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 650;
+  line-height: 1.5;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
+
+.hero-surface {
+  background: radial-gradient(ellipse at 85% 15%, #e6e9dc, transparent 55%), var(--color-paper);
+}
+
+.proof-panel {
+  box-shadow: 10px 10px 0 var(--color-accent);
+}
+
+/* Product media stays in colour for pointer, keyboard and touch users. */
 
 /* While a case is open the page behind it holds still. */
 html:has(dialog[open]) {

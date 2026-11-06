@@ -12,10 +12,11 @@ const linkedin = contacts.find((contact) => contact.id === 'linkedin');
 
 export function SiteHeader() {
   return (
-    <header className="bg-night/95 border-night-line sticky top-0 z-40 border-b backdrop-blur">
+    <header className="bg-paper/95 border-line sticky top-0 z-40 border-b backdrop-blur">
       <Container className="flex h-14 items-center justify-between gap-6">
-        <a href="#top" className="wide text-snow text-[0.8125rem] font-semibold">
-          {profile.name}
+        <a href="#top" className="text-ink flex items-center gap-3 text-[0.8125rem] font-semibold">
+          <span className="bg-ink text-paper grid size-8 place-items-center text-xs">CA</span>
+          <span>{profile.name}</span>
         </a>
         <nav aria-label="Sections" className="hidden md:block">
           <ul className="flex items-center gap-8">
@@ -23,7 +24,7 @@ export function SiteHeader() {
               <li key={item.href}>
                 <a
                   href={item.href}
-                  className="text-snow-2 hover:text-snow text-sm transition-colors"
+                  className="text-ink-3 hover:text-ink text-sm transition-colors"
                 >
                   {item.label}
                 </a>
@@ -36,19 +37,19 @@ export function SiteHeader() {
             href={linkedin.href}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-snow inline-flex items-center gap-1.5 text-sm"
+            className="text-ink inline-flex items-center gap-1.5 text-sm"
           >
             LinkedIn
             <ArrowOut />
           </a>
         )}
       </Container>
-      <nav aria-label="Sections on mobile" className="border-night-line border-t md:hidden">
+      <nav aria-label="Sections on mobile" className="border-line border-t md:hidden">
         <Container>
           <ul className="flex justify-between gap-3">
             {NAV.map((item) => (
               <li key={item.href}>
-                <a href={item.href} className="text-snow-2 hover:text-snow block py-3 text-sm">
+                <a href={item.href} className="text-ink-3 hover:text-ink block py-3 text-sm">
                   {item.label}
                 </a>
               </li>

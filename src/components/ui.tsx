@@ -13,10 +13,7 @@ export function Container({
   );
 }
 
-/**
- * A page section, laid out like a CV: the section's name in a narrow column on
- * the left, the content on the right. On a phone the name sits on top.
- */
+/** A numbered section header keeps the long page easy to scan. */
 export function Section({
   id,
   name,
@@ -36,26 +33,29 @@ export function Section({
     <section
       id={id}
       aria-labelledby={`${id}-name`}
-      className={night ? 'bg-night text-snow-2' : 'bg-paper text-ink-2'}
+      className={night ? 'bg-night text-snow-2' : id === 'work' ? 'bg-paper-2 text-ink-2' : 'bg-paper text-ink-2'}
     >
       <Container className="py-16 sm:py-24">
         <div
-          className={`grid gap-y-8 border-t pt-6 lg:grid-cols-12 lg:gap-x-8 ${
+          className={`border-t pt-5 ${
             night ? 'border-night-line' : 'border-line'
           }`}
         >
-          <div className="lg:col-span-3">
+          <div className="mb-10 flex flex-wrap items-baseline justify-between gap-x-8 gap-y-2 sm:mb-14">
             <h2
               id={`${id}-name`}
-              className={`wide text-[0.8125rem] font-semibold ${night ? 'text-snow' : 'text-ink'}`}
+              className={`eyebrow flex items-center gap-4 ${night ? 'text-snow' : 'text-ink'}`}
             >
+              <span className={night ? 'text-accent' : 'text-accent-dark'} aria-hidden="true">
+                {{ record: '01', work: '02', method: '03', contact: '04' }[id]}
+              </span>
               {name}
             </h2>
             {note && (
-              <p className={`mt-2 text-sm ${night ? 'text-snow-3' : 'text-ink-3'}`}>{note}</p>
+              <p className={`text-sm ${night ? 'text-snow-3' : 'text-ink-3'}`}>{note}</p>
             )}
           </div>
-          <div className="lg:col-span-9">{children}</div>
+          <div>{children}</div>
         </div>
       </Container>
     </section>

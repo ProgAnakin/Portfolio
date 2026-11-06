@@ -102,7 +102,7 @@ function Card({
   return (
     <article
       aria-labelledby={`${project.id}-name`}
-      className={`tint-group group bg-paper border-line flex flex-col border ${
+      className={`group bg-paper border-line flex flex-col overflow-hidden border transition-shadow hover:shadow-lg ${
         wide ? 'md:col-span-2 lg:grid lg:grid-cols-12' : ''
       }`}
     >
@@ -111,7 +111,7 @@ function Card({
         data-case-id={project.id}
         onClick={openCase}
         aria-label={project.preview ? `Open the ${project.name} case` : undefined}
-        className={`tint bg-night relative block overflow-hidden ${media}`}
+        className={`bg-night relative block overflow-hidden ${media}`}
         style={{ background: project.preview?.background }}
       >
         {project.preview ? <Preview project={project} paused={paused} /> : <MarkPanel project={project} />}
@@ -131,7 +131,7 @@ function Card({
             alt=""
             width={36}
             height={36}
-            className="tint size-9 shrink-0 rounded-[22%] object-contain"
+            className="size-9 shrink-0 rounded-[22%] object-contain"
           />
           <h3 id={`${project.id}-name`} className="head text-ink text-[1.75rem] sm:text-[2rem]">
             {project.name}
@@ -140,7 +140,7 @@ function Card({
         <p className="text-ink mt-3 font-medium">{project.tagline}</p>
         <p className="mt-3">{project.summary}</p>
 
-        <p className="text-ink-3 mt-5 text-sm">{project.status}</p>
+        <p className="text-ink-2 border-line mt-6 border-t pt-4 text-sm">{project.status}</p>
 
         <div className="mt-auto pt-8">
           <a
@@ -158,9 +158,6 @@ function Card({
 }
 
 export function Work({ onOpen, caseOpen }: { onOpen: OpenProject; caseOpen: boolean }) {
-  // Only devices that can hover show the projects in grey, so only they are
-  // told how to bring the colour back.
-  const [canHover, setCanHover] = useState(false);
   const [previewsPaused, setPreviewsPaused] = useState(false);
   const [motionReduced, setMotionReduced] = useState(() => window.matchMedia(motionQuery).matches);
   useEffect(() => {
@@ -169,30 +166,34 @@ export function Work({ onOpen, caseOpen }: { onOpen: OpenProject; caseOpen: bool
     preference.addEventListener('change', update);
     return () => preference.removeEventListener('change', update);
   }, []);
-  useEffect(() => setCanHover(window.matchMedia('(hover: hover)').matches), []);
 
   return (
     <Section id="work" name="Work" note={`${projects.length} projects, built outside work`}>
-      <h3 className="head text-ink max-w-[24ch] text-[clamp(2rem,4.4vw,3.5rem)]">
-        Software for people who sell, built from the shop floor.
-      </h3>
-      <p className="mt-6 max-w-[60ch]">
-        One is a product I’m selling, one is a start-up I co-founded, and two are independent
-        projects. The videos show the products with demo data.
-        {canHover && ' Point at one to see it in colour.'}
-      </p>
+      <div className="grid gap-6 lg:grid-cols-2 lg:gap-16">
+        <h3 className="head text-ink max-w-[18ch] text-[clamp(2.25rem,4.4vw,3.5rem)]">
+          Built from the shop floor.
+        </h3>
+        <p className="max-w-[52ch] lg:self-end">
+          A CRM for the counter. A guide to the right product. A place to practise a sales call.
+          And a sports start-up I co-founded. Explore the decisions behind each project.
+        </p>
+      </div>
+
+      <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
+        <p className="text-ink-3 text-sm">Product walkthroughs use demo data.</p>
 
       {!motionReduced && (
         <button
           type="button"
           onClick={() => setPreviewsPaused((paused) => !paused)}
-          className="text-ink mt-6 border-b border-current pb-0.5 text-sm"
+          className="text-ink border-b border-current pb-0.5 text-sm"
         >
           {previewsPaused ? 'Play previews' : 'Pause previews'}
         </button>
       )}
+      </div>
 
-      <div className="mt-12 grid gap-6 md:grid-cols-2">
+      <div className="mt-6 grid gap-6 md:grid-cols-2">
         {projects.map((project, i) => (
           <Card
             key={project.id}
